@@ -151,10 +151,10 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32,
         utils.zeroBytes32
       ).send({from: registrant});
-      assert.equal(resultRegister.events['0'].raw.topics[0], '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', "Wrong Event");
+      assert.equal(resultRegister.events['0'].raw.topics[0], web3Utils.sha3("Transfer(address,address,uint256)"), "Wrong Event");
       assert.equal(web3Utils.toChecksumAddress("0x"+resultRegister.events['0'].raw.topics[1].substring(26)), registrant, "Wrong subnode owner");
       assert.equal(web3Utils.toChecksumAddress("0x"+resultRegister.events['0'].raw.topics[2].substring(26)), UsernameRegistrar.address, "Wrong subnode owner");
-      assert.equal(resultRegister.events['1'].raw.topics[0], '0xce0457fe73731f824cc272376169235128c118b49d344817417c6d108d155e82', "Wrong Event");
+      assert.equal(resultRegister.events['1'].raw.topics[0], web3Utils.sha3("NewOwner(bytes32,bytes32,address)"), "Wrong Event");
       assert.equal(resultRegister.events['1'].raw.topics[1], registry.namehash, "Wrong Node");
       assert.equal(resultRegister.events['1'].raw.topics[2], label, "Wrong Label");
       assert.equal(web3Utils.toChecksumAddress("0x"+resultRegister.events['1'].raw.data.substring(26)), registrant, "Wrong subnode owner");
@@ -181,17 +181,18 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32,
         utils.zeroBytes32
       ).send({from: registrant});
-      assert.equal(resultRegister.events['1'].raw.topics[0], '0xce0457fe73731f824cc272376169235128c118b49d344817417c6d108d155e82', "Wrong Event");
+
+      assert.equal(resultRegister.events['1'].raw.topics[0], web3Utils.sha3("NewOwner(bytes32,bytes32,address)"), "Wrong Event");
       assert.equal(resultRegister.events['1'].raw.topics[1], registry.namehash, "Wrong Node");
       assert.equal(resultRegister.events['1'].raw.topics[2], label, "Wrong Label");
       assert.equal(web3Utils.toChecksumAddress("0x"+resultRegister.events['1'].raw.data.substring(26)), UsernameRegistrar.address, "Wrong subnode owner");
-      assert.equal(resultRegister.events['2'].raw.topics[0], '0x335721b01866dc23fbee8b6b2c7b1e14d6f05c28cd35a2c934239f94095602a0', "Wrong Event");
+      assert.equal(resultRegister.events['2'].raw.topics[0], web3Utils.sha3("NewResolver(bytes32,address)"), "Wrong Event");
       assert.equal(resultRegister.events['2'].raw.topics[1], usernameHash, "Wrong Username");
       assert.equal(web3Utils.toChecksumAddress("0x"+resultRegister.events['2'].raw.data.substring(26)), PublicResolver.address, "Wrong Resolver");
-      assert.equal(resultRegister.events['3'].raw.topics[0], '0x52d7d861f09ab3d26239d492e8968629f95e9e318cf0b73bfddc441522a15fd2', "Wrong Event");
+      assert.equal(resultRegister.events['3'].raw.topics[0], web3Utils.sha3("AddrChanged(bytes32,address)"), "Wrong Event");
       assert.equal(resultRegister.events['3'].raw.topics[1], usernameHash, "Wrong Username");
       assert.equal(web3Utils.toChecksumAddress("0x"+resultRegister.events['3'].raw.data.substring(26)), registrant, "Wrong address to resolve");
-      assert.equal(resultRegister.events['4'].raw.topics[0], '0xd4735d920b0f87494915f556dd9b54c8f309026070caea5c737245152564d266', "Wrong Event");
+      assert.equal(resultRegister.events['4'].raw.topics[0], web3Utils.sha3("Transfer(bytes32,address)"), "Wrong Event");
       assert.equal(resultRegister.events['4'].raw.topics[1], usernameHash, "Wrong Username");
       assert.equal(web3Utils.toChecksumAddress("0x"+resultRegister.events['4'].raw.data.substring(26)), registrant, "Wrong registry.namehash owner");
       assert.equal(resultRegister.events.UsernameOwner.returnValues.owner, registrant, "event UsernameOwner owner mismatch");
@@ -220,17 +221,17 @@ contract('UsernameRegistrar', function () {
         points.x,
         points.y
       ).send({from: registrant});
-      assert.equal(resultRegister.events['1'].raw.topics[0], '0xce0457fe73731f824cc272376169235128c118b49d344817417c6d108d155e82', "Wrong Event");
+      assert.equal(resultRegister.events['1'].raw.topics[0], web3Utils.sha3("NewOwner(bytes32,bytes32,address)"), "Wrong Event");
       assert.equal(resultRegister.events['1'].raw.topics[1], registry.namehash, "Wrong Node");
       assert.equal(resultRegister.events['1'].raw.topics[2], label, "Wrong Label");
       assert.equal(web3Utils.toChecksumAddress("0x"+resultRegister.events['1'].raw.data.substring(26)), UsernameRegistrar.address, "Wrong subnode owner");
-      assert.equal(resultRegister.events['2'].raw.topics[0], '0x335721b01866dc23fbee8b6b2c7b1e14d6f05c28cd35a2c934239f94095602a0', "Wrong Event");
+      assert.equal(resultRegister.events['2'].raw.topics[0], web3Utils.sha3("NewResolver(bytes32,address)"), "Wrong Event");
       assert.equal(resultRegister.events['2'].raw.topics[1], usernameHash, "Wrong Username");
       assert.equal(web3Utils.toChecksumAddress("0x"+resultRegister.events['2'].raw.data.substring(26)), PublicResolver.address, "Wrong Resolver");
-      assert.equal(resultRegister.events['3'].raw.topics[0], '0x1d6f5e03d3f63eb58751986629a5439baee5079ff04f345becb66e23eb154e46', "Wrong Event");
+      assert.equal(resultRegister.events['3'].raw.topics[0], web3Utils.sha3("PubkeyChanged(bytes32,bytes32,bytes32)"), "Wrong Event");
       assert.equal(resultRegister.events['3'].raw.topics[1], usernameHash, "Wrong Username");
       assert.equal(resultRegister.events['3'].raw.data, points.x.concat(points.y.substr(2)))
-      assert.equal(resultRegister.events['4'].raw.topics[0], '0xd4735d920b0f87494915f556dd9b54c8f309026070caea5c737245152564d266', "Wrong Event");
+      assert.equal(resultRegister.events['4'].raw.topics[0], web3Utils.sha3("Transfer(bytes32,address)"), "Wrong Event");
       assert.equal(resultRegister.events['4'].raw.topics[1], usernameHash, "Wrong Username");
       assert.equal(web3Utils.toChecksumAddress("0x"+resultRegister.events['4'].raw.data.substring(26)), registrant, "Wrong registry.namehash owner");
       assert.equal(resultRegister.events.UsernameOwner.returnValues.owner, registrant, "event UsernameOwner owner mismatch");
@@ -259,20 +260,20 @@ contract('UsernameRegistrar', function () {
         points.x,
         points.y
       ).send({from: registrant}); 
-      assert.equal(resultRegister.events['1'].raw.topics[0], '0xce0457fe73731f824cc272376169235128c118b49d344817417c6d108d155e82', "Wrong Event");
+      assert.equal(resultRegister.events['1'].raw.topics[0], web3Utils.sha3("NewOwner(bytes32,bytes32,address)"), "Wrong Event");
       assert.equal(resultRegister.events['1'].raw.topics[1], registry.namehash, "Wrong Node");
       assert.equal(resultRegister.events['1'].raw.topics[2], label, "Wrong Label");
       assert.equal(web3Utils.toChecksumAddress("0x"+resultRegister.events['1'].raw.data.substring(26)), UsernameRegistrar.address, "Wrong subnode owner");
-      assert.equal(resultRegister.events['2'].raw.topics[0], '0x335721b01866dc23fbee8b6b2c7b1e14d6f05c28cd35a2c934239f94095602a0', "Wrong Event");
+      assert.equal(resultRegister.events['2'].raw.topics[0], web3Utils.sha3("NewResolver(bytes32,address)"), "Wrong Event");
       assert.equal(resultRegister.events['2'].raw.topics[1], usernameHash, "Wrong Username");
       assert.equal(web3Utils.toChecksumAddress("0x"+resultRegister.events['2'].raw.data.substring(26)), await UsernameRegistrar.methods.resolver().call(), "Wrong Resolver");
-      assert.equal(resultRegister.events['3'].raw.topics[0], '0x52d7d861f09ab3d26239d492e8968629f95e9e318cf0b73bfddc441522a15fd2', "Wrong Event");
+      assert.equal(resultRegister.events['3'].raw.topics[0], web3Utils.sha3("AddrChanged(bytes32,address)"), "Wrong Event");
       assert.equal(resultRegister.events['3'].raw.topics[1], usernameHash, "Wrong Username");
       assert.equal(web3Utils.toChecksumAddress("0x"+resultRegister.events['3'].raw.data.substring(26)), registrant, "Wrong address to resolve");
-      assert.equal(resultRegister.events['4'].raw.topics[0], '0x1d6f5e03d3f63eb58751986629a5439baee5079ff04f345becb66e23eb154e46', "Wrong Event");
+      assert.equal(resultRegister.events['4'].raw.topics[0], web3Utils.sha3("PubkeyChanged(bytes32,bytes32,bytes32)"), "Wrong Event");
       assert.equal(resultRegister.events['4'].raw.topics[1], usernameHash, "Wrong Username");
       assert.equal(resultRegister.events['4'].raw.data, points.x.concat(points.y.substr(2)))
-      assert.equal(resultRegister.events['5'].raw.topics[0], '0xd4735d920b0f87494915f556dd9b54c8f309026070caea5c737245152564d266', "Wrong Event");
+      assert.equal(resultRegister.events['5'].raw.topics[0], web3Utils.sha3("Transfer(bytes32,address)"), "Wrong Event");
       assert.equal(resultRegister.events['5'].raw.topics[1], usernameHash, "Wrong Username");
       assert.equal(web3Utils.toChecksumAddress("0x"+resultRegister.events['5'].raw.data.substring(26)), registrant, "Wrong registry.namehash owner");
       assert.equal(resultRegister.events.UsernameOwner.returnValues.owner, registrant, "event UsernameOwner owner mismatch");
