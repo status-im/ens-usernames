@@ -21,7 +21,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     uint256 public releaseDelay = 365 days;
     mapping (bytes32 => Account) public accounts;
     
-    //slashing conditions
+    //Slashing conditions
     uint256 public usernameMinLenght;
     bytes32 public reservedUsernamesMerkleRoot;
     
@@ -41,20 +41,25 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         address owner;
     }
 
+    /**
+     * @notice Callabe only by `parentRegistry()` to continue migration of ENSSubdomainRegistry.
+     */
     modifier onlyParentRegistry {
         require(msg.sender == parentRegistry, "Migration only.");
         _;
     }
 
     /** 
-     * @notice Initializes a UserRegistry contract 
-     * @param _token fee token base 
-     * @param _ensRegistry Ethereum Name Service root address 
-     * @param _resolver Default resolver to use in initial settings
-     * @param _ensNode ENS node (registry) being used for usernames subnodes (subregistry)
+     * @notice Initializes UsernameRegistrar contract. 
+     * The only parameter from this list that can be changed later is `_resolver`.
+     * Other updates require a new contract and migration of domain.
+     * @param _token ERC20 token with optional `approveAndCall(address,uint256,bytes)` for locking fee.
+     * @param _ensRegistry Ethereum Name Service root contract address.
+     * @param _resolver Public Resolver for resolving usernames.
+     * @param _ensNode ENS node (domain) being used for usernames subnodes (subdomain)
      * @param _usernameMinLenght Minimum length of usernames 
-     * @param _reservedUsernamesMerkleRoot Merkle Roots of reserved usernames 
-     * @param _parentRegistry Address of old registry (if any) for account migration.
+     * @param _reservedUsernamesMerkleRoot Merkle root of reserved usernames
+     * @param _parentRegistry Address of old registry (if any) for optional account migration.
      */
     constructor(
         ERC20Token _token,
@@ -88,10 +93,10 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * - Usernames contained in the merkle tree of root `reservedUsernamesMerkleRoot` can be slashed.
      * - Usernames starting with `0x` and bigger then 12 characters can be slashed.
      * - If terms of the contract change—e.g. Status makes contract upgrades—the user has the right to release the username and get their deposit back.
-     * @param _label choosen unowned username hash 
-     * @param _account optional address to set at public resolver
-     * @param _pubkeyA optional pubkey part A to set at public resolver
-     * @param _pubkeyB optional pubkey part B to set at public resolver
+     * @param _label Choosen unowned username hash.
+     * @param _account Optional address to set at public resolver.
+     * @param _pubkeyA Optional pubkey part A to set at public resolver.
+     * @param _pubkeyB Optional pubkey part B to set at public resolver.
      */
     function register(
         bytes32 _label,
@@ -106,8 +111,10 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
     
     /** 
-     * @notice release username and retrieve locked fee, needs to be called after `releasePeriod` from creation time.
-     * @param _label `msg.sender` owned username hash 
+     * @notice Release username and retrieve locked fee, needs to be called 
+     * after `releasePeriod` from creation time by ENS registry owner of domain 
+     * or anytime by account owner when domain migrated to a new registry.
+     * @param _label Username hash.
      */
     function release(
         bytes32 _label
@@ -126,9 +133,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         } else {
             require(msg.sender == account.owner, "Not the former account owner.");
             address newOwner = ensRegistry.owner(ensNode);
-            //low level call, case dropUsername not implemented or failing, proceed release. 
-            //invert to supress warning
-            !newOwner.call( 
+            //Low level call, case dropUsername not implemented or failing, proceed release. 
+            //Invert (!) to supress warning, return of this call have no use.
+            !newOwner.call(
                 abi.encodeWithSignature(
                     "dropUsername(bytes32)",
                     _label
@@ -145,8 +152,10 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /** 
-     * @notice updates funds owner, useful to move username account to new registry.
-     * @param _label `msg.sender` owned username hash 
+     * @notice update account owner, should be called by new ens node owner 
+     * to update this contract registry, otherwise former owner can release 
+     * if domain is moved to a new registry. 
+     * @param _label Username hash.
      **/
     function updateAccountOwner(
         bytes32 _label
@@ -162,8 +171,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }  
     
     /**
-     * @notice slash account due too length restriction 
-     * @param _username raw value of offending username
+     * @notice Slash username smaller then `usernameMinLenght`.
+     * @param _username Raw value of offending username.
      */
     function slashSmallUsername(
         bytes _username
@@ -175,8 +184,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
-     * @notice slash account due look like an address 
-     * @param _username raw value of offending username
+     * @notice Slash username starting with "0x" and with lenght greater than 12.
+     * @param _username Raw value of offending username.
      */
     function slashAddressLikeUsername(
         string _username
@@ -191,8 +200,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }  
 
     /**
-     * @notice slash account due reserved name
-     * @param _username raw value of offending username
+     * @notice Slash usernmae that is exactly a reserved name.
+     * @param _username Raw value of offending username.
+     * @param _proof Merkle proof that name is listed on merkle tree.
      */
     function slashReservedUsername(
         bytes _username,
@@ -212,9 +222,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
-     * @notice slash account of invalid username
-     * @param _username raw value of offending username
-     * @param _offendingPos position of invalid character
+     * @notice Slash username that contains a non alphanumeric character.
+     * @param _username Raw value of offending username.
+     * @param _offendingPos Position of non alphanumeric character.
      */
     function slashInvalidUsername(
         bytes _username,
@@ -231,8 +241,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
-     * @notice Migrate account to new registry
-     * @param _label `msg.sender` owned username hash 
+     * @notice Migrate account to new registry.
+     * @param _label Username hash.
      **/
     function moveAccount(
         bytes32 _label
@@ -254,8 +264,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
     
     /**
-     * @dev callabe only by parent registry to continue migration of ENSSubdomainRegistry
-     * @param _domainHash needs to be this contract ensNode
+     * @notice Migrate domain coming from parent registry and activate regsitration.
+     * @param _price Price of registration.
+     * @param _domainHash Needs to be `ensNode`.
      **/
     function migrateDomain(
         uint256 _price,
@@ -269,8 +280,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /** 
-     * @notice Activate registry
-     * @param _price The price of username registry
+     * @notice Activate registration.
+     * @param _price The price of registration.
      */
     function activate(
         uint256 _price
@@ -286,8 +297,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /** 
-     * @notice updates default public resolver for newly registred usernames
-     * @param _resolver new default resolver  
+     * @notice Updates Public Resolver for resolving users.
+     * @param _resolver New PublicResolver.
      */
     function setResolver(
         address _resolver
@@ -299,8 +310,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
-     * @notice updates registry price
-     * @param _price new price
+     * @notice Updates registration price.
+     * @param _price New registration price.
      */
     function updateRegistryPrice(
         uint256 _price
@@ -314,8 +325,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
   
     /**
-     * @notice moves a registry to other Registry (will not move usernames accounts)
-     * @param _newRegistry new registry hodling this registry
+     * @notice Transfer ownership of ensNode to `_newRegistry`.
+     * Usernames registered are not affected, but they would be able to instantly release.
+     * @param _newRegistry New UsernameRegistrar for hodling `ensNode` node.
      */
     function moveRegistry(
         UsernameRegistrar _newRegistry
@@ -332,8 +344,13 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
-     * @dev callable only by parent registry for continue user opt-in migration
-     * @param _domainHash needs to be this contract ensNode
+     * @notice Calls `migrateUsername(bytes32,uint256,uint256,address)`.
+     * Deprecated, portability for "ENSSubdomainRegistry".
+     * @param _userHash Username hash. 
+     * @param _domainHash Needs to be `ensNode`
+     * @param _tokenBalance Amount being transfered from `parentRegistry()`.
+     * @param _creationTime Time user registrated in `parentRegistry()` is preserved. 
+     * @param _accountOwner Account owner which migrated the account.
      **/
     function migrateAccount(
         bytes32 _userHash,
@@ -349,8 +366,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /** 
-     * @dev clears ens registry. Callable only by parant registry for continue user opt-out migration
-     * @param _label any username hash coming from parent 
+     * @notice Opt-out migration of username from `parentRegistry()`.
+     * Clear ENS resolver and subnode owner.
+     * @param _label Username hash.
      */
     function dropUsername(
         bytes32 _label
@@ -366,9 +384,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
-     * @notice withdraw tokens forced into the contract
-     * @param _token address of ERC20 withdrawing excess, or address(0) if want ETH/
-     * @param _beneficiary who gets the funds
+     * @notice Withdraw tokens wrongly sent to the contract.
+     * @param _token Address of ERC20 withdrawing excess, or address(0) if want ETH.
+     * @param _beneficiary Address to send the funds.
      **/
     function withdrawExcessBalance(
         address _token,
@@ -394,9 +412,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
-     * @notice withdraw ens nodes not belonging to this contract
-     * @param _domainHash ens node namehash
-     * @param _beneficiary new owner of ens node
+     * @notice Withdraw ens nodes not belonging to this contract.
+     * @param _domainHash Ens node namehash.
+     * @param _beneficiary New owner of ens node.
      **/
     function withdrawWrongNode(
         bytes32 _domainHash,
@@ -412,8 +430,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
-     * @notice gets registrar price 
-     * @return registry price
+     * @notice Gets registration price.
+     * @return Registration price.
      **/
     function getPrice() 
         external 
@@ -425,8 +443,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     
     /**
      * @notice reads amount tokens locked in username 
-     * @param _label hash of username
-     * @return locked username balance
+     * @param _label Username hash.
+     * @return Locked username balance.
      **/
     function getAccountBalance(bytes32 _label)
         external
@@ -437,10 +455,10 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
-     * @notice reads username owner at this contract, 
-     * which can release or migrate in case of upgrade
-     * @param _label hash of username
-     * @return username owner
+     * @notice reads username account owner at this contract, 
+     * which can release or migrate in case of upgrade.
+     * @param _label Username hash.
+     * @return Username account owner.
      **/
     function getAccountOwner(bytes32 _label)
         external
@@ -452,8 +470,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
 
     /**
      * @notice reads when the account was registered 
-     * @param _label hash of username
-     * @return registration time
+     * @param _label Username hash.
+     * @return Registration time.
      **/
     function getCreationTime(bytes32 _label)
         external
@@ -465,8 +483,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
 
     /**
      * @notice calculate time where username can be released 
-     * @param _label hash of username
-     * @return exact time when username can be released
+     * @param _label Username hash.
+     * @return Exact time when username can be released.
      **/
     function getExpirationTime(bytes32 _label)
         external
@@ -477,11 +495,11 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
-     * @notice Receive approval, callable only by `token()`. 
-     * @param _from who is approving
-     * @param _amount amount being approved, need to be equal `getPrice()`
-     * @param _token token being approved, need to be equal `token()`
-     * @param _data abi encoded data with selector of `register(bytes32,address,bytes32,bytes32)`
+     * @notice Support for "approveAndCall". Callable only by `token()`.  
+     * @param _from Who approved.
+     * @param _amount Amount being approved, need to be equal `getPrice()`.
+     * @param _token Token being approved, need to be equal `token()`.
+     * @param _data Abi encoded data with selector of `register(bytes32,address,bytes32,bytes32)`.
      */
     function receiveApproval(
         address _from,
@@ -507,38 +525,13 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         );
         registerUser(_from, label, account, pubkeyA, pubkeyB);
     }
-    
+   
     /**
-     * @dev decodes abi encoded data with selector for "register(bytes32,address,bytes32,bytes32)"
-     * @param _data abi encoded data
-     */
-    function abiDecodeRegister(
-        bytes _data
-    ) 
-        private 
-        pure 
-        returns(
-            bytes4 sig,
-            bytes32 label,
-            address account,
-            bytes32 pubkeyA,
-            bytes32 pubkeyB
-        )
-    {
-        assembly {
-            sig := mload(add(_data, add(0x20, 0)))
-            label := mload(add(_data, 36))
-            account := mload(add(_data, 68))
-            pubkeyA := mload(add(_data, 100))
-            pubkeyB := mload(add(_data, 132))
-        }
-    }
-    /**
-     * @dev callable only by parent registry for continue user opt-in migration
-     * @param _label any username hash coming from parent
-     * @param _tokenBalance amount being transferred
-     * @param _creationTime any value coming from parent
-     * @param _accountOwner owner for opt-out/release at registry move
+     * @notice Continues migration of username to new registry.
+     * @param _label Username hash.
+     * @param _tokenBalance Amount being transfered from `parentRegistry()`.
+     * @param _creationTime Time user registrated in `parentRegistry()` is preserved. 
+     * @param _accountOwner Account owner which migrated the account.
      **/
     function migrateUsername(
         bytes32 _label,
@@ -565,8 +558,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
 
     /**
      * @dev callabe only by parent registry to continue migration
-     * of registry and activate registrar
-     * @param _price the price to setup and activate domain
+     * of registry and activate registration.
+     * @param _price The price of registration.
      **/
     function migrateRegistry(
         uint256 _price
@@ -583,11 +576,11 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
 
     /**
      * @notice Registers `_label` username to `ensNode` setting msg.sender as owner.
-     * @param _owner address registering the user and paying registry price.
-     * @param _label choosen unowned username hash 
-     * @param _account optional address to set at public resolver
-     * @param _pubkeyA optional pubkey part A to set at public resolver
-     * @param _pubkeyB optional pubkey part B to set at public resolver
+     * @param _owner Address registering the user and paying registry price.
+     * @param _label Choosen unowned username hash.
+     * @param _account Optional address to set at public resolver.
+     * @param _pubkeyA Optional pubkey part A to set at public resolver.
+     * @param _pubkeyB Optional pubkey part B to set at public resolver.
      */
     function registerUser(
         address _owner,
@@ -638,8 +631,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
     
     /**
-     * @dev removes account hash of `_username` and send account.balance to msg.sender
-     * @param _username username being slashed
+     * @dev Removes account hash of `_username` and send account.balance to msg.sender.
+     * @param _username Username being slashed.
      */
     function slashUsername(bytes _username) internal {
         bytes32 label = keccak256(_username);
@@ -658,5 +651,31 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         }
         emit UsernameOwner(namehash, address(0));
     }
-    
+     
+    /**
+     * @dev Decodes abi encoded data with selector for "register(bytes32,address,bytes32,bytes32)".
+     * @param _data Abi encoded data.
+     * @return Decoded registry call.
+     */
+    function abiDecodeRegister(
+        bytes _data
+    ) 
+        private 
+        pure 
+        returns(
+            bytes4 sig,
+            bytes32 label,
+            address account,
+            bytes32 pubkeyA,
+            bytes32 pubkeyB
+        )
+    {
+        assembly {
+            sig := mload(add(_data, add(0x20, 0)))
+            label := mload(add(_data, 36))
+            account := mload(add(_data, 68))
+            pubkeyA := mload(add(_data, 100))
+            pubkeyB := mload(add(_data, 132))
+        }
+    }
 }
