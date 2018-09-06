@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 /// @dev `Owned` is a base level contract that assigns an `owner` that can be
 ///  later changed

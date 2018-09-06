@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.24;
 
 /** 
  * @notice Uses ethereum signed messages
@@ -18,8 +18,8 @@ contract MessageSigned {
         bytes32 _signHash, 
         bytes _messageSignature
     )
-        pure
         internal
+        pure
         returns(address) 
     {
         uint8 v;
