@@ -1,5 +1,6 @@
-var EC = require('elliptic').ec;
-var ec = new EC('secp256k1');
+const EC = require('elliptic').ec;
+const ec = new EC('secp256k1');
+const web3Utils = require('web3-utils');
 
 // This has been tested with the real Ethereum network and Testrpc.
 // Copied and edited from: https://gist.github.com/xavierlepretre/d5583222fde52ddfbc58b7cfa0d2d0a9
@@ -38,6 +39,10 @@ exports.listenForEvent = event => new Promise((resolve, reject) => {
 exports.eventValues = (receipt, eventName) => {
     if(receipt.events[eventName])
         return receipt.events[eventName].returnValues;
+}
+
+exports.eventAddress = (bytes32Address) => {
+    return web3Utils.toChecksumAddress("0x"+bytes32Address.substring(26))
 }
 
 exports.addressToBytes32 = (address) => {
