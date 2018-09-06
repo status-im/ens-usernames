@@ -336,7 +336,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         external
         onlyController
     {
-        require(state == RegistrarState.Active, "Wrong registry");
+        require(_newRegistry != this, "Cannot move to self.");
         require(ensRegistry.owner(ensNode) == address(this), "Registry not owned anymore.");
         state = RegistrarState.Moved;
         ensRegistry.setOwner(ensNode, _newRegistry);
