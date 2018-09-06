@@ -126,8 +126,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         } else {
             require(msg.sender == account.owner, "Not the former account owner.");
             address newOwner = ensRegistry.owner(ensNode);
-            //low level call, case dropUsername not implemented or failing, proceed release.
-            newOwner.call(
+            //low level call, case dropUsername not implemented or failing, proceed release. 
+            //invert to supress warning
+            !newOwner.call( 
                 abi.encodeWithSignature(
                     "dropUsername(bytes32)",
                     _label
