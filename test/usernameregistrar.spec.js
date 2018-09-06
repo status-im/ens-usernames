@@ -152,8 +152,9 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});
       assert.equal(resultRegister.events['0'].raw.topics[0], web3Utils.sha3("Transfer(address,address,uint256)"), "Wrong Event");
-      assert.equal(utils.eventAddress(resultRegister.events['0'].raw.topics[1]), registrant, "Wrong subnode owner");
-      assert.equal(utils.eventAddress(resultRegister.events['0'].raw.topics[2]), UsernameRegistrar.address, "Wrong subnode owner");
+      assert.equal(utils.eventAddress(resultRegister.events['0'].raw.topics[1]), registrant, "Wrong Transfer from");
+      assert.equal(utils.eventAddress(resultRegister.events['0'].raw.topics[2]), UsernameRegistrar.address, "Wrong transfer to");
+      assert.equal(resultRegister.events['0'].raw.data, registry.price, "Wrong transfer value");
       assert.equal(resultRegister.events['1'].raw.topics[0], web3Utils.sha3("NewOwner(bytes32,bytes32,address)"), "Wrong Event");
       assert.equal(resultRegister.events['1'].raw.topics[1], registry.namehash, "Wrong Node");
       assert.equal(resultRegister.events['1'].raw.topics[2], label, "Wrong Label");
@@ -181,7 +182,10 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32,
         utils.zeroBytes32
       ).send({from: registrant});
-
+      assert.equal(resultRegister.events['0'].raw.topics[0], web3Utils.sha3("Transfer(address,address,uint256)"), "Wrong Event");
+      assert.equal(utils.eventAddress(resultRegister.events['0'].raw.topics[1]), registrant, "Wrong Transfer from");
+      assert.equal(utils.eventAddress(resultRegister.events['0'].raw.topics[2]), UsernameRegistrar.address, "Wrong transfer to");
+      assert.equal(resultRegister.events['0'].raw.data, registry.price, "Wrong transfer value");
       assert.equal(resultRegister.events['1'].raw.topics[0], web3Utils.sha3("NewOwner(bytes32,bytes32,address)"), "Wrong Event");
       assert.equal(resultRegister.events['1'].raw.topics[1], registry.namehash, "Wrong Node");
       assert.equal(resultRegister.events['1'].raw.topics[2], label, "Wrong Label");
@@ -221,6 +225,10 @@ contract('UsernameRegistrar', function () {
         points.x,
         points.y
       ).send({from: registrant});
+      assert.equal(resultRegister.events['0'].raw.topics[0], web3Utils.sha3("Transfer(address,address,uint256)"), "Wrong Event");
+      assert.equal(utils.eventAddress(resultRegister.events['0'].raw.topics[1]), registrant, "Wrong Transfer from");
+      assert.equal(utils.eventAddress(resultRegister.events['0'].raw.topics[2]), UsernameRegistrar.address, "Wrong transfer to");
+      assert.equal(resultRegister.events['0'].raw.data, registry.price, "Wrong transfer value");
       assert.equal(resultRegister.events['1'].raw.topics[0], web3Utils.sha3("NewOwner(bytes32,bytes32,address)"), "Wrong Event");
       assert.equal(resultRegister.events['1'].raw.topics[1], registry.namehash, "Wrong Node");
       assert.equal(resultRegister.events['1'].raw.topics[2], label, "Wrong Label");
@@ -260,6 +268,10 @@ contract('UsernameRegistrar', function () {
         points.x,
         points.y
       ).send({from: registrant}); 
+      assert.equal(resultRegister.events['0'].raw.topics[0], web3Utils.sha3("Transfer(address,address,uint256)"), "Wrong Event");
+      assert.equal(utils.eventAddress(resultRegister.events['0'].raw.topics[1]), registrant, "Wrong Transfer from");
+      assert.equal(utils.eventAddress(resultRegister.events['0'].raw.topics[2]), UsernameRegistrar.address, "Wrong transfer to");
+      assert.equal(resultRegister.events['0'].raw.data, registry.price, "Wrong transfer value");
       assert.equal(resultRegister.events['1'].raw.topics[0], web3Utils.sha3("NewOwner(bytes32,bytes32,address)"), "Wrong Event");
       assert.equal(resultRegister.events['1'].raw.topics[1], registry.namehash, "Wrong Node");
       assert.equal(resultRegister.events['1'].raw.topics[2], label, "Wrong Label");
