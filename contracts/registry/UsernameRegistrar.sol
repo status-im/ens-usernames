@@ -241,7 +241,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
-     * @notice Migrate account to new registry.
+     * @notice Migrate account to new registry, opt-in to new contract.
      * @param _label Username hash.
      **/
     function moveAccount(
@@ -249,6 +249,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     ) 
         external 
     {
+        require(state == RegistrarState.Moved, "Wrong contract state");
         require(msg.sender == accounts[_label].owner, "Callable only by account owner.");
         UsernameRegistrar _newRegistry = UsernameRegistrar(ensRegistry.owner(ensNode));
         Account memory account = accounts[_label];
