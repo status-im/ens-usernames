@@ -125,13 +125,7 @@ const InnerForm = ({
             wide />
         </Field>
         <div style={{ position: 'relative', left: 0, right: 0, bottom: 0 }}>
-          {!Number(SNTAllowance) || (Number(domainPrice) && !Number(SNTBalance)) ? <TokenPermissions
-            symbol="SNT"
-            spender={UsernameRegistrar.address}
-            methods={TestToken.methods}
-            mobile
-          />
-          : !isSubmitting ? <MobileButton type="submit" text={`${editAccount ? 'Save' : 'Register'} with transaction`} style={{ width: '100%' }} /> : <CircularProgress style={{ marginLeft: '45%' }} />}
+          {!isSubmitting ? <MobileButton type="submit" text={`${editAccount ? 'Save' : 'Register'} with transaction`} style={{ width: '100%' }} /> : <CircularProgress style={{ marginLeft: '45%' }} />}
         </div>
       </Hidden>
     </div>
@@ -151,8 +145,9 @@ const RegisterSubDomain = withFormik({
   async handleSubmit(values, { setSubmitting, props }) {
     const { editAccount, preRegisteredCallback } = props;
     const { address, statusAddress } = values;
-    const { subDomain, domainName, registeredCallbackFn } = props || values;
+    const { subDomain, domainName, domainPrice, registeredCallbackFn } = props || values;
     const { methods: { register } } = UsernameRegistrar;
+    const { methods: { approveAndCall } } = TestToken;
     const subdomainHash = soliditySha3(subDomain);
     const domainNameHash = hash(domainName);
     const resolveToAddr = address || zeroAddress;
@@ -167,16 +162,20 @@ const RegisterSubDomain = withFormik({
       points ? points.x : zeroBytes32,
       points ? points.y : zeroBytes32,
     ];
-    editAccount
-      ? funcsToSend.push(setAddr(node, resolveToAddr), setPubkey(node, args[3], args[4]))
-      : funcsToSend.push(register(...args));
+    if (editAccount) funcsToSend.push(setAddr(node, resolveToAddr), setPubkey(node, args[3], args[4]));
+    else {
+      funcsToSend.push(
+        approveAndCall(UsernameRegistrar.address, Number(domainPrice), register(...args).encodeABI())
+      );
+    }
     while (funcsToSend.length) {
       const toSend = funcsToSend.pop();
       toSend.estimateGas().then((gasEstimated) => {
-        console.log("Register would work. :D Gas estimated: " + gasEstimated)
+        const gas = editAccount ? gasEstimated + 1000 : gasEstimated * 2;
+        console.log("Register would work. :D Gas estimated: " + gasEstimated, { gas }, gasEstimated + 1000);
         console.log("Trying: register(\"" + subdomainHash + "\",\"" + domainNameHash + "\",\"" + resolveToAddr + "\",\"" + zeroBytes32 + "\",\"" + zeroBytes32 + "\")");
         if (preRegisteredCallback) preRegisteredCallback();
-        toSend.send({gas: gasEstimated + 1000 }).then((txId) => {
+        toSend.send({ gas }).then((txId) => {
           if (txId.status == "0x1" || txId.status == "0x01"){
             console.log("Register send success. :)");
           } else {
