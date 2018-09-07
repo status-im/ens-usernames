@@ -162,8 +162,10 @@ const RegisterSubDomain = withFormik({
       points ? points.x : zeroBytes32,
       points ? points.y : zeroBytes32,
     ];
-    if (editAccount) funcsToSend.push(setAddr(node, resolveToAddr), setPubkey(node, args[3], args[4]));
-    else {
+    if (editAccount) {
+      if (address !== web3.eth.defaultAccount) funcsToSend.push(setAddr(node, resolveToAddr));
+      if (statusAddress && statusAddress !== props.statusContactCode) funcsToSend.push(setPubkey(node, args[3], args[4]));
+    } else {
       funcsToSend.push(
         approveAndCall(UsernameRegistrar.address, Number(domainPrice), register(...args).encodeABI())
       );
