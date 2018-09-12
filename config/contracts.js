@@ -115,7 +115,7 @@ module.exports = {
         "address": "0x58E01078d14142E0370526dFdAE44E4f508c844B"
       },
       "UsernameRegistrar": {
-        "address": "0x028F3Df706c5295Ba283c326F4692c375D14cb68"
+        "address": "0x2e1239715c5d7A84002328D2D8B8307fd509937c"
       }
     }
   },
