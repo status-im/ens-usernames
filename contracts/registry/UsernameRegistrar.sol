@@ -267,22 +267,6 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
             account.owner
         );
     }
-    
-    /**
-     * @notice Migrate domain coming from parent registry and activate regsitration.
-     * @param _price Price of registration.
-     * @param _domainHash Needs to be `ensNode`.
-     **/
-    function migrateDomain(
-        bytes32 _domainHash,
-        uint256 _price
-    ) 
-        external
-        onlyParentRegistry
-    {
-        require(_domainHash == ensNode, "Wrong Registry");
-        migrateRegistry(_price);
-    }
 
     /** 
      * @notice Activate registration.
@@ -346,28 +330,6 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         ensRegistry.setOwner(ensNode, _newRegistry);
         _newRegistry.migrateRegistry(price);
         emit RegistryMoved(_newRegistry);
-    }
-
-    /**
-     * @notice Calls `migrateUsername(bytes32,uint256,uint256,address)`.
-     * Deprecated, portability for "ENSSubdomainRegistry".
-     * @param _userHash Username hash. 
-     * @param _domainHash Needs to be `ensNode`
-     * @param _tokenBalance Amount being transfered from `parentRegistry()`.
-     * @param _creationTime Time user registrated in `parentRegistry()` is preserved. 
-     * @param _accountOwner Account owner which migrated the account.
-     **/
-    function migrateAccount(
-        bytes32 _userHash,
-        bytes32 _domainHash,
-        uint256 _tokenBalance,
-        uint256 _creationTime,
-        address _accountOwner
-    )
-        external
-    {
-        require(_domainHash == ensNode, "Wrong Registry");
-        migrateUsername(_userHash, _tokenBalance, _creationTime, _accountOwner);
     }
 
     /** 
@@ -544,7 +506,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         uint256 _creationTime,
         address _accountOwner
     )
-        public
+        external
         onlyParentRegistry
     {
         if (_tokenBalance > 0) {
@@ -569,7 +531,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     function migrateRegistry(
         uint256 _price
     ) 
-        public
+        external
         onlyParentRegistry
     {
         require(state == RegistrarState.Unactive, "Not unactive");
