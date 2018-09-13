@@ -110,7 +110,7 @@ module.exports = {
         "address": "0x58E01078d14142E0370526dFdAE44E4f508c844B"
       },
       "UsernameRegistrar": {
-        "address": "0xde15C0257a0B60dd34A0750058686d1cCE4F53Ca"
+        "address": "0x11d9F481effd20D76cEE832559bd9Aca25405841"
       }
     }
   },
