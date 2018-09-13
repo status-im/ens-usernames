@@ -16,21 +16,16 @@ module.exports = {
     ],
     "gas": "auto",
     "contracts": {
-      "TestToken": {
-        "deploy": false
-      },
+      "TestToken": {},
       "MerkleProofWrapper": {
         "deploy": false
       },
       "ERC20Receiver": { 
         "deploy": false 
       },
-      "ENSRegistry": {
-        "deploy": false
-      },
+      "ENSRegistry": {},
       "PublicResolver": {
-        "args": ["$ENSRegistry"],
-        "deploy": false
+        "args": ["$ENSRegistry"]
       },
       "UsernameRegistrar": {
         "args": [
