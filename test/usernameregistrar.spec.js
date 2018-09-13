@@ -23,6 +23,14 @@ const dummyRegistry = {
   price: 100000000
 }
 
+const oldRegistry = {
+  name: 'oldreg',
+  registry:  'oldreg.eth',
+  label: web3Utils.sha3('oldreg'),
+  namehash: namehash.hash('oldreg.eth'),
+  price: 100000000
+}
+
 // TODO: load file of reserved names and balance array lenght to be even
 
 const merkleTree = new MerkleTree(ReservedUsernames);
@@ -93,6 +101,30 @@ var contractsConfig = {
       "3", 
       merkleRoot,
       "$DummyUsernameRegistrar"
+    ]
+  },
+  "ENSSubdomainRegistry": {
+    "args": [
+      "$TestToken",
+      "$ENSRegistry",
+      "$PublicResolver",
+      "0x0"
+    ],
+    "onDeploy": [
+      "ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+oldRegistry.label+"', ENSSubdomainRegistry.address).send()",
+      "ENSSubdomainRegistry.methods.setDomainPrice('"+oldRegistry.namehash+"' , '"+oldRegistry.price+"').send();"
+    ]
+  }, 
+  "LegacyTestUsernameRegistrar": {
+    "instanceOf" : "UsernameRegistrar",
+    "args": [
+      "$TestToken",
+      "$ENSRegistry",
+      "$PublicResolver",
+      oldRegistry.namehash,
+      "3", 
+      merkleRoot,
+      "$ENSSubdomainRegistry"
     ]
   }
 
@@ -791,6 +823,16 @@ contract('UsernameRegistrar', function () {
       //TODO: check events
       assert.equal(await ens.methods.owner(registry.namehash).call(), UpdatedUsernameRegistrar.address, "registry ownership not moved correctly")
       assert.equal(await UpdatedUsernameRegistrar.methods.getPrice().call(), registry.price, "updated registry didnt migrated price")
+    });
+  });
+
+
+  describe('migrateDomain()', function() {
+    it('should move registry to new registry and migrate', async () => {
+      const result = await ENSSubdomainRegistry.methods.moveDomain(LegacyTestUsernameRegistrar.address, oldRegistry.namehash).send();
+      //TODO: check events
+      assert.equal(await ens.methods.owner(oldRegistry.namehash).call(), LegacyTestUsernameRegistrar.address, "registry ownership not moved correctly")
+      assert.equal(await LegacyTestUsernameRegistrar.methods.getPrice().call(), oldRegistry.price, "updated registry didnt migrated price")
     });
   });
 
