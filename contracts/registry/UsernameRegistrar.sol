@@ -72,6 +72,10 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     ) 
         public 
     {
+        require(address(_token) != address(0), "No ERC20Token address defined.");
+        require(address(_ensRegistry) != address(0), "No ENS address defined.");
+        require(address(_resolver) != address(0), "No Resolver address defined.");
+        require(_ensNode != bytes32(0), "No ENS node defined.");
         token = _token;
         ensRegistry = _ensRegistry;
         resolver = _resolver;
