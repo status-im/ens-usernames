@@ -274,8 +274,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _domainHash Needs to be `ensNode`.
      **/
     function migrateDomain(
-        uint256 _price,
-        bytes32 _domainHash
+        bytes32 _domainHash,
+        uint256 _price
     ) 
         external
         onlyParentRegistry
