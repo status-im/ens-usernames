@@ -597,21 +597,29 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         emit UsernameOwner(namehash, _owner);
     }
     
-    /**
+        /**
      * @dev Removes account hash of `_username` and send account.balance to msg.sender.
      * @param _username Username being slashed.
      */
     function slashUsername(bytes _username) internal {
         bytes32 label = keccak256(_username);
         bytes32 namehash = keccak256(abi.encodePacked(ensNode, label));
-        require(accounts[label].creationTime > 0, "Username not registered.");
-        
+        uint256 amountToTransfer;
+        if(accounts[label].creationTime == 0) {
+            require(
+                ensRegistry.owner(namehash) != address(0) ||
+                ensRegistry.resolver(namehash) != address(0),
+                "Nothing to slash."
+            );
+        } else {
+            amountToTransfer = accounts[label].balance;
+            delete accounts[label];
+        }
+
         ensRegistry.setSubnodeOwner(ensNode, label, address(this));
         ensRegistry.setResolver(namehash, address(0));
         ensRegistry.setOwner(namehash, address(0));
         
-        uint256 amountToTransfer = accounts[label].balance;
-        delete accounts[label];
         if (amountToTransfer > 0) {
             reserveAmount -= amountToTransfer;
             require(token.transfer(msg.sender, amountToTransfer), "Error in transfer.");   

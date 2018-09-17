@@ -23,6 +23,15 @@ const dummyRegistry = {
   price: 100000000
 }
 
+
+const dummy2Registry = {
+  name: 'dummy2reg',
+  registry:  'dummy2reg.eth',
+  label: web3Utils.sha3('dummy2reg'),
+  namehash: namehash.hash('dummy2reg.eth'),
+  price: 100000000
+}
+
 // TODO: load file of reserved names and balance array lenght to be even
 
 const merkleTree = new MerkleTree(ReservedUsernames);
@@ -93,6 +102,34 @@ var contractsConfig = {
       "3", 
       merkleRoot,
       "$DummyUsernameRegistrar"
+    ]
+  },
+  "Dummy2UsernameRegistrar": {
+    "instanceOf" : "UsernameRegistrar",
+    "args": [
+      "$TestToken",
+      "$ENSRegistry",
+      "$PublicResolver",
+      dummy2Registry.namehash,
+      "3", 
+      utils.zeroBytes32,
+      "0x0"
+    ],
+    "onDeploy": [
+      "ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+dummy2Registry.label+"', Dummy2UsernameRegistrar.address).send()",
+      "Dummy2UsernameRegistrar.methods.activate("+dummy2Registry.price+").send()"
+    ]
+  },
+  "UpdatedDummy2UsernameRegistrar": {
+    "instanceOf" : "UsernameRegistrar",
+    "args": [
+      "$TestToken",
+      "$ENSRegistry",
+      "$PublicResolver",
+      dummy2Registry.namehash,
+      "3", 
+      merkleRoot,
+      "$Dummy2UsernameRegistrar"
     ]
   }
 
@@ -491,8 +528,6 @@ contract('UsernameRegistrar', function () {
     });
     it('should release moved username account balance by owner', async () => {
       const registrant = accountsArr[5];
-      UsernameRegistrar
-      UpdatedUsernameRegistrar
       await TestToken.methods.mint(dummyRegistry.price).send({from: registrant});
       await DummyUsernameRegistrar.methods.activate(dummyRegistry.price).send({from: accountsArr[0]});
       await TestToken.methods.approve(DummyUsernameRegistrar.address, dummyRegistry.price).send({from: registrant});  
@@ -782,6 +817,45 @@ contract('UsernameRegistrar', function () {
       //TODO: check events
       assert.equal(await TestToken.methods.balanceOf(slasher).call(), (+initialSlasherBalance)+(+registry.price));    
       assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
+    });
+
+    it('should slash a username of a not migrated subnode that became unallowed', async () => {
+      const registrant = accountsArr[5];
+      const notRegistrant = accountsArr[6];
+
+      await TestToken.methods.mint(dummy2Registry.price).send({from: registrant});
+      await TestToken.methods.approve(Dummy2UsernameRegistrar.address, dummy2Registry.price).send({from: registrant});  
+
+      const username = ReservedUsernames[10];
+      const label = web3Utils.sha3(username);
+      const usernameHash = namehash.hash(username + '.' + dummy2Registry.registry);
+      await Dummy2UsernameRegistrar.methods.register(
+        label,
+        registrant,
+        utils.zeroBytes32,
+        utils.zeroBytes32
+      ).send({from: registrant});
+      let initialAccountBalance = await Dummy2UsernameRegistrar.methods.getAccountBalance(label).call();
+      const initialRegistrantBalance = await TestToken.methods.balanceOf(registrant).call();
+      const initialRegistryBalance = await TestToken.methods.balanceOf(Dummy2UsernameRegistrar.address).call();
+
+
+     await Dummy2UsernameRegistrar.methods.moveRegistry(UpdatedDummy2UsernameRegistrar.address).send();
+
+      assert.equal(await ens.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
+      assert.equal(await ens.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
+      assert.equal(await PublicResolver.methods.addr(usernameHash).call(), registrant, "Resolved address not set");      
+      
+      const resultRelease = await UpdatedDummy2UsernameRegistrar.methods.slashReservedUsername(
+        web3Utils.toHex(username), 
+        merkleTree.getHexProof(username)
+      ).send({from: notRegistrant });
+      //TODO: verify events
+      
+      assert.equal(await ens.methods.resolver(usernameHash).call(), utils.zeroAddress, "Resolver not undefined");
+      assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress, "Owner not removed");
+      //We are not cleaning PublicResolver or any resolver, so the value should remain the same.
+      assert.equal(await PublicResolver.methods.addr(usernameHash).call(), registrant, "Resolved address not set");      
     });
   });
   
