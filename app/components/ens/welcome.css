@@ -1,0 +1,90 @@
+.ens-welcome {
+    margin: 16px;
+    text-align: center;
+}
+
+.ens-welcome__img {
+    margin: 20px 0 50px;
+}
+
+.ens-welcome__title {
+    font-weight: bold;
+    font-size: 1.375rem;
+    line-height: 1.75rem;
+}
+
+.ens-welcome__guide {
+    color: #adb5bd;
+    margin: 20px 0 30px;
+}
+
+.ens-welcome__guide span {
+    position: relative;
+}
+
+.ens-welcome__guide span:after, .ens-welcome__guide span:before {
+    content: '';
+    border-bottom: solid 6px transparent;
+    display: block;
+    position: absolute;
+    border-top: solid 6px #fff;
+    border-left: solid 6px transparent;
+    border-right: solid 6px transparent;
+    top: 5px;
+    right: -20px;
+}
+
+.ens-welcome__guide span:before {
+    border-top: solid 6px #adb5bd;
+    top: 7px;
+}
+
+.ens-welcome__list {
+    margin-top: 20px;
+    counter-reset: ens-counter;
+    list-style: none;
+    text-align: left;
+    padding-left: 0;
+}
+
+.ens-welcome__list li {
+    margin: 0 0 1rem 0;
+    padding-left: 80px;
+    counter-increment: ens-counter;
+    position: relative;
+    min-height: 60px;
+}
+
+.ens-welcome__list li:before {
+    content: counter(ens-counter);
+    color: #4360DF;
+    font-size: 1.5rem;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+    line-height: 60px;
+    width: 60px;
+    height: 57px;
+    top: 0;
+    border-radius: 50%;
+    border: solid 3px #ECEFFC;
+    text-align: center;
+}
+
+.ens-welcome__list .title {
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.ens-welcome__list .text {
+    color: #adb5bd;
+    line-height: 1.313rem;
+}
+
+.ens-welcome__info {
+    border-top: solid 1px #ccc;
+    border-bottom: solid 1px #ccc;
+    margin: 30px 0 20px;
+    padding: 15px 0;
+    text-align: center;
+}

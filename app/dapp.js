@@ -53,7 +53,6 @@ class App extends React.Component {
     const isMainnet = network === 'main';
     return (
       <div>
-        <CssBaseline />
         <Hidden mdDown>
           <StatusOptimized />
         </Hidden>

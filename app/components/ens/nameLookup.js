@@ -23,6 +23,7 @@ import StatusLogo from '../../ui/icons/components/StatusLogo'
 import EnsLogo from '../../ui/icons/logos/ens.png';
 import { formatPrice } from '../ens/utils';
 import CheckCircle from '../../ui/icons/components/baseline_check_circle_outline.png';
+import WarningIcon from '../../ui/icons/svg/warning.svg';
 const { getPrice, getExpirationTime, release } = UsernameRegistrar.methods;
 import NotInterested from '@material-ui/icons/NotInterested';
 import Face from '@material-ui/icons/Face';
@@ -284,15 +285,17 @@ const LookupForm = ({ handleSubmit, values, handleChange, justSearch }) => (
         <MobileSearch
           search
           name="domainName"
-          placeholder='Search for vacant name'
+          placeholder='Search for available name'
           value={values.domainName}
           onChange={handleChange}
           required
           wide />
-        {!justSearch && <Typography variant="subheading" style={{ color: '#939ba1', textAlign: 'center', marginTop: '25vh' }}>
-          Symbols * / <br/>
-          are not supported
-        </Typography>}
+        {!justSearch &&
+          <div style={{ textAlign: 'center', marginTop: '40vh' }}>
+            <img style={{ display: 'block', margin: '0 auto 15px' }} src={WarningIcon} />
+            Names are made with<br/>letters and numbers only
+          </div>
+        }
       </Hidden>
       <Hidden mdDown>
         <Button mode="strong" type="submit" style={{ marginLeft: '3%', maxWidth: '95%' }} wide>
