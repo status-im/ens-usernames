@@ -65,36 +65,47 @@ const validTimestamp = timestamp => Number(timestamp) > 99999999;
 const generatePrettyDate = timestamp => new Date(timestamp * 1000).toDateString();
 
 const DisplayBox = ({ displayType, pubKey }) => (
-  <div style={{ border: '1px solid #EEF2F5', borderRadius: '8px', margin: '1em', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', minHeight: '4em' }}>
-    <div style={{ margin: '3%', wordBreak: 'break-word' }}>
-      <div style={{ fontSize: '14px', color: '#939BA1' }}>{displayType}</div>
-      <Typography type='body1'>{pubKey}</Typography>
+  <div>
+    <div style={{ fontSize: '14px', color: '#939BA1', margin: '0 1em' }}>{displayType}</div>
+    <div style={{ border: '1px solid #EEF2F5', borderRadius: '8px', margin: '0.5 1em 1em', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', minHeight: '4em' }}>
+      <div style={{ margin: '3%', wordBreak: 'break-word' }}>
+        <Typography type='body1'>{pubKey}</Typography>
+      </div>
     </div>
   </div>
 );
 
 const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTime, defaultAccount, isOwner, edit, onSubmit }) => (
   <Fragment>
+    <MobileSearch
+        search
+        name="domainName"
+        placeholder='Search for available name'
+        // value={values.domainName}
+        // onChange={handleChange}
+        required
+        wide />
     <Info background={isOwner ? '#44D058' : '#000000'} style={{ margin: '0.4em', boxShadow: '0px 6px 10px rgba(0, 0, 0, 0.2)' }}>
       <Typography variant="title" style={
         { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly', height: '4em', color: '#ffffff', textAlign: 'center', margin: '10%' }
       }>
         {isOwner ? <Face style={{ marginBottom: '0.5em', fontSize: '2em' }} /> : <NotInterested style={{ marginBottom: '0.5em', fontSize: '2em' }}/>}
         <b>{formatName(domainName)}</b>
-        <div style={{ fontWeight: 300 }}>
-          {validTimestamp(expirationTime) && <i>Locked until {generatePrettyDate(expirationTime)}</i>}
+        <div style={{ fontWeight: 300, fontSize: '15px', marginTop: '10px' }}>
+            {isOwner
+                ? edit ? 'Edit Contact Code' : 'You own this ENS name'
+                : 'unavailable'}
+
         </div>
       </Typography>
     </Info>
-    <Typography type='subheading' style={{ textAlign: 'center', fontSize: '17px', margin: '1em 0 0.3em 0' }}>
-      {isOwner
-       ? edit ? 'Edit Contact Code' : 'You\'re the owner of this name'
-       : 'Name is unavailable'}
+    <Typography type='subheading' style={{ textAlign: 'center', fontSize: '17px', fontWeight: '500', margin: '1.5em 0 0.3em 0' }}>
+        Registered {validTimestamp(expirationTime)}
     </Typography>
     <Typography type='body2' style={{ textAlign: 'center', margin: 10 }}>
       {edit
        ? 'The contact code connects the domain with a unique Status account'
-       : validAddress(address) ? 'registered to the addresses below' : 'Click \'Edit\' to add a valid address and contact code'}
+       : validAddress(address) ? 'to the addresses below' : 'Click \'Edit\' to add a valid address and contact code'}
     </Typography>
     {edit && <RegisterSubDomain
       subDomain={domainName}
@@ -103,8 +114,8 @@ const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTi
       editAccount={true}
       preRegisteredCallback={onSubmit}
       registeredCallbackFn={console.log} />}
-    {!edit && <DisplayBox displayType='Wallet Address' pubKey={address} />}
-    {!edit && validStatusAddress(statusAccount) && <DisplayBox displayType='Contact Code' pubKey={statusAccount} />}
+    {!edit && <DisplayBox displayType='Your wallet address' pubKey={address} />}
+    {!edit && validStatusAddress(statusAccount) && <DisplayBox displayType='Your contact code' pubKey={statusAccount} />}
   </Fragment>
 )
 
@@ -148,7 +159,7 @@ class RenderAddresses extends PureComponent {
         </Hidden>
         <Hidden mdUp>
           {submitted ? <TransactionComplete type={editAction} setStatus={setStatus} /> : <MobileAddressDisplay {...this.props} isOwner={isOwner} edit={editAction === 'edit'} onSubmit={() => { this.setState({ submitted: true}) }}/>}
-          {isOwner && !editAction && <MobileButton text="Edit" style={{ marginLeft: '35%' }} onClick={onClickEdit}/>}
+          {isOwner && !editAction && <MobileButton text="Edit" style={{ margin: 'auto', display: 'block' }} onClick={onClickEdit}/>}
           <EditOptions open={editMenu} onClose={onClose} />
           <ReleaseDomainAlert open={editAction === 'release' && !submitted} handleClose={closeReleaseAlert} />
         </Hidden>
@@ -171,17 +182,20 @@ const RegisterInfoCard = ({ formattedDomain, domainPrice, registryOwnsDomain }) 
         }>
           <img src={CheckCircle} style={{ maxWidth: '2.5em', marginBottom: '0.5em' }} />
           <b>{formattedDomain.toLowerCase()}</b>
-          <div style={{ fontWeight: 300 }}>
-            {!!domainPrice && formatPrice(fromWei(domainPrice))} SNT / 1 year
+          <div style={{ fontWeight: 300, fontSize: '15px' }}>
+            available
           </div>
         </Typography>
       </Info>
     </Hidden>
     <Hidden mdUp>
+      <Typography style={{ textAlign: 'center', fontSize: '17px', fontWeight: '500', margin: '1.5em 0 0.3em 0' }}>
+        {!!domainPrice && formatPrice(fromWei(domainPrice))} SNT to register
+      </Typography>
       <Typography style={{ textAlign: 'center', padding: '1.5em' }}>
         {registryOwnsDomain ?
-         'This name will be pointed to the wallet address and contact code below' :
-         'This domain is not owned by the registy'}
+         'Add your contact code to use your name in Status chat.' :
+         'This domain is not owned by the registry'}
       </Typography>
     </Hidden>
   </Fragment>
@@ -336,15 +350,15 @@ const InnerForm = ({
        ownerAddress={status.ownerAddress}
        registryOwnsDomain={status.registryOwnsDomain}
        setStatus={setStatus} /> :
-     <div>
-       <LookupForm {...{ handleSubmit, values, handleChange }} justSearch />
-       <ConnectedRegister
-         style={{ position: 'relative' }}
-         setStatus={setStatus}
-         registryOwnsDomain={status.registryOwnsDomain}
-         ownerAddress={status.ownerAddress}
-         domainName={values.domainName}  />
-     </div>
+       <div>
+          <LookupForm {...{ handleSubmit, values, handleChange }} justSearch />
+          <ConnectedRegister
+            style={{ position: 'relative' }}
+            setStatus={setStatus}
+            registryOwnsDomain={status.registryOwnsDomain}
+            ownerAddress={status.ownerAddress}
+            domainName={values.domainName}  />
+       </div>
     }
   </div>
 )

@@ -13,11 +13,24 @@ import { zeroAddress, zeroBytes32, formatPrice } from './utils';
 import { getStatusContactCode, getSNTAllowance, getCurrentAccount } from '../../reducers/accounts';
 import FieldGroup from '../standard/FieldGroup';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import Typography from '@material-ui/core/Typography';
 import TokenPermissions from '../standard/TokenPermissionConnect';
 import { generateXY } from '../../utils/ecdsa';
 import { getResolver } from './utils/domain';
 
 const { soliditySha3, fromWei } = web3.utils;
+
+
+const DisplayBox = ({ displayType, pubKey }) => (
+    <div>
+        <div style={{ fontSize: '14px', color: '#939BA1', margin: '0 1em' }}>{displayType}</div>
+        <div style={{ border: '1px solid #EEF2F5', borderRadius: '8px', margin: '0.5 1em 1em', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', minHeight: '4em' }}>
+            <div style={{ margin: '3%', wordBreak: 'break-word' }}>
+                <Typography type='body1'>{pubKey}</Typography>
+            </div>
+        </div>
+    </div>
+);
 
 const InnerForm = ({
   values,
@@ -102,28 +115,43 @@ const InnerForm = ({
         />
         {!isSubmitting ? <Button wide mode="strong" type="submit" disabled={isSubmitting || !!Object.keys(errors).length}>{!isSubmitting ? 'Submit' : 'Submitting to the Blockchain - (this may take awhile)'}</Button> : <LinearProgress />}
       </Hidden>
+
       <Hidden mdUp>
-        <Field label="Your Contact Code">
-          <MobileSearch
-            name="statusAddress"
-            style={{ marginTop: '10px' }}
-            placeholder="Status Messenger Address"
-            value={values.statusAddress}
-            onChange={handleChange}
-            onClick={() => setFieldValue('statusAddress', '')}
-            wide />
-        </Field>
-        <Field label="Your Wallet Address">
-          <MobileSearch
-            name="address"
-            style={{ marginTop: '10px' }}
-            placeholder="Ethereum Address"
-            value={values.address}
-            onChange={handleChange}
-            onClick={() => setFieldValue('address', '')}
-            required
-            wide />
-        </Field>
+
+        <DisplayBox displayType='Your wallet address' pubKey={values.address} />
+
+        <DisplayBox displayType='Your contact code' pubKey={values.statusAddress} />
+
+        {/*<div style={{ fontSize: '14px', color: '#939BA1', margin: '0 1em' }}>Your contact code</div>*/}
+        {/*<div style={{ border: '1px solid #EEF2F5', borderRadius: '8px', margin: '0.5 1em 1em', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', minHeight: '4em' }}>*/}
+            {/*<div style={{ margin: '3%', wordBreak: 'break-word' }}>*/}
+                {/*<Typography type='body1' onClick={() => setFieldValue('statusAddress', '')} style={{ textAlign: 'center', padding: '30px 0', color: 'blue', cursor: 'pointer'}}>*/}
+                  {/*Grant Access*/}
+                {/*</Typography>*/}
+            {/*</div>*/}
+        {/*</div>*/}
+
+        {/*<Field label="Your Wallet Address">*/}
+          {/*<MobileSearch*/}
+            {/*name="address"*/}
+            {/*style={{ marginTop: '10px' }}*/}
+            {/*placeholder="Your wallet address"*/}
+            {/*value={values.address}*/}
+            {/*onChange={handleChange}*/}
+            {/*onClick={() => setFieldValue('address', '')}*/}
+            {/*required*/}
+            {/*wide />*/}
+        {/*</Field>*/}
+        {/*<Field label="Your contact code">*/}
+          {/*<MobileSearch*/}
+            {/*name="statusAddress"*/}
+            {/*style={{ marginTop: '10px' }}*/}
+            {/*placeholder="Status Messenger Address"*/}
+            {/*value={values.statusAddress}*/}
+            {/*onChange={handleChange}*/}
+            {/*onClick={() => setFieldValue('statusAddress', '')}*/}
+            {/*wide />*/}
+        {/*</Field>*/}
         <div style={{ position: 'relative', left: 0, right: 0, bottom: 0 }}>
           {!isSubmitting ? <MobileButton type="submit" text={`${editAccount ? 'Save' : 'Register'} with transaction`} style={{ width: '100%' }} /> : <CircularProgress style={{ marginLeft: '45%' }} />}
         </div>
