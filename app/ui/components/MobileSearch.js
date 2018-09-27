@@ -13,6 +13,7 @@ const searchWrapper = {
   alignItems: 'center',
   justifyContent: 'flex-start',
   paddingLeft: '11px',
+  boxSizing: 'border-box',
 };
 
 const pasteStyle = {
@@ -23,7 +24,7 @@ const pasteStyle = {
 
 const MobileInput = styled.input`
   display: block;
-  border-radius: 4px;
+  border-radius: 0;
   background-color: #eef2f5;
   font-size: 16px;
   border: none;
