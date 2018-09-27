@@ -2,10 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import Avatar from '@material-ui/core/Avatar';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
@@ -16,6 +15,11 @@ import Typography from '@material-ui/core/Typography';
 import blue from '@material-ui/core/colors/blue';
 
 const styles = {
+  paper: {
+    margin: 0,
+    maxWidth: '100%',
+    borderRadius: '6px 6px 0 0',
+  },
   list: {
     width: '100%',
     position: 'absolute',
@@ -37,22 +41,18 @@ class SimpleDialog extends React.Component {
     const { classes, onClose, selectedValue, ...other } = this.props;
 
     return (
-      <Dialog onClose={this.handleClose} aria-labelledby="simple-dialog-title" {...other}>
+      <Dialog classes={{paper: classes.paper,}} onClose={this.handleClose} fullWidth paperFullWidth style={{alignItems: 'flex-end'}} aria-labelledby="simple-dialog-title" {...other}>
         <List>
           <ListItem button onClick={() => this.handleListItemClick('edit')} key="edit">
-            <ListItemAvatar>
-              <Avatar>
+            <ListItemIcon>
                 <EditIcon />
-              </Avatar>
-            </ListItemAvatar>
+            </ListItemIcon>
             <ListItemText primary="Edit Contact Code" />
           </ListItem>
           <ListItem button onClick={() => this.handleListItemClick('release')}>
-            <ListItemAvatar>
-              <Avatar>
+            <ListItemIcon>
                 <DeleteOutline />
-              </Avatar>
-            </ListItemAvatar>
+            </ListItemIcon>
             <ListItemText primary="Release Name" />
           </ListItem>
         </List>
