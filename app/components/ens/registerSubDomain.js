@@ -33,6 +33,7 @@ const DisplayBox = ({ displayType, pubKey }) => (
   </div>
 );
 
+const formRef = React.createRef();
 const displayTerms = status => status === 'terms';
 const InnerForm = ({
   values,
@@ -51,7 +52,7 @@ const InnerForm = ({
   SNTAllowance,
   SNTBalance,
 }) => (
-  <form onSubmit={handleSubmit} ref={node => (this.form = node)}>
+  <form onSubmit={handleSubmit} ref={formRef}>
     <div style={{ margin: '10px' }}>
       {!subDomain &&
        <FieldGroup
@@ -157,7 +158,7 @@ const InnerForm = ({
           {/*</Field>*/}
         <div style={{ position: 'relative', left: 0, right: 0, bottom: 0 }}>
           {!isSubmitting ? <MobileButton onClick={() => { setStatus('terms') }} text={`${editAccount ? 'Save' : 'Register'} with transaction`} style={{ width: '100%' }} /> : <CircularProgress style={{ marginLeft: '45%' }} />}
-          <Terms open={displayTerms(status)} onSubmit={() => { setStatus(null); this.form.dispatchEvent(new Event('submit')) }} />
+          <Terms open={displayTerms(status)} onSubmit={() => { setStatus(null); formRef.dispatchEvent(new Event('submit')) }} />
         </div>
       </Hidden>
     </div>

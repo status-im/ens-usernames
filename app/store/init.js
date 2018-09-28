@@ -6,7 +6,7 @@ import { fetchAndDispatchSNTAllowance, fetchAndDispatchAccountsWithBalances, che
 const dispatch = action => store.dispatch(action)
 
 export default () => {
-  __embarkContext.execWhenReady(async () => {
+  EmbarkJS.onReady(async (err) => {
     fetchAndDispatchAccountsWithBalances(web3, dispatch)
     checkAndDispatchStatusContactCode(dispatch)
     fetchAndDispatchSNTAllowance(dispatch)
