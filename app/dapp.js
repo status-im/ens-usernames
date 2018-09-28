@@ -40,9 +40,8 @@ class App extends React.Component {
   state = { admin: false, searching: false };
 
   componentDidMount(){
-    __embarkContext.execWhenReady(() => {
+    EmbarkJS.onReady((err) => {
       getNetworkType().then(network => { this.setState({ network })});
-
     });
   }
 
