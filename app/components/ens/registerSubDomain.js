@@ -200,7 +200,7 @@ const RegisterSubDomain = withFormik({
       if (statusAddress && statusAddress !== props.statusContactCode) funcsToSend.push(setPubkey(node, args[3], args[4]));
     } else {
       funcsToSend.push(
-        approveAndCall(UsernameRegistrar.address, Number(domainPrice), register(...args).encodeABI())
+        approveAndCall(UsernameRegistrar.address, domainPrice, register(...args).encodeABI())
       );
     }
     while (funcsToSend.length) {
