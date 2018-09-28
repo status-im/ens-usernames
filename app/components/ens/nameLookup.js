@@ -328,13 +328,13 @@ const InnerForm = ({
         <StatusLogo />
         <img  style={{ maxWidth: '150px', alignSelf: 'center' }} src={EnsLogo} alt="Ens Logo"/>
       </span>
-    </Hidden>
+     </Hidden>
     {!status
      ? <LookupForm {...{ handleSubmit, values, handleChange }} />
      : validAddress(status.address) || defaultAccount === status.ownerAddress ?
      <DisplayAddress
        {...{ handleSubmit, values, handleChange }}
-       domainName={values.domainName}
+       domainName={status.resolvedDomainName}
        address={status.address}
        statusAccount={status.statusAccount}
        releaseTime={status.releaseTime}
@@ -348,7 +348,7 @@ const InnerForm = ({
          setStatus={setStatus}
          registryOwnsDomain={status.registryOwnsDomain}
          ownerAddress={status.ownerAddress}
-         domainName={values.domainName}  />
+         domainName={status.resolvedDomainName}  />
      </div>
     }
   </div>
@@ -371,7 +371,8 @@ const NameLookup = withFormik({
            .then(([ address, keys, ownerAddress, releaseTime, suffixOwner ]) => {
              const statusAccount = keyFromXY(keys[0], keys[1]);
              const registryOwnsDomain = registryIsOwner(suffixOwner)
-             setStatus({ address, statusAccount, releaseTime, ownerAddress, registryOwnsDomain });
+             const resolvedDomainName = domainName;
+             setStatus({ address, statusAccount, releaseTime, ownerAddress, registryOwnsDomain, resolvedDomainName });
            })
   }
 })(InnerForm)
