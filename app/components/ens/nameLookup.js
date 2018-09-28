@@ -75,16 +75,9 @@ const DisplayBox = ({ displayType, pubKey }) => (
   </div>
 );
 
-const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTime, defaultAccount, isOwner, edit, onSubmit }) => (
+const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTime, defaultAccount, isOwner, edit, onSubmit, handleChange, values, handleSubmit }) => (
   <Fragment>
-    <MobileSearch
-        search
-        name="domainName"
-        placeholder='Search for available name'
-        // value={values.domainName}
-        // onChange={handleChange}
-        required
-        wide />
+    <LookupForm {...{ handleSubmit, values, handleChange }} justSearch />
     <Info background={isOwner ? '#44D058' : '#000000'} style={{ margin: '0.4em', boxShadow: '0px 6px 10px rgba(0, 0, 0, 0.2)' }}>
       <Typography variant="title" style={
         { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly', height: '4em', color: '#ffffff', textAlign: 'center', margin: '10%' }
@@ -92,15 +85,15 @@ const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTi
         {isOwner ? <Face style={{ marginBottom: '0.5em', fontSize: '2em' }} /> : <NotInterested style={{ marginBottom: '0.5em', fontSize: '2em' }}/>}
         <b>{formatName(domainName)}</b>
         <div style={{ fontWeight: 300, fontSize: '15px', marginTop: '10px' }}>
-            {isOwner
-                ? edit ? 'Edit Contact Code' : 'You own this ENS name'
-                : 'unavailable'}
+          {isOwner
+           ? edit ? 'Edit Contact Code' : 'You own this ENS name'
+           : 'unavailable'}
 
         </div>
       </Typography>
     </Info>
     <Typography type='subheading' style={{ textAlign: 'center', fontSize: '17px', fontWeight: '500', margin: '1.5em 0 0.3em 0' }}>
-        Registered {validTimestamp(expirationTime)}
+      Registered {validTimestamp(expirationTime)}
     </Typography>
     <Typography type='body2' style={{ textAlign: 'center', margin: 10 }}>
       {edit
@@ -108,12 +101,12 @@ const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTi
        : validAddress(address) ? 'to the addresses below' : 'Click \'Edit\' to add a valid address and contact code'}
     </Typography>
     {edit && <RegisterSubDomain
-      subDomain={domainName}
-      domainName="stateofus.eth"
-      domainPrice="DO NOT SHOW"
-      editAccount={true}
-      preRegisteredCallback={onSubmit}
-      registeredCallbackFn={console.log} />}
+               subDomain={domainName}
+               domainName="stateofus.eth"
+               domainPrice="DO NOT SHOW"
+               editAccount={true}
+               preRegisteredCallback={onSubmit}
+               registeredCallbackFn={console.log} />}
     {!edit && <DisplayBox displayType='Your wallet address' pubKey={address} />}
     {!edit && validStatusAddress(statusAccount) && <DisplayBox displayType='Your contact code' pubKey={statusAccount} />}
   </Fragment>
@@ -343,6 +336,7 @@ const InnerForm = ({
      ? <LookupForm {...{ handleSubmit, values, handleChange }} />
      : validAddress(status.address) || defaultAccount === status.ownerAddress ?
      <DisplayAddress
+       {...{ handleSubmit, values, handleChange }}
        domainName={values.domainName}
        address={status.address}
        statusAccount={status.statusAccount}
@@ -350,15 +344,15 @@ const InnerForm = ({
        ownerAddress={status.ownerAddress}
        registryOwnsDomain={status.registryOwnsDomain}
        setStatus={setStatus} /> :
-       <div>
-          <LookupForm {...{ handleSubmit, values, handleChange }} justSearch />
-          <ConnectedRegister
-            style={{ position: 'relative' }}
-            setStatus={setStatus}
-            registryOwnsDomain={status.registryOwnsDomain}
-            ownerAddress={status.ownerAddress}
-            domainName={values.domainName}  />
-       </div>
+     <div>
+       <LookupForm {...{ handleSubmit, values, handleChange }} justSearch />
+       <ConnectedRegister
+         style={{ position: 'relative' }}
+         setStatus={setStatus}
+         registryOwnsDomain={status.registryOwnsDomain}
+         ownerAddress={status.ownerAddress}
+         domainName={values.domainName}  />
+     </div>
     }
   </div>
 )
