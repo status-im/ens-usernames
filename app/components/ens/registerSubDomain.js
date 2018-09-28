@@ -158,7 +158,7 @@ const InnerForm = ({
           {/*</Field>*/}
         <div style={{ position: 'relative', left: 0, right: 0, bottom: 0 }}>
           {!isSubmitting ? <MobileButton onClick={() => { setStatus('terms') }} text={`${editAccount ? 'Save' : 'Register'} with transaction`} style={{ width: '100%' }} /> : <CircularProgress style={{ marginLeft: '45%' }} />}
-          <Terms open={displayTerms(status)} onSubmit={() => { setStatus(null); formRef.dispatchEvent(new Event('submit')) }} />
+          <Terms open={displayTerms(status)} onSubmit={() => { setStatus(null); formRef.current.dispatchEvent(new Event('submit')) }} form={formRef} />
         </div>
       </Hidden>
     </div>
