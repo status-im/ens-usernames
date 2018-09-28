@@ -8,6 +8,6 @@ export const nullAddress = '0x0000000000000000000000000000000000000000';
 export const getResolver = async node => {
   const resolverAddress = await resolver(node).call();
   return resolverAddress !== nullAddress
-    ? new EmbarkJS.Contract({ abi: PublicResolver._jsonInterface, address: resolverAddress })
+    ? new EmbarkJS.Blockchain.Contract({ abi: PublicResolver._jsonInterface, address: resolverAddress })
     : PublicResolver
 }
