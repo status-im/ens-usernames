@@ -605,7 +605,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         emit UsernameOwner(namehash, _owner);
     }
     
-        /**
+    /**
      * @dev Removes account hash of `_username` and send account.balance to msg.sender.
      * @param _username Username being slashed.
      */
@@ -620,6 +620,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
                 "Nothing to slash."
             );
         } else {
+            assert(accounts[label].creationTime != block.timestamp);
             amountToTransfer = accounts[label].balance;
             delete accounts[label];
         }
