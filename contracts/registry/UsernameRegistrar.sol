@@ -134,11 +134,19 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         if (state == RegistrarState.Active) {
             require(msg.sender == ensRegistry.owner(namehash), "Not owner of ENS node.");
             require(block.timestamp > account.creationTime + releaseDelay, "Release period not reached.");
+        } else {
+            require(msg.sender == account.owner, "Not the former account owner.");
+        }
+        delete accounts[_label];
+        if (account.balance > 0) {
+            reserveAmount -= account.balance;
+            require(token.transfer(msg.sender, account.balance), "Transfer failed");
+        }
+        if (state == RegistrarState.Active) {
             ensRegistry.setSubnodeOwner(ensNode, _label, address(this));
             ensRegistry.setResolver(namehash, address(0));
             ensRegistry.setOwner(namehash, address(0));
         } else {
-            require(msg.sender == account.owner, "Not the former account owner.");
             address newOwner = ensRegistry.owner(ensNode);
             //Low level call, case dropUsername not implemented or failing, proceed release. 
             //Invert (!) to supress warning, return of this call have no use.
@@ -149,13 +157,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
                 )
             );
         }
-        delete accounts[_label];
-        if (account.balance > 0) {
-            reserveAmount -= account.balance;
-            require(token.transfer(msg.sender, account.balance), "Transfer failed");
-        }
         emit UsernameOwner(namehash, address(0));   
-    
     }
 
     /** 
