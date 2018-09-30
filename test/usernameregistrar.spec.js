@@ -871,6 +871,37 @@ contract('UsernameRegistrar', function () {
     });
   });
 
+  describe('reserveSlash()', function() {
+    it('should send funds to reserver', async() =>{
+      const username = 'c';
+      const label = web3Utils.sha3(username);
+      const usernameHash = namehash.hash(username + '.' + registry.registry);
+      const registrant = accountsArr[1];
+      const slashReserver = accountsArr[2];
+      const slashCaller = accountsArr[3];
+      await TestToken.methods.mint(registry.price).send({from: registrant});
+      await TestToken.methods.approve(UsernameRegistrar.address, registry.price).send({from: registrant});
+      await UsernameRegistrar.methods.register(
+        web3Utils.sha3(username),
+        utils.zeroAddress,
+        utils.zeroBytes32,
+        utils.zeroBytes32
+      ).send({from: registrant});
+      await utils.increaseTime(20000)
+      assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
+      const initialSlasherBalance = await TestToken.methods.balanceOf(slashReserver).call();
+      const creationTime = await UsernameRegistrar.methods.getCreationTime(label).call();
+      const secret = web3Utils.soliditySha3(usernameHash, registrant, creationTime);
+      assert.equal(await UsernameRegistrar.methods.getReservedSlasher(label).call(), utils.zeroAddress);
+      await UsernameRegistrar.methods.reserveSlash(secret).send({from: slashReserver});
+      assert.equal(await UsernameRegistrar.methods.getReservedSlasher(label).call(), slashReserver);
+      await UsernameRegistrar.methods.slashSmallUsername(username).send({from: slashCaller})
+      //TODO: check events
+      assert.equal(await TestToken.methods.balanceOf(slashReserver).call(), (+initialSlasherBalance)+(+registry.price));    
+      assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
+    });
+  });
+  
   describe('moveRegistry()', function() {
     it('should move registry to new registry and migrate', async () => {
       const result = await UsernameRegistrar.methods.moveRegistry(UpdatedUsernameRegistrar.address).send();

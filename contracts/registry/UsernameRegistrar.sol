@@ -20,7 +20,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
 
     uint256 public constant releaseDelay = 365 days;
     mapping (bytes32 => Account) public accounts;
-    
+    mapping (bytes32 => address) reservedSlashers;
+
     //Slashing conditions
     uint256 public usernameMinLength;
     bytes32 public reservedUsernamesMerkleRoot;
@@ -175,7 +176,15 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         accounts[_label].owner = msg.sender;
         emit UsernameOwner(namehash, msg.sender);
     }  
-    
+
+    /**
+     * @notice secretly reserve the slashing reward to `msg.sender`
+     * @param _secret keccak256(abi.encodePacked(namehash, owner, creationTime)) 
+     */
+    function reserveSlash(bytes32 _secret) external {
+        reservedSlashers[_secret] = msg.sender;
+    }
+
     /**
      * @notice Slash username smaller then `usernameMinLength`.
      * @param _username Raw value of offending username.
@@ -470,6 +479,23 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
+     * @notice returns address that reserved slashing of an account
+     * @param _label Username hash.
+     * @return Exact time when username can be released.
+     **/
+    function getReservedSlasher(bytes32 _label)
+        external
+        view
+        returns(address reservedSlasher)
+    {
+        bytes32 namehash = keccak256(abi.encodePacked(ensNode, _label));
+        uint256 creationTime = accounts[_label].creationTime;
+        address owner = ensRegistry.owner(namehash);
+        bytes32 secret = keccak256(abi.encodePacked(namehash, owner, creationTime));
+        reservedSlasher = reservedSlashers[secret];
+    }
+
+    /**
      * @notice Support for "approveAndCall". Callable only by `token()`.  
      * @param _from Who approved.
      * @param _amount Amount being approved, need to be equal `getPrice()`.
@@ -613,14 +639,16 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         bytes32 label = keccak256(_username);
         bytes32 namehash = keccak256(abi.encodePacked(ensNode, label));
         uint256 amountToTransfer;
-        if(accounts[label].creationTime == 0) {
+        uint256 creationTime = accounts[label].creationTime;
+        address owner = ensRegistry.owner(namehash);
+        if(creationTime == 0) {
             require(
-                ensRegistry.owner(namehash) != address(0) ||
+                owner != address(0) ||
                 ensRegistry.resolver(namehash) != address(0),
                 "Nothing to slash."
             );
         } else {
-            assert(accounts[label].creationTime != block.timestamp);
+            assert(creationTime != block.timestamp);
             amountToTransfer = accounts[label].balance;
             delete accounts[label];
         }
@@ -631,7 +659,14 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         
         if (amountToTransfer > 0) {
             reserveAmount -= amountToTransfer;
-            require(token.transfer(msg.sender, amountToTransfer), "Error in transfer.");   
+            address receiver = msg.sender;
+            bytes32 secret = keccak256(abi.encodePacked(namehash, owner, creationTime));
+            address reservedSlasher = reservedSlashers[secret];
+            if (reservedSlasher != address(0)) {
+                delete reservedSlashers[secret];
+                receiver = reservedSlasher;
+            }
+            require(token.transfer(receiver, amountToTransfer), "Error in transfer.");   
         }
         emit UsernameOwner(namehash, address(0));
     }
