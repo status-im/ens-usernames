@@ -22,14 +22,14 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     mapping (bytes32 => Account) public accounts;
     
     //Slashing conditions
-    uint256 public usernameMinLenght;
+    uint256 public usernameMinLength;
     bytes32 public reservedUsernamesMerkleRoot;
     
     event RegistryPrice(uint256 price);
     event RegistryMoved(address newRegistry);
     event UsernameOwner(bytes32 indexed nameHash, address owner);
 
-    enum RegistrarState { Unactive, Active, Moved }
+    enum RegistrarState { Inactive, Active, Moved }
     bytes32 public ensNode;
     uint256 public price;
     RegistrarState public state;
@@ -42,7 +42,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
-     * @notice Callabe only by `parentRegistry()` to continue migration of ENSSubdomainRegistry.
+     * @notice Callable only by `parentRegistry()` to continue migration of ENSSubdomainRegistry.
      */
     modifier onlyParentRegistry {
         require(msg.sender == parentRegistry, "Migration only.");
@@ -57,7 +57,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _ensRegistry Ethereum Name Service root contract address.
      * @param _resolver Public Resolver for resolving usernames.
      * @param _ensNode ENS node (domain) being used for usernames subnodes (subdomain)
-     * @param _usernameMinLenght Minimum length of usernames 
+     * @param _usernameMinLength Minimum length of usernames 
      * @param _reservedUsernamesMerkleRoot Merkle root of reserved usernames
      * @param _parentRegistry Address of old registry (if any) for optional account migration.
      */
@@ -66,7 +66,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         ENS _ensRegistry,
         PublicResolver _resolver,
         bytes32 _ensNode,
-        uint256 _usernameMinLenght,
+        uint256 _usernameMinLength,
         bytes32 _reservedUsernamesMerkleRoot,
         address _parentRegistry
     ) 
@@ -80,7 +80,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         ensRegistry = _ensRegistry;
         resolver = _resolver;
         ensNode = _ensNode;
-        usernameMinLenght = _usernameMinLenght;
+        usernameMinLength = _usernameMinLength;
         reservedUsernamesMerkleRoot = _reservedUsernamesMerkleRoot;
         parentRegistry = _parentRegistry;
     }
@@ -93,7 +93,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * - User deposits are completely protected. The contract controller cannot access them.
      * - User's address(es) will be publicly associated with the ENS name.
      * - User must authorise the contract to transfer `price` `token.name()`  on their behalf.
-     * - Usernames registered with less then `usernameMinLenght` characters can be slashed.
+     * - Usernames registered with less then `usernameMinLength` characters can be slashed.
      * - Usernames contained in the merkle tree of root `reservedUsernamesMerkleRoot` can be slashed.
      * - Usernames starting with `0x` and bigger then 12 characters can be slashed.
      * - If terms of the contract change—e.g. Status makes contract upgrades—the user has the right to release the username and get their deposit back.
@@ -175,7 +175,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }  
     
     /**
-     * @notice Slash username smaller then `usernameMinLenght`.
+     * @notice Slash username smaller then `usernameMinLength`.
      * @param _username Raw value of offending username.
      */
     function slashSmallUsername(
@@ -183,12 +183,12 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     ) 
         external 
     {
-        require(_username.length < usernameMinLenght, "Not a small username.");
+        require(_username.length < usernameMinLength, "Not a small username.");
         slashUsername(_username);
     }
 
     /**
-     * @notice Slash username starting with "0x" and with lenght greater than 12.
+     * @notice Slash username starting with "0x" and with length greater than 12.
      * @param _username Raw value of offending username.
      */
     function slashAddressLikeUsername(
@@ -204,7 +204,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }  
 
     /**
-     * @notice Slash usernmae that is exactly a reserved name.
+     * @notice Slash username that is exactly a reserved name.
      * @param _username Raw value of offending username.
      * @param _proof Merkle proof that name is listed on merkle tree.
      */
@@ -278,7 +278,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         external
         onlyController
     {
-        require(state == RegistrarState.Unactive, "Registry state is not unactive");
+        require(state == RegistrarState.Inactive, "Registry state is not Inactive");
         require(ensRegistry.owner(ensNode) == address(this), "Registry does not own registry");
         price = _price;
         state = RegistrarState.Active;
@@ -524,7 +524,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
-     * @dev callabe only by parent registry to continue migration
+     * @dev callable only by parent registry to continue migration
      * of registry and activate registration.
      * @param _price The price of registration.
      **/
@@ -534,7 +534,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         external
         onlyParentRegistry
     {
-        require(state == RegistrarState.Unactive, "Not unactive");
+        require(state == RegistrarState.Inactive, "Not Inactive");
         require(ensRegistry.owner(ensNode) == address(this), "ENS registry owner not transfered.");
         price = _price;
         state = RegistrarState.Active;
@@ -580,7 +580,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         bool resolvePubkey = _pubkeyA != 0 || _pubkeyB != 0;
         bool resolveAccount = _account != address(0);
         if (resolvePubkey || resolveAccount) {
-            //set to self the ownship to setup initial resolver
+            //set to self the ownership to setup initial resolver
             ensRegistry.setSubnodeOwner(ensNode, _label, address(this));
             ensRegistry.setResolver(namehash, resolver); //default resolver
             if (resolveAccount) {
@@ -591,7 +591,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
             }
             ensRegistry.setOwner(namehash, _owner);
         } else {
-            //transfer ownship of subdone directly to registrant
+            //transfer ownership of subdone directly to registrant
             ensRegistry.setSubnodeOwner(ensNode, _label, _owner);
         }
         emit UsernameOwner(namehash, _owner);
