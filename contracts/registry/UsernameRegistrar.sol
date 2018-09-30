@@ -150,7 +150,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
             address newOwner = ensRegistry.owner(ensNode);
             //Low level call, case dropUsername not implemented or failing, proceed release. 
             //Invert (!) to supress warning, return of this call have no use.
-            !newOwner.call(
+            !newOwner.call.gas(80000)(
                 abi.encodeWithSignature(
                     "dropUsername(bytes32)",
                     _label
