@@ -603,6 +603,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32,
         utils.zeroBytes32
       ).send({from: registrant});
+      await utils.increaseTime(20000)
       assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
       assert.notEqual(await UsernameRegistrar.methods.getCreationTime(label).call(), 0);
       await UsernameRegistrar.methods.slashInvalidUsername(username, 4).send()
@@ -620,7 +621,8 @@ contract('UsernameRegistrar', function () {
         utils.zeroAddress,
         utils.zeroBytes32,
         utils.zeroBytes32
-      ).send({from: registrant});    
+      ).send({from: registrant}); 
+      await utils.increaseTime(20000)   
       let failed;
       try{
         await UsernameRegistrar.methods.slashInvalidUsername(username, 4).send()
@@ -645,6 +647,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32,
         utils.zeroBytes32
       ).send({from: registrant});
+      await utils.increaseTime(20000)
       assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
       let failed;
       try{
@@ -667,6 +670,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32,
         utils.zeroBytes32
       ).send({from: registrant});
+      await utils.increaseTime(20000)
       assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
       let failed;
       try{
@@ -689,6 +693,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32,
         utils.zeroBytes32
       ).send({from: registrant});
+      await utils.increaseTime(20000)
       assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
       result = await UsernameRegistrar.methods.slashReservedUsername(username, merkleTree.getHexProof(username)).send()  
       //TODO: check events
@@ -708,6 +713,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32,
         utils.zeroBytes32
       ).send({from: registrant});
+      await utils.increaseTime(1000)
       let failed;
       try{
         await UsernameRegistrar.methods.slashSmallUsername(username).send()    
@@ -730,6 +736,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32,
         utils.zeroBytes32
       ).send({from: registrant});  
+      await utils.increaseTime(20000)
       assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
       result = await UsernameRegistrar.methods.slashSmallUsername(username).send()    
       assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
@@ -750,6 +757,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32,
         utils.zeroBytes32
       ).send({from: registrant});
+      await utils.increaseTime(1000)
       assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
       result = await UsernameRegistrar.methods.slashAddressLikeUsername(username).send()    
       assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
@@ -766,6 +774,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32,
         utils.zeroBytes32
       ).send({from: registrant});
+      await utils.increaseTime(20000)
       let failed;
       try{
         result = await UsernameRegistrar.methods.slashAddressLikeUsername(username).send()    
@@ -787,6 +796,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32,
         utils.zeroBytes32
       ).send({from: registrant});
+      await utils.increaseTime(20000)
       let failed;
       try{
         await UsernameRegistrar.methods.slashAddressLikeUsername(username).send()    
@@ -811,6 +821,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32,
         utils.zeroBytes32
       ).send({from: registrant});
+      await utils.increaseTime(20000)
       assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
       const initialSlasherBalance = await TestToken.methods.balanceOf(slasher).call();
       await UsernameRegistrar.methods.slashSmallUsername(username).send({from: slasher})
@@ -818,7 +829,7 @@ contract('UsernameRegistrar', function () {
       assert.equal(await TestToken.methods.balanceOf(slasher).call(), (+initialSlasherBalance)+(+registry.price));    
       assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
-
+    
     it('should slash a username of a not migrated subnode that became unallowed', async () => {
       const registrant = accountsArr[5];
       const notRegistrant = accountsArr[6];
@@ -835,6 +846,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32,
         utils.zeroBytes32
       ).send({from: registrant});
+      await utils.increaseTime(20000)
       let initialAccountBalance = await Dummy2UsernameRegistrar.methods.getAccountBalance(label).call();
       const initialRegistrantBalance = await TestToken.methods.balanceOf(registrant).call();
       const initialRegistryBalance = await TestToken.methods.balanceOf(Dummy2UsernameRegistrar.address).call();
@@ -858,7 +870,7 @@ contract('UsernameRegistrar', function () {
       assert.equal(await PublicResolver.methods.addr(usernameHash).call(), registrant, "Resolved address not set");      
     });
   });
-  
+
   describe('moveRegistry()', function() {
     it('should move registry to new registry and migrate', async () => {
       const result = await UsernameRegistrar.methods.moveRegistry(UpdatedUsernameRegistrar.address).send();
