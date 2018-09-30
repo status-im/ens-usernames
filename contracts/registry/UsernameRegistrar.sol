@@ -18,13 +18,14 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     PublicResolver public resolver;
     address public parentRegistry;
 
-    uint256 public releaseDelay = 365 days;
+    uint256 public constant releaseDelay = 365 days;
     mapping (bytes32 => Account) public accounts;
     
     //Slashing conditions
     uint256 public usernameMinLength;
     bytes32 public reservedUsernamesMerkleRoot;
     
+    event RegistryState(RegistrarState state);
     event RegistryPrice(uint256 price);
     event RegistryMoved(address newRegistry);
     event UsernameOwner(bytes32 indexed nameHash, address owner);
@@ -83,6 +84,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         usernameMinLength = _usernameMinLength;
         reservedUsernamesMerkleRoot = _reservedUsernamesMerkleRoot;
         parentRegistry = _parentRegistry;
+        setState(RegistrarState.Inactive);
     }
 
     /**
@@ -151,7 +153,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
             reserveAmount -= account.balance;
             require(token.transfer(msg.sender, account.balance), "Transfer failed");
         }
-        emit UsernameOwner(_label, address(0));   
+        emit UsernameOwner(namehash, address(0));   
     
     }
 
@@ -179,12 +181,13 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _username Raw value of offending username.
      */
     function slashSmallUsername(
-        bytes _username
+        string _username
     ) 
         external 
     {
-        require(_username.length < usernameMinLength, "Not a small username.");
-        slashUsername(_username);
+        bytes memory username = bytes(_username);
+        require(username.length < usernameMinLength, "Not a small username.");
+        slashUsername(username);
     }
 
     /**
@@ -209,20 +212,21 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _proof Merkle proof that name is listed on merkle tree.
      */
     function slashReservedUsername(
-        bytes _username,
+        string _username,
         bytes32[] _proof
     ) 
         external 
     {   
+        bytes memory username = bytes(_username);
         require(
             MerkleProof.verifyProof(
                 _proof,
                 reservedUsernamesMerkleRoot,
-                keccak256(_username)
+                keccak256(username)
             ),
             "Invalid Proof."
         );
-        slashUsername(_username);
+        slashUsername(username);
     }
 
     /**
@@ -231,17 +235,18 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _offendingPos Position of non alphanumeric character.
      */
     function slashInvalidUsername(
-        bytes _username,
+        string _username,
         uint256 _offendingPos
     ) 
         external
     { 
-        require(_username.length > _offendingPos, "Invalid position.");
-        byte b = _username[_offendingPos];
+        bytes memory username = bytes(_username);
+        require(username.length > _offendingPos, "Invalid position.");
+        byte b = username[_offendingPos];
         
         require(!((b >= 48 && b <= 57) || (b >= 97 && b <= 122)), "Not invalid character.");
     
-        slashUsername(_username);
+        slashUsername(username);
     }
 
     /**
@@ -281,7 +286,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         require(state == RegistrarState.Inactive, "Registry state is not Inactive");
         require(ensRegistry.owner(ensNode) == address(this), "Registry does not own registry");
         price = _price;
-        state = RegistrarState.Active;
+        setState(RegistrarState.Active);
         emit RegistryPrice(_price);
     }
 
@@ -326,7 +331,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     {
         require(_newRegistry != this, "Cannot move to self.");
         require(ensRegistry.owner(ensNode) == address(this), "Registry not owned anymore.");
-        state = RegistrarState.Moved;
+        setState(RegistrarState.Moved);
         ensRegistry.setOwner(ensNode, _newRegistry);
         _newRegistry.migrateRegistry(price);
         emit RegistryMoved(_newRegistry);
@@ -453,12 +458,15 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _label Username hash.
      * @return Exact time when username can be released.
      **/
-    function getExpirationTime(bytes32 _label)
+    function getReleaseTime(bytes32 _label)
         external
         view
-        returns(uint256 expirationTime)
+        returns(uint256 releaseTime)
     {
-        expirationTime = accounts[_label].creationTime + releaseDelay;
+        uint256 creationTime = accounts[_label].creationTime;
+        if (creationTime > 0){
+            releaseTime = creationTime + releaseDelay;
+        }
     }
 
     /**
@@ -537,7 +545,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         require(state == RegistrarState.Inactive, "Not Inactive");
         require(ensRegistry.owner(ensNode) == address(this), "ENS registry owner not transfered.");
         price = _price;
-        state = RegistrarState.Active;
+        setState(RegistrarState.Active);
         emit RegistryPrice(_price);
     }
 
@@ -625,6 +633,11 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
             require(token.transfer(msg.sender, amountToTransfer), "Error in transfer.");   
         }
         emit UsernameOwner(namehash, address(0));
+    }
+
+    function setState(RegistrarState _state) private {
+        state = _state;
+        emit RegistryState(_state);
     }
      
     /**

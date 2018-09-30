@@ -605,7 +605,7 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});
       assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
       assert.notEqual(await UsernameRegistrar.methods.getCreationTime(label).call(), 0);
-      await UsernameRegistrar.methods.slashInvalidUsername(web3Utils.toHex(username), 4).send()
+      await UsernameRegistrar.methods.slashInvalidUsername(username, 4).send()
       //TODO: check events
       assert.equal(await UsernameRegistrar.methods.getCreationTime(label).call(), 0);
       assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
@@ -623,7 +623,7 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});    
       let failed;
       try{
-        await UsernameRegistrar.methods.slashInvalidUsername(web3Utils.toHex(username), 4).send()
+        await UsernameRegistrar.methods.slashInvalidUsername(username, 4).send()
         failed = false;
       } catch(e){
         failed = true;
@@ -648,7 +648,7 @@ contract('UsernameRegistrar', function () {
       assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
       let failed;
       try{
-        await UsernameRegistrar.methods.slashReservedUsername(web3Utils.toHex(username), merkleTree.getHexProof(ReservedUsernames[0])).send()
+        await UsernameRegistrar.methods.slashReservedUsername(username, merkleTree.getHexProof(ReservedUsernames[0])).send()
         failed = false;
       } catch(e){
         failed = true;
@@ -670,7 +670,7 @@ contract('UsernameRegistrar', function () {
       assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
       let failed;
       try{
-        await UsernameRegistrar.methods.slashReservedUsername(web3Utils.toHex(username), merkleTree.getHexProof(ReservedUsernames[1])).send()
+        await UsernameRegistrar.methods.slashReservedUsername(username, merkleTree.getHexProof(ReservedUsernames[1])).send()
         failed = false;
       } catch(e){
         failed = true;
@@ -690,7 +690,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});
       assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
-      result = await UsernameRegistrar.methods.slashReservedUsername(web3Utils.toHex(username), merkleTree.getHexProof(username)).send()  
+      result = await UsernameRegistrar.methods.slashReservedUsername(username, merkleTree.getHexProof(username)).send()  
       //TODO: check events
       assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
@@ -710,7 +710,7 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});
       let failed;
       try{
-        await UsernameRegistrar.methods.slashSmallUsername(web3Utils.toHex(username)).send()    
+        await UsernameRegistrar.methods.slashSmallUsername(username).send()    
         failed = false;
       } catch(e){
         failed = true;
@@ -731,7 +731,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});  
       assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
-      result = await UsernameRegistrar.methods.slashSmallUsername(web3Utils.toHex(username)).send()    
+      result = await UsernameRegistrar.methods.slashSmallUsername(username).send()    
       assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
   });
@@ -751,7 +751,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});
       assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
-      result = await UsernameRegistrar.methods.slashAddressLikeUsername(web3Utils.toHex(username)).send()    
+      result = await UsernameRegistrar.methods.slashAddressLikeUsername(username).send()    
       assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
     it('should not slash username that starts with 0x but is smaller then 12', async () => {
@@ -813,7 +813,7 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});
       assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
       const initialSlasherBalance = await TestToken.methods.balanceOf(slasher).call();
-      await UsernameRegistrar.methods.slashSmallUsername(web3Utils.toHex(username)).send({from: slasher})
+      await UsernameRegistrar.methods.slashSmallUsername(username).send({from: slasher})
       //TODO: check events
       assert.equal(await TestToken.methods.balanceOf(slasher).call(), (+initialSlasherBalance)+(+registry.price));    
       assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
@@ -847,7 +847,7 @@ contract('UsernameRegistrar', function () {
       assert.equal(await PublicResolver.methods.addr(usernameHash).call(), registrant, "Resolved address not set");      
       
       const resultRelease = await UpdatedDummy2UsernameRegistrar.methods.slashReservedUsername(
-        web3Utils.toHex(username), 
+        username, 
         merkleTree.getHexProof(username)
       ).send({from: notRegistrant });
       //TODO: verify events
