@@ -35,7 +35,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     bytes32 public ensNode;
     uint256 public price;
     RegistrarState public state;
-    uint256 private reserveAmount;
+    uint256 public reserveAmount;
 
     struct Account {
         uint256 balance;
@@ -181,9 +181,10 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
 
     /**
      * @notice secretly reserve the slashing reward to `msg.sender`
-     * @param _secret keccak256(abi.encodePacked(namehash, owner, creationTime)) 
+     * @param _secret keccak256(abi.encodePacked(namehash, creationTime)) 
      */
     function reserveSlash(bytes32 _secret) external {
+        require(reservedSlashers[_secret] == address(0), "Already Reserved");
         reservedSlashers[_secret] = msg.sender;
     }
 
@@ -367,7 +368,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
-     * @notice Withdraw tokens wrongly sent to the contract.
+     * @notice Withdraw not reserved tokens
      * @param _token Address of ERC20 withdrawing excess, or address(0) if want ETH.
      * @param _beneficiary Address to send the funds.
      **/
@@ -388,7 +389,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
                 require(amount > reserveAmount, "Is not excess");
                 amount -= reserveAmount;
             } else {
-                require(amount > 0, "Is not excess");
+                require(amount > 0, "No balance");
             }
             excessToken.transfer(_beneficiary, amount);
         }
@@ -483,7 +484,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     /**
      * @notice returns address that reserved slashing of an account
      * @param _label Username hash.
-     * @return Exact time when username can be released.
+     * @return Reserved Slasher
      **/
     function getReservedSlasher(bytes32 _label)
         external
@@ -492,9 +493,24 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     {
         bytes32 namehash = keccak256(abi.encodePacked(ensNode, _label));
         uint256 creationTime = accounts[_label].creationTime;
-        address owner = ensRegistry.owner(namehash);
-        bytes32 secret = keccak256(abi.encodePacked(namehash, owner, creationTime));
+        bytes32 secret = keccak256(abi.encodePacked(namehash, creationTime));
         reservedSlasher = reservedSlashers[secret];
+    }
+
+    /**
+     * @notice calculate reward part an account could payout on slash 
+     * @param _label Username hash.
+     * @return Part of reward
+     **/
+    function getSlashRewardPart(bytes32 _label)
+        external
+        view
+        returns(uint256 partReward)
+    {
+        uint256 balance = accounts[_label].balance;
+        if (balance > 0) {
+            partReward = balance / 3;
+        }
     }
 
     /**
@@ -661,14 +677,20 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         
         if (amountToTransfer > 0) {
             reserveAmount -= amountToTransfer;
-            address receiver = msg.sender;
-            bytes32 secret = keccak256(abi.encodePacked(namehash, owner, creationTime));
+            uint256 partialDeposit = amountToTransfer / 3;
+            amountToTransfer = partialDeposit * 2; // reserve 1/3 to network (controller)
+            address slasher = msg.sender;
+            bytes32 secret = keccak256(abi.encodePacked(namehash, creationTime));
             address reservedSlasher = reservedSlashers[secret];
             if (reservedSlasher != address(0)) {
                 delete reservedSlashers[secret];
-                receiver = reservedSlasher;
+                if (reservedSlasher != msg.sender) { 
+                    amountToTransfer -= partialDeposit; // 1/3 goes to msg.sender 
+                    require(token.transfer(msg.sender, partialDeposit), "Error in transfer."); 
+                }
+                slasher = reservedSlasher; // reservedSlasher will receive the amountToTransfer instead of msg.sender
             }
-            require(token.transfer(receiver, amountToTransfer), "Error in transfer.");   
+            require(token.transfer(slasher, amountToTransfer), "Error in transfer.");
         }
         emit UsernameOwner(namehash, address(0));
     }

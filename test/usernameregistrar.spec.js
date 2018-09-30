@@ -813,20 +813,22 @@ contract('UsernameRegistrar', function () {
       const usernameHash = namehash.hash(username + '.' + registry.registry);
       const registrant = accountsArr[1];
       const slasher = accountsArr[2];
+      const label = web3Utils.sha3(username);
       await TestToken.methods.mint(registry.price).send({from: registrant});
       await TestToken.methods.approve(UsernameRegistrar.address, registry.price).send({from: registrant});
       await UsernameRegistrar.methods.register(
-        web3Utils.sha3(username),
+        label,
         utils.zeroAddress,
         utils.zeroBytes32,
         utils.zeroBytes32
       ).send({from: registrant});
       await utils.increaseTime(20000)
+      const partReward = await UsernameRegistrar.methods.getSlashRewardPart(label).call();
       assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
       const initialSlasherBalance = await TestToken.methods.balanceOf(slasher).call();
       await UsernameRegistrar.methods.slashSmallUsername(username).send({from: slasher})
       //TODO: check events
-      assert.equal(await TestToken.methods.balanceOf(slasher).call(), (+initialSlasherBalance)+(+registry.price));    
+      assert.equal(await TestToken.methods.balanceOf(slasher).call(), (+initialSlasherBalance)+((+partReward)*2));    
       assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
     
@@ -872,7 +874,7 @@ contract('UsernameRegistrar', function () {
   });
 
   describe('reserveSlash()', function() {
-    it('should send funds to reserver', async() =>{
+    it('should send 1/3 funds to reserver and 1/3 of funds to caller', async() =>{
       const username = 'c';
       const label = web3Utils.sha3(username);
       const usernameHash = namehash.hash(username + '.' + registry.registry);
@@ -889,15 +891,48 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});
       await utils.increaseTime(20000)
       assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
-      const initialSlasherBalance = await TestToken.methods.balanceOf(slashReserver).call();
+      const partReward = await UsernameRegistrar.methods.getSlashRewardPart(label).call();
+      const initialSlashReserverBalance = await TestToken.methods.balanceOf(slashReserver).call();
+      const initialSlashCallerBalance = await TestToken.methods.balanceOf(slashCaller).call();
       const creationTime = await UsernameRegistrar.methods.getCreationTime(label).call();
-      const secret = web3Utils.soliditySha3(usernameHash, registrant, creationTime);
+      const secret = web3Utils.soliditySha3(usernameHash, creationTime);
       assert.equal(await UsernameRegistrar.methods.getReservedSlasher(label).call(), utils.zeroAddress);
       await UsernameRegistrar.methods.reserveSlash(secret).send({from: slashReserver});
       assert.equal(await UsernameRegistrar.methods.getReservedSlasher(label).call(), slashReserver);
       await UsernameRegistrar.methods.slashSmallUsername(username).send({from: slashCaller})
       //TODO: check events
-      assert.equal(await TestToken.methods.balanceOf(slashReserver).call(), (+initialSlasherBalance)+(+registry.price));    
+      assert.equal(await TestToken.methods.balanceOf(slashReserver).call(), (+initialSlashReserverBalance)+(+partReward));    
+      assert.equal(await TestToken.methods.balanceOf(slashCaller).call(), (+initialSlashCallerBalance)+(+partReward));    
+      assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
+    });
+
+
+    it('should send 2/3 funds to reserver as is also the caller', async() =>{
+      const username = 'c';
+      const label = web3Utils.sha3(username);
+      const usernameHash = namehash.hash(username + '.' + registry.registry);
+      const registrant = accountsArr[1];
+      const slashReserverCaller = accountsArr[2];
+      await TestToken.methods.mint(registry.price).send({from: registrant});
+      await TestToken.methods.approve(UsernameRegistrar.address, registry.price).send({from: registrant});
+      await UsernameRegistrar.methods.register(
+        web3Utils.sha3(username),
+        utils.zeroAddress,
+        utils.zeroBytes32,
+        utils.zeroBytes32
+      ).send({from: registrant});
+      await utils.increaseTime(20000)
+      assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
+      const partReward = await UsernameRegistrar.methods.getSlashRewardPart(label).call();
+      const initialSlashReserverBalance = await TestToken.methods.balanceOf(slashReserverCaller).call();
+      const creationTime = await UsernameRegistrar.methods.getCreationTime(label).call();
+      const secret = web3Utils.soliditySha3(usernameHash, creationTime);
+      assert.equal(await UsernameRegistrar.methods.getReservedSlasher(label).call(), utils.zeroAddress);
+      await UsernameRegistrar.methods.reserveSlash(secret).send({from: slashReserverCaller});
+      assert.equal(await UsernameRegistrar.methods.getReservedSlasher(label).call(), slashReserverCaller);
+      await UsernameRegistrar.methods.slashSmallUsername(username).send({from: slashReserverCaller})
+      //TODO: check events
+      assert.equal(await TestToken.methods.balanceOf(slashReserverCaller).call(), (+initialSlashReserverBalance)+(+partReward*2));    
       assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
   });
