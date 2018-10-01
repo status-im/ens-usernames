@@ -3,6 +3,7 @@ import web3 from 'web3';
 import EmbarkJS from 'Embark/EmbarkJS';
 import { connect } from 'react-redux';
 import { actions as accountActions, getDefaultAccount } from '../../reducers/accounts';
+import { checkAndDispatchStatusContactCode } from '../../actions/accounts';
 import { hash } from 'eth-ens-namehash';
 import { isNil } from 'lodash';
 import Hidden from '@material-ui/core/Hidden';
@@ -64,8 +65,8 @@ const backButton = {
 const validTimestamp = timestamp => Number(timestamp) > 99999999;
 const generatePrettyDate = timestamp => new Date(timestamp * 1000).toDateString();
 
-const DisplayBox = ({ displayType, pubKey }) => (
-  <div>
+const WrappedDisplayBox = ({ displayType, pubKey, getStatusContactCode }) => (
+  <div onClick={getStatusContactCode}>
     <div style={{ fontSize: '14px', color: '#939BA1', margin: '0 1em' }}>{displayType}</div>
     <div style={{ border: '1px solid #EEF2F5', borderRadius: '8px', margin: '0.5 1em 1em', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', minHeight: '4em' }}>
       <div style={{ margin: '3%', wordBreak: 'break-word' }}>
@@ -74,6 +75,14 @@ const DisplayBox = ({ displayType, pubKey }) => (
     </div>
   </div>
 );
+
+const mapDispatchToDisplayBoxProps = dispatch => ({
+  getStatusContactCode() {
+    checkAndDispatchStatusContactCode(dispatch)
+  }
+});
+
+const DisplayBox = connect(null, mapDispatchToDisplayBoxProps)(WrappedDisplayBox);
 
 const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTime, defaultAccount, isOwner, edit, onSubmit, handleChange, values, handleSubmit }) => (
   <Fragment>
