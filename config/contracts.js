@@ -35,7 +35,7 @@ module.exports = {
           "0x5f7791d31ca0493e9ca7c9ca16695ecd9d5044768674d14d31ab5d8277518fff",
           3,
           merkleTree.getHexRoot(),
-          "0x9e183BC54Bb4f3cCa1A478CA6f2c3EdC37B60478"
+          "0x11d9F481effd20D76cEE832559bd9Aca25405841"
         ]
       }
     }
@@ -110,7 +110,7 @@ module.exports = {
         "address": "0x58E01078d14142E0370526dFdAE44E4f508c844B"
       },
       "UsernameRegistrar": {
-        "address": "0x11d9F481effd20D76cEE832559bd9Aca25405841"
+        "address": "0x1f1CD0569cfDE5E63Bb2108574eeb15e5bBE6efa"
       }
     }
   },
