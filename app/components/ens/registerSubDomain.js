@@ -1,37 +1,25 @@
 import web3 from "Embark/web3"
 import UsernameRegistrar from 'Embark/contracts/UsernameRegistrar';
-import PublicResolver from 'Embark/contracts/PublicResolver';
 import TestToken from 'Embark/contracts/TestToken';
 import React from 'react';
 import { connect } from 'react-redux';
 import Hidden from '@material-ui/core/Hidden';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { Button, MobileSearch, MobileButton, Field } from '../../ui/components';
+import { Button, MobileButton } from '../../ui/components';
 import { withFormik } from 'formik';
 import { hash } from 'eth-ens-namehash';
 import { zeroAddress, zeroBytes32, formatPrice } from './utils';
 import { getStatusContactCode, getSNTAllowance, getCurrentAccount } from '../../reducers/accounts';
 import FieldGroup from '../standard/FieldGroup';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import Typography from '@material-ui/core/Typography';
-import TokenPermissions from '../standard/TokenPermissionConnect';
 import Terms from './terms';
 import { generateXY } from '../../utils/ecdsa';
 import { getResolver } from './utils/domain';
+import DisplayBox from './DisplayBox';
+import { YOUR_CONTACT_CODE } from './constants';
 
 const { soliditySha3, fromWei } = web3.utils;
 
-
-const DisplayBox = ({ displayType, pubKey }) => (
-  <div>
-    <div style={{ fontSize: '14px', color: '#939BA1', margin: '0 1em' }}>{displayType}</div>
-    <div style={{ border: '1px solid #EEF2F5', borderRadius: '8px', margin: '0.5 1em 1em', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', minHeight: '4em' }}>
-      <div style={{ margin: '3%', wordBreak: 'break-word' }}>
-        <Typography type='body1'>{pubKey}</Typography>
-      </div>
-    </div>
-  </div>
-);
 
 const formRef = React.createRef();
 const displayTerms = status => status === 'terms';
@@ -123,8 +111,8 @@ const InnerForm = ({
 
       <Hidden mdUp>
 
-        <DisplayBox displayType='Your wallet address' pubKey={values.address} />
-        <DisplayBox displayType='Your contact code' pubKey={values.statusAddress} />
+        <DisplayBox displayType="Your wallet address" pubKey={values.address} />
+        <DisplayBox displayType={YOUR_CONTACT_CODE} pubKey={values.statusAddress} />
 
         {/*<div style={{ fontSize: '14px', color: '#939BA1', margin: '0 1em' }}>Your contact code</div>*/}
         {/*<div style={{ border: '1px solid #EEF2F5', borderRadius: '8px', margin: '0.5 1em 1em', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', minHeight: '4em' }}>*/}

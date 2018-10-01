@@ -31,6 +31,8 @@ import Face from '@material-ui/icons/Face';
 import Copy from './copy';
 import IDNANormalizer from 'idna-normalize';
 import { nullAddress, getResolver } from './utils/domain';
+import { YOUR_CONTACT_CODE } from './constants';
+import DisplayBox from './DisplayBox';
 
 const normalizer = new IDNANormalizer();
 const invalidSuffix = '0000000000000000000000000000000000000000'
@@ -117,7 +119,7 @@ const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTi
                preRegisteredCallback={onSubmit}
                registeredCallbackFn={console.log} />}
     {!edit && <DisplayBox displayType='Your wallet address' pubKey={address} />}
-    {!edit && validStatusAddress(statusAccount) && <DisplayBox displayType='Your contact code' pubKey={statusAccount} />}
+    {!edit && validStatusAddress(statusAccount) && <DisplayBox displayType={YOUR_CONTACT_CODE} pubKey={statusAccount} />}
   </Fragment>
 )
 
