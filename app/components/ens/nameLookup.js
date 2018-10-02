@@ -87,7 +87,7 @@ const mapDispatchToDisplayBoxProps = dispatch => ({
 
 const DisplayBox = connect(null, mapDispatchToDisplayBoxProps)(WrappedDisplayBox);
 
-const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTime, defaultAccount, isOwner, edit, onSubmit, handleChange, values, handleSubmit }) => (
+const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTime, creationTime, defaultAccount, isOwner, edit, onSubmit, handleChange, values, handleSubmit }) => (
   <Fragment>
     <LookupForm {...{ handleSubmit, values, handleChange }} justSearch />
     <Info background={isOwner ? '#44D058' : '#000000'} style={{ margin: '0.4em', boxShadow: '0px 6px 10px rgba(0, 0, 0, 0.2)' }}>
@@ -105,7 +105,7 @@ const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTi
       </Typography>
     </Info>
     <Typography type='subheading' style={{ textAlign: 'center', fontSize: '17px', fontWeight: '500', margin: '1.5em 0 0.3em 0' }}>
-      Registered {validTimestamp(expirationTime)}
+      Registered {validTimestamp(creationTime) && && generatePrettyDate(creationTime)}
     </Typography>
     <Typography type='body2' style={{ textAlign: 'center', margin: 10 }}>
       {edit
@@ -349,6 +349,7 @@ const InnerForm = ({
        address={status.address}
        statusAccount={status.statusAccount}
        expirationTime={status.expirationTime}
+       creationTime={status.creationTime}
        ownerAddress={status.ownerAddress}
        registryOwnsDomain={status.registryOwnsDomain}
        setStatus={setStatus} /> :
