@@ -38,7 +38,7 @@ class SimpleDialog extends React.Component {
   };
 
   render() {
-    const { classes, onClose, selectedValue, ...other } = this.props;
+    const { classes, onClose, selectedValue, canBeReleased, ...other } = this.props;
 
     return (
       <Dialog classes={{paper: classes.paper,}} onClose={this.handleClose} fullWidth paperFullWidth style={{alignItems: 'flex-end'}} aria-labelledby="simple-dialog-title" {...other}>
@@ -49,12 +49,12 @@ class SimpleDialog extends React.Component {
             </ListItemIcon>
             <ListItemText primary="Edit Contact Code" />
           </ListItem>
-          <ListItem button onClick={() => this.handleListItemClick('release')}>
+          {canBeReleased && <ListItem button onClick={() => this.handleListItemClick('release')}>
             <ListItemIcon>
                 <DeleteOutline />
             </ListItemIcon>
             <ListItemText primary="Release Name" />
-          </ListItem>
+          </ListItem>}
         </List>
       </Dialog>
     );

@@ -66,6 +66,7 @@ const backButton = {
 
 const validTimestamp = timestamp => Number(timestamp) > 99999999;
 const generatePrettyDate = timestamp => new Date(timestamp * 1000).toDateString();
+const pastReleaseDate = timestamp => new Date > new Date(timestamp * 1000);
 
 const WrappedDisplayBox = ({ displayType, pubKey, getStatusContactCode }) => (
   <div onClick={getStatusContactCode}>
@@ -135,6 +136,7 @@ class RenderAddresses extends PureComponent {
     const onClose = value => { this.setState({ editAction: value, editMenu: false }) }
     const onClickEdit = () => { validAddress(address) ? this.setState({ editMenu: true }) : this.setState({ editAction: 'edit' }) }
     const isOwner = defaultAccount === ownerAddress;
+    const canBeReleased = validTimestamp(releaseTime) && pastReleaseDate(releaseTime);
     const closeReleaseAlert = value => {
       if (!isNil(value)) {
         this.setState({ submitted: true })
@@ -164,7 +166,7 @@ class RenderAddresses extends PureComponent {
         <Hidden mdUp>
           {submitted ? <TransactionComplete type={editAction} setStatus={setStatus} /> : <MobileAddressDisplay {...this.props} isOwner={isOwner} edit={editAction === 'edit'} onSubmit={() => { this.setState({ submitted: true}) }}/>}
           {isOwner && !editAction && <MobileButton text="Edit" style={{ margin: 'auto', display: 'block' }} onClick={onClickEdit}/>}
-          <EditOptions open={editMenu} onClose={onClose} />
+          <EditOptions open={editMenu} onClose={onClose} canBeReleased={canBeReleased} />
           <ReleaseDomainAlert open={editAction === 'release' && !submitted} handleClose={closeReleaseAlert} />
         </Hidden>
       </Fragment>
