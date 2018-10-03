@@ -20,7 +20,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
 
     uint256 public constant releaseDelay = 365 days;
     mapping (bytes32 => Account) public accounts;
-    mapping (bytes32 => address) reservedSlashers;
+    mapping (bytes32 => SlashReserve) reservedSlashers;
 
     //Slashing conditions
     uint256 public usernameMinLength;
@@ -41,6 +41,11 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         uint256 balance;
         uint256 creationTime;
         address owner;
+    }
+
+    struct SlashReserve {
+        address reserver;
+        uint256 blockNumber;
     }
 
     /**
@@ -181,11 +186,11 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
 
     /**
      * @notice secretly reserve the slashing reward to `msg.sender`
-     * @param _secret keccak256(abi.encodePacked(namehash, creationTime)) 
+     * @param _secret keccak256(abi.encodePacked(namehash, creationTime, reserveSecret)) 
      */
     function reserveSlash(bytes32 _secret) external {
-        require(reservedSlashers[_secret] == address(0), "Already Reserved");
-        reservedSlashers[_secret] = msg.sender;
+        require(reservedSlashers[_secret].blockNumber == 0, "Already Reserved");
+        reservedSlashers[_secret] = SlashReserve(msg.sender, block.number);
     }
 
     /**
@@ -193,13 +198,14 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _username Raw value of offending username.
      */
     function slashSmallUsername(
-        string _username
+        string _username,
+        uint256 _reserveSecret
     ) 
         external 
     {
         bytes memory username = bytes(_username);
         require(username.length < usernameMinLength, "Not a small username.");
-        slashUsername(username);
+        slashUsername(username, _reserveSecret);
     }
 
     /**
@@ -207,7 +213,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _username Raw value of offending username.
      */
     function slashAddressLikeUsername(
-        string _username
+        string _username,
+        uint256 _reserveSecret
     ) 
         external 
     {
@@ -215,7 +222,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         require(username.length > 12, "Too small to look like an address.");
         require(username[0] == byte("0"), "First character need to be 0");
         require(username[1] == byte("x"), "Second character need to be x");
-        slashUsername(username);
+        slashUsername(username, _reserveSecret);
     }  
 
     /**
@@ -225,7 +232,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      */
     function slashReservedUsername(
         string _username,
-        bytes32[] _proof
+        bytes32[] _proof,
+        uint256 _reserveSecret
     ) 
         external 
     {   
@@ -238,7 +246,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
             ),
             "Invalid Proof."
         );
-        slashUsername(username);
+        slashUsername(username, _reserveSecret);
     }
 
     /**
@@ -248,7 +256,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      */
     function slashInvalidUsername(
         string _username,
-        uint256 _offendingPos
+        uint256 _offendingPos,
+        uint256 _reserveSecret
     ) 
         external
     { 
@@ -258,7 +267,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         
         require(!((b >= 48 && b <= 57) || (b >= 97 && b <= 122)), "Not invalid character.");
     
-        slashUsername(username);
+        slashUsername(username, _reserveSecret);
     }
 
     /**
@@ -482,22 +491,6 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
-     * @notice returns address that reserved slashing of an account
-     * @param _label Username hash.
-     * @return Reserved Slasher
-     **/
-    function getReservedSlasher(bytes32 _label)
-        external
-        view
-        returns(address reservedSlasher)
-    {
-        bytes32 namehash = keccak256(abi.encodePacked(ensNode, _label));
-        uint256 creationTime = accounts[_label].creationTime;
-        bytes32 secret = keccak256(abi.encodePacked(namehash, creationTime));
-        reservedSlasher = reservedSlashers[secret];
-    }
-
-    /**
      * @notice calculate reward part an account could payout on slash 
      * @param _label Username hash.
      * @return Part of reward
@@ -653,10 +646,15 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @dev Removes account hash of `_username` and send account.balance to msg.sender.
      * @param _username Username being slashed.
      */
-    function slashUsername(bytes _username) internal {
+    function slashUsername(
+        bytes _username,
+        uint256 _reserveSecret
+    ) 
+        internal 
+    {
         bytes32 label = keccak256(_username);
         bytes32 namehash = keccak256(abi.encodePacked(ensNode, label));
-        uint256 amountToTransfer;
+        uint256 amountToTransfer = 0;
         uint256 creationTime = accounts[label].creationTime;
         address owner = ensRegistry.owner(namehash);
         if(creationTime == 0) {
@@ -679,18 +677,13 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
             reserveAmount -= amountToTransfer;
             uint256 partialDeposit = amountToTransfer / 3;
             amountToTransfer = partialDeposit * 2; // reserve 1/3 to network (controller)
-            address slasher = msg.sender;
-            bytes32 secret = keccak256(abi.encodePacked(namehash, creationTime));
-            address reservedSlasher = reservedSlashers[secret];
-            if (reservedSlasher != address(0)) {
-                delete reservedSlashers[secret];
-                if (reservedSlasher != msg.sender) { 
-                    amountToTransfer -= partialDeposit; // 1/3 goes to msg.sender 
-                    require(token.transfer(msg.sender, partialDeposit), "Error in transfer."); 
-                }
-                slasher = reservedSlasher; // reservedSlasher will receive the amountToTransfer instead of msg.sender
-            }
-            require(token.transfer(slasher, amountToTransfer), "Error in transfer.");
+            bytes32 secret = keccak256(abi.encodePacked(namehash, creationTime, _reserveSecret));
+            SlashReserve memory reserve = reservedSlashers[secret];
+            require(reserve.reserver != address(0), "Not reserved.");
+            require(reserve.blockNumber < block.number, "Cannot reveal in same block");
+            delete reservedSlashers[secret];
+
+            require(token.transfer(reserve.reserver, amountToTransfer), "Error in transfer.");
         }
         emit UsernameOwner(namehash, address(0));
     }
