@@ -161,7 +161,7 @@ contract('UsernameRegistrar', function () {
     });
   });
 
-  describe('updateRegistryPrice()', function() {
+  describe('updateRegistryPrice(uint256)', function() {
     it('should change registry price', async () => {
       const newPrice = registry.price;
       const resultUpdateRegistryPrice = await UsernameRegistrar.methods.updateRegistryPrice(newPrice).send({from: accountsArr[0]});
@@ -171,7 +171,7 @@ contract('UsernameRegistrar', function () {
     });
   });
 
-  describe('register()', function() {
+  describe('register(bytes32,address,bytes32,bytes32)', function() {
     it('should register username', async () => {
       const registrant = accountsArr[5];
       const username = 'erin';
@@ -338,7 +338,7 @@ contract('UsernameRegistrar', function () {
     });
   });
 
-  describe('receiveApproval()', function() {
+  describe('receiveApproval(address,uint256,address,bytes)', function() {
     it('should register username', async () => {
       const registrant = accountsArr[5];
       const username = 'erinauto';
@@ -364,7 +364,7 @@ contract('UsernameRegistrar', function () {
       assert.equal(await TestToken.methods.balanceOf(registrant).call(), +initialRegistrantBalance-registryPrice, "User final balance wrong")
       assert.equal(await TestToken.methods.balanceOf(UsernameRegistrar.address).call(), (+initialRegistryBalance)+(+registry.price), "Registry final balance wrong")
     });
-    it('should register username only resolveing address  ', async () => {
+    it('should register username only resolving address  ', async () => {
       const registrant = accountsArr[2];
       await TestToken.methods.mint(registry.price).send({from: registrant});
       const username = 'bobauto';
@@ -445,7 +445,7 @@ contract('UsernameRegistrar', function () {
     });
   });
 
-  describe('release()', function() {
+  describe('release(bytes32)', function() {
     it('should not release username due delay', async () => {
       let registrant = accountsArr[6];
       await TestToken.methods.mint(registry.price).send({from: registrant});
@@ -563,7 +563,7 @@ contract('UsernameRegistrar', function () {
     });
   });
   
-  describe('updateAccountOwner()', function() {
+  describe('updateAccountOwner(bytes32)', function() {
     it('should update username account owner', async () => {
       let username = 'heidi';
       let label = web3Utils.sha3(username);
@@ -588,7 +588,7 @@ contract('UsernameRegistrar', function () {
     });
   });
   
-  describe('slashInvalidUsername()', function() {
+  describe('slashInvalidUsername(string,uint256)', function() {
     it('should slash invalid username', async () => {
       let username = 'alicé';
       let label = web3Utils.sha3(username);
@@ -634,7 +634,7 @@ contract('UsernameRegistrar', function () {
     });
   });
 
-  describe('slashReservedUsername()', function() {
+  describe('slashReservedUsername(string,bytes32[])', function() {
     it('should not slash not reserved name username', async () => {
       const username = 'somedummyname123';
       const usernameHash = namehash.hash(username + '.' + registry.registry);
@@ -701,7 +701,7 @@ contract('UsernameRegistrar', function () {
     });
   });
 
-  describe('slashSmallUsername()', function() {
+  describe('slashSmallUsername(string)', function() {
     it('should not slash big username', async() =>{
       let username = '1234567890';
       let registrant = accountsArr[1];
@@ -743,7 +743,7 @@ contract('UsernameRegistrar', function () {
     });
   });
   
-  describe('slashAddressLikeUsername()', function() {
+  describe('slashAddressLikeUsername(string)', function() {
     it('should slash username that starts with 0x and is 12 of lenght or bigger', async () => {
       let username = "0xc6b95bd26123";
       let userlabelHash = "0xe311c0592b075c30277c679f0daea74ee1727547efa522fd28d20a8f2c3e435b"; //sha3("0xc6b95bd26123")
@@ -807,7 +807,7 @@ contract('UsernameRegistrar', function () {
       assert(failed, "Was slashed anyway");     
     });
   });
-  describe('slashUsername()', function() {
+  describe('slashUsername(bytes)', function() {
     it('should slash a username and get funds from registrant', async () => {
       const username = 'b';
       const usernameHash = namehash.hash(username + '.' + registry.registry);
@@ -873,7 +873,7 @@ contract('UsernameRegistrar', function () {
     });
   });
 
-  describe('reserveSlash()', function() {
+  describe('reserveSlash(bytes32)', function() {
     it('should send 1/3 funds to reserver and 1/3 of funds to caller', async() =>{
       const username = 'c';
       const label = web3Utils.sha3(username);
@@ -937,7 +937,7 @@ contract('UsernameRegistrar', function () {
     });
   });
   
-  describe('moveRegistry()', function() {
+  describe('moveRegistry(address)', function() {
     it('should move registry to new registry and migrate', async () => {
       const result = await UsernameRegistrar.methods.moveRegistry(UpdatedUsernameRegistrar.address).send();
       //TODO: check events
@@ -946,7 +946,7 @@ contract('UsernameRegistrar', function () {
     });
   });
 
-  describe('moveAccount()', function() {
+  describe('moveAccount(label)', function() {
     it('should move username to new registry by account owner', async () => {
       const registrant = accountsArr[5];
       const username = 'erin';
