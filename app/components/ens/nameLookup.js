@@ -24,7 +24,7 @@ import EnsLogo from '../../ui/icons/logos/ens.png';
 import { formatPrice } from '../ens/utils';
 import CheckCircle from '../../ui/icons/components/baseline_check_circle_outline.png';
 import WarningIcon from '../../ui/icons/svg/warning.svg';
-const { getPrice, getReleaseTime, release } = UsernameRegistrar.methods;
+const { getPrice, getExpirationTime, release } = UsernameRegistrar.methods;
 import NotInterested from '@material-ui/icons/NotInterested';
 import Face from '@material-ui/icons/Face';
 import Copy from './copy';
@@ -75,7 +75,7 @@ const DisplayBox = ({ displayType, pubKey }) => (
   </div>
 );
 
-const MobileAddressDisplay = ({ domainName, address, statusAccount, releaseTime, defaultAccount, isOwner, edit, onSubmit, handleChange, values, handleSubmit }) => (
+const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTime, defaultAccount, isOwner, edit, onSubmit, handleChange, values, handleSubmit }) => (
   <Fragment>
     <LookupForm {...{ handleSubmit, values, handleChange }} justSearch />
     <Info background={isOwner ? '#44D058' : '#000000'} style={{ margin: '0.4em', boxShadow: '0px 6px 10px rgba(0, 0, 0, 0.2)' }}>
@@ -93,7 +93,7 @@ const MobileAddressDisplay = ({ domainName, address, statusAccount, releaseTime,
       </Typography>
     </Info>
     <Typography type='subheading' style={{ textAlign: 'center', fontSize: '17px', fontWeight: '500', margin: '1.5em 0 0.3em 0' }}>
-      Registered {validTimestamp(releaseTime)}
+      Registered {validTimestamp(expirationTime)}
     </Typography>
     <Typography type='body2' style={{ textAlign: 'center', margin: 10 }}>
       {edit
@@ -116,7 +116,7 @@ class RenderAddresses extends PureComponent {
   state = { copied: false, editMenu: false, editAction: false }
 
   render() {
-    const { domainName, address, statusAccount, releaseTime, defaultAccount, ownerAddress, setStatus, registryOwnsDomain } = this.props
+    const { domainName, address, statusAccount, expirationTime, defaultAccount, ownerAddress, setStatus, registryOwnsDomain } = this.props
     const { copied, editMenu, editAction, submitted } = this.state
     const markCopied = (v) => { this.setState({ copied: v }) }
     const isCopied = address => address == copied;
@@ -139,7 +139,7 @@ class RenderAddresses extends PureComponent {
       <Fragment>
         <Hidden mdDown>
           <div style={{ display: 'flex', flexDirection: 'column', margin: 50 }}>
-            <Info.Action title="Click to copy"><b>{formatName(domainName)}</b>{releaseTime && <i> (Expires {generatePrettyDate(releaseTime)})</i>} Resolves To:</Info.Action>
+            <Info.Action title="Click to copy"><b>{formatName(domainName)}</b>{expirationTime && <i> (Expires {generatePrettyDate(expirationTime)})</i>} Resolves To:</Info.Action>
             {address && <Text style={{ marginTop: '1em' }}>Ethereum Address {renderCopied(address)}</Text>}
             <CopyToClipboard text={address} onCopy={markCopied}>
               <div style={addressStyle}>{address}</div>
@@ -340,7 +340,7 @@ const InnerForm = ({
        domainName={status.resolvedDomainName}
        address={status.address}
        statusAccount={status.statusAccount}
-       releaseTime={status.releaseTime}
+       expirationTime={status.expirationTime}
        ownerAddress={status.ownerAddress}
        registryOwnsDomain={status.registryOwnsDomain}
        setStatus={setStatus} /> :
@@ -369,13 +369,13 @@ const NameLookup = withFormik({
     const keys = pubkey(lookupHash).call();
     const ownerAddress = owner(lookupHash).call();
     const suffixOwner = owner(hash(getDomain(domainName))).call();
-    const releaseTime = getReleaseTime(lookupHash).call();
-    Promise.all([address, keys, ownerAddress, releaseTime, suffixOwner])
-           .then(([ address, keys, ownerAddress, releaseTime, suffixOwner ]) => {
+    const expirationTime = getExpirationTime(lookupHash).call();
+    Promise.all([address, keys, ownerAddress, expirationTime, suffixOwner])
+           .then(([ address, keys, ownerAddress, expirationTime, suffixOwner ]) => {
              const statusAccount = keyFromXY(keys[0], keys[1]);
              const registryOwnsDomain = registryIsOwner(suffixOwner)
              const resolvedDomainName = domainName;
-             setStatus({ address, statusAccount, releaseTime, ownerAddress, registryOwnsDomain, resolvedDomainName });
+             setStatus({ address, statusAccount, expirationTime, ownerAddress, registryOwnsDomain, resolvedDomainName });
            })
   }
 })(InnerForm)
