@@ -964,7 +964,7 @@ contract('UsernameRegistrar', function () {
     });
   });
 
-  describe('moveAccount(label)', function() {
+  describe('moveAccount(label,address)', function() {
     it('should move username to new registry by account owner', async () => {
       const registrant = accountsArr[5];
       const username = 'erin';
@@ -978,7 +978,7 @@ contract('UsernameRegistrar', function () {
       const creationTime = await UsernameRegistrar.methods.getCreationTime(label).call();
       assert.notEqual(creationTime, 0);
       assert.equal(await UpdatedUsernameRegistrar.methods.getCreationTime(label).call(), 0);
-      const result = await UsernameRegistrar.methods.moveAccount(label).send({from: registrant});
+      const result = await UsernameRegistrar.methods.moveAccount(label, UpdatedUsernameRegistrar.address).send({from: registrant});
       assert.equal(await UsernameRegistrar.methods.getCreationTime(label).call(), 0);
       assert.equal(await UpdatedUsernameRegistrar.methods.getCreationTime(label).call(), creationTime);
       assert.equal(await TestToken.methods.balanceOf(UsernameRegistrar.address).call(), (+initialRegistryBalance)-(+accountBalance))

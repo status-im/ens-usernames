@@ -275,13 +275,14 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _label Username hash.
      **/
     function moveAccount(
-        bytes32 _label
+        bytes32 _label,
+        UsernameRegistrar _newRegistry
     ) 
         external 
     {
         require(state == RegistrarState.Moved, "Wrong contract state");
         require(msg.sender == accounts[_label].owner, "Callable only by account owner.");
-        UsernameRegistrar _newRegistry = UsernameRegistrar(ensRegistry.owner(ensNode));
+        require(ensRegistry.owner(ensNode) == address(_newRegistry), "Wrong update");
         Account memory account = accounts[_label];
         delete accounts[_label];
 
