@@ -25,7 +25,7 @@ import EnsLogo from '../../ui/icons/logos/ens.png';
 import { formatPrice } from '../ens/utils';
 import CheckCircle from '../../ui/icons/components/baseline_check_circle_outline.png';
 import Warning from '../../ui/components/Warning';
-const { getPrice, getExpirationTime, release } = UsernameRegistrar.methods;
+const { getPrice, getExpirationTime, getCreationTime, release } = UsernameRegistrar.methods;
 import NotInterested from '@material-ui/icons/NotInterested';
 import Face from '@material-ui/icons/Face';
 import Copy from './copy';
@@ -68,25 +68,6 @@ const validTimestamp = timestamp => Number(timestamp) > 99999999;
 const generatePrettyDate = timestamp => new Date(timestamp * 1000).toDateString();
 const pastReleaseDate = timestamp => new Date > new Date(timestamp * 1000);
 
-const WrappedDisplayBox = ({ displayType, pubKey, getStatusContactCode }) => (
-  <div onClick={getStatusContactCode}>
-    <div style={{ fontSize: '14px', color: '#939BA1', margin: '0 1em' }}>{displayType}</div>
-    <div style={{ border: '1px solid #EEF2F5', borderRadius: '8px', margin: '0.5 1em 1em', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', minHeight: '4em' }}>
-      <div style={{ margin: '3%', wordBreak: 'break-word' }}>
-        <Typography type='body1'>{pubKey}</Typography>
-      </div>
-    </div>
-  </div>
-);
-
-const mapDispatchToDisplayBoxProps = dispatch => ({
-  getStatusContactCode() {
-    checkAndDispatchStatusContactCode(dispatch)
-  }
-});
-
-const DisplayBox = connect(null, mapDispatchToDisplayBoxProps)(WrappedDisplayBox);
-
 const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTime, creationTime, defaultAccount, isOwner, edit, onSubmit, handleChange, values, handleSubmit }) => (
   <Fragment>
     <LookupForm {...{ handleSubmit, values, handleChange }} justSearch />
@@ -105,7 +86,7 @@ const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTi
       </Typography>
     </Info>
     <Typography type='subheading' style={{ textAlign: 'center', fontSize: '17px', fontWeight: '500', margin: '1.5em 0 0.3em 0' }}>
-      Registered {validTimestamp(creationTime) && && generatePrettyDate(creationTime)}
+      Registered {validTimestamp(creationTime) && generatePrettyDate(creationTime)}
     </Typography>
     <Typography type='body2' style={{ textAlign: 'center', margin: 10 }}>
       {edit
@@ -136,7 +117,7 @@ class RenderAddresses extends PureComponent {
     const onClose = value => { this.setState({ editAction: value, editMenu: false }) }
     const onClickEdit = () => { validAddress(address) ? this.setState({ editMenu: true }) : this.setState({ editAction: 'edit' }) }
     const isOwner = defaultAccount === ownerAddress;
-    const canBeReleased = validTimestamp(releaseTime) && pastReleaseDate(releaseTime);
+    const canBeReleased = validTimestamp(expirationTime) && pastReleaseDate(expirationTime);
     const closeReleaseAlert = value => {
       if (!isNil(value)) {
         this.setState({ submitted: true })
@@ -372,19 +353,21 @@ const NameLookup = withFormik({
     const { domainName } = values;
     const { methods: { owner, resolver } } = ENSRegistry;
     const lookupHash = hash(formatName(domainName));
+    const subdomainHash = soliditySha3(domainName);
     const resolverContract = await getResolver(lookupHash);
     const { addr, pubkey } = resolverContract.methods;
     const address = addr(lookupHash).call();
     const keys = pubkey(lookupHash).call();
     const ownerAddress = owner(lookupHash).call();
     const suffixOwner = owner(hash(getDomain(domainName))).call();
-    const expirationTime = getExpirationTime(lookupHash).call();
-    Promise.all([address, keys, ownerAddress, expirationTime, suffixOwner])
-           .then(([ address, keys, ownerAddress, expirationTime, suffixOwner ]) => {
+    const expirationTime = getExpirationTime(subdomainHash).call();
+    const creationTime = getCreationTime(subdomainHash).call();
+    Promise.all([address, keys, ownerAddress, expirationTime, creationTime, suffixOwner])
+           .then(([ address, keys, ownerAddress, expirationTime, creationTime, suffixOwner ]) => {
              const statusAccount = keyFromXY(keys[0], keys[1]);
              const registryOwnsDomain = registryIsOwner(suffixOwner)
              const resolvedDomainName = domainName;
-             setStatus({ address, statusAccount, expirationTime, ownerAddress, registryOwnsDomain, resolvedDomainName });
+             setStatus({ address, statusAccount, expirationTime, creationTime, ownerAddress, registryOwnsDomain, resolvedDomainName });
            })
   }
 })(InnerForm)
