@@ -1,3 +1,5 @@
+
+
 const utils = require('../utils/testUtils.js');
 const web3Utils = require('web3-utils');
 const namehash = require('eth-ens-namehash');
@@ -14,6 +16,8 @@ const registry = {
   namehash: namehash.hash('stateofus.eth'),
   price: 100000000
 }
+
+
 
 const dummyRegistry = {
   name: 'dummyreg',
@@ -776,8 +780,8 @@ contract('UsernameRegistrar', function () {
   describe('slashAddressLikeUsername(string,uint256)', function() {
     it('should slash username that starts with 0x and is 12 of lenght or bigger', async () => {
       let username = '0xc6b95bd26123';
-      let userlabelHash = '0xe311c0592b075c30277c679f0daea74ee1727547efa522fd28d20a8f2c3e435b'; //sha3("0xc6b95bd26123")
-      let usernameHash = '0xb707907c2749895522150dd9e6dec4f71f1662ce873f8bf0b8682fa052ff495e'; //namehash("0xc6b95bd26123.stateofus.eth")
+      const userlabelHash = web3Utils.soliditySha3({value: username, type: "string"});
+      const usernameHash = namehash.hash(username + '.' + registry.registry);
       let registrant = accountsArr[1];
       await TestToken.methods.mint(registry.price).send({from: registrant});
       await TestToken.methods.approve(UsernameRegistrar.address, registry.price).send({from: registrant});
@@ -798,7 +802,7 @@ contract('UsernameRegistrar', function () {
     });
     it('should not slash username that starts with 0x but is smaller then 12', async () => {
       let username = "0xc6b95bd26";
-      let userlabelHash = "0x59bf8d16c517a40a5dacc3471abd002f3bc0850a13e930e4bee49070a58517e8"; //sha3("0xc6b95bd26")
+      const userlabelHash = web3Utils.soliditySha3({value: username, type: "string"});
       const usernameHash = namehash.hash(username + '.' + registry.registry);
       let registrant = accountsArr[1];
       await TestToken.methods.mint(registry.price).send({from: registrant});
@@ -825,7 +829,34 @@ contract('UsernameRegistrar', function () {
     });
     it('should not slash username that dont starts 0x and is bigger than 12', async () => {
       const username = "0a002322c6b95bd26";
-      const userlabelHash = "0xe4769e5c31ff61ac50dce20559a4411a4ca45d94c733cbeda7ab9f28ed75cef1"; //sha3("0a002322c6b95bd26")
+      const userlabelHash = web3Utils.soliditySha3({value: username, type: "string"});
+      const usernameHash = namehash.hash(username + '.' + registry.registry);
+      const registrant = accountsArr[1];
+      await TestToken.methods.mint(registry.price).send({from: registrant});
+      await TestToken.methods.approve(UsernameRegistrar.address, registry.price).send({from: registrant});
+      await UsernameRegistrar.methods.register(
+        userlabelHash,
+        utils.zeroAddress,
+        utils.zeroBytes32,
+        utils.zeroBytes32
+      ).send({from: registrant});
+      await utils.increaseTime(20000)
+      const creationTime = await UsernameRegistrar.methods.getCreationTime(userlabelHash).call();
+      const reserveSecret = 1337;
+      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
+      await UsernameRegistrar.methods.reserveSlash(secret).send();
+      let failed;
+      try{
+        await UsernameRegistrar.methods.slashAddressLikeUsername(username, reserveSecret).send()    
+        failed = false;
+      } catch(e){
+        failed = true;
+      }
+      assert(failed, "Was slashed anyway");     
+    });
+    it('should not slash username that starts with 0x but dont use hex chars', async () => {
+      const username = "0xprotocolstatus";
+      const userlabelHash = web3Utils.soliditySha3({value: username, type: "string"});
       const usernameHash = namehash.hash(username + '.' + registry.registry);
       const registrant = accountsArr[1];
       await TestToken.methods.mint(registry.price).send({from: registrant});

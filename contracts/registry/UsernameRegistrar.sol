@@ -222,6 +222,10 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         require(username.length > 12, "Too small to look like an address.");
         require(username[0] == byte("0"), "First character need to be 0");
         require(username[1] == byte("x"), "Second character need to be x");
+        for(uint i = 2; i < 7; i++){
+            byte b = username[i];
+            require((b >= 48 && b <= 57) || (b >= 97 && b <= 102), "Does not look like an address");
+        }
         slashUsername(username, _reserveSecret);
     }  
 
