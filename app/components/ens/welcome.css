@@ -3,6 +3,16 @@
     text-align: center;
 }
 
+.ens-welcome a,
+.ens-welcome a:hover,
+.ens-welcome a:visited {
+    color: #4360df;
+}
+
+.ens-welcome__highlight {
+    color: #4360df;
+}
+
 .ens-welcome__img {
     margin: 20px 0 50px;
 }

@@ -33,6 +33,7 @@ import IDNANormalizer from 'idna-normalize';
 import { nullAddress, getResolver } from './utils/domain';
 import { YOUR_CONTACT_CODE } from './constants';
 import DisplayBox from './DisplayBox';
+import styled from "styled-components";
 
 const normalizer = new IDNANormalizer();
 const invalidSuffix = '0000000000000000000000000000000000000000'
@@ -71,7 +72,7 @@ const pastReleaseDate = timestamp => new Date > new Date(timestamp * 1000);
 const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTime, creationTime, defaultAccount, isOwner, edit, onSubmit, handleChange, values, handleSubmit }) => (
   <Fragment>
     <LookupForm {...{ handleSubmit, values, handleChange }} />
-    <Info background={isOwner ? '#44D058' : '#000000'} style={{ margin: '0.4em', boxShadow: '0px 6px 10px rgba(0, 0, 0, 0.2)' }}>
+    <Info background={isOwner ? '#44D058' : '#000000'} style={{ margin: '0.5em', boxShadow: '0px 6px 10px rgba(0, 0, 0, 0.2)' }}>
       <Typography variant="title" style={
         { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly', height: '4em', color: '#ffffff', textAlign: 'center', margin: '10%' }
       }>
@@ -155,6 +156,16 @@ class RenderAddresses extends PureComponent {
   }
 }
 
+const InfoHeading = styled.h2`
+  line-height: 26px;
+  font-size: 22px;
+  text-align: center;
+  letter-spacing: -0.275px;
+  margin: 0 0 12px 0;
+  
+  color: #FFFFFF;
+`;
+
 const RegisterInfoCard = ({ formattedDomain, domainPrice, registryOwnsDomain }) => (
   <Fragment>
     <Hidden mdDown>
@@ -163,26 +174,31 @@ const RegisterInfoCard = ({ formattedDomain, domainPrice, registryOwnsDomain }) 
       </Info.Action>
     </Hidden>
     <Hidden mdUp>
-      <Info background="#415be3" style={{ margin: '0.4em' }}>
-        <Typography variant="title" style={
-          { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly', height: '4em', color: '#ffffff', textAlign: 'center', margin: '10%' }
+      <Info background="#415be3" style={{ margin: '12px' }}>
+        <div style={
+          { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly', height: '4em', color: '#ffffff', textAlign: 'center', margin: '36px 18px' }
         }>
-          <img src={CheckCircle} style={{ maxWidth: '2.5em', marginBottom: '0.5em' }} />
-          <b>{formattedDomain.toLowerCase()}</b>
+          <img src={CheckCircle} style={{ maxWidth: '2.5em', marginBottom: '14px' }} />
+          <InfoHeading>{formattedDomain.toLowerCase()}</InfoHeading>
           <div style={{ fontWeight: 300, fontSize: '15px' }}>
             available
           </div>
-        </Typography>
+        </div>
       </Info>
     </Hidden>
     <Hidden mdUp>
       <Typography style={{ textAlign: 'center', fontSize: '17px', fontWeight: '500', margin: '1.5em 0 0.3em 0' }}>
         {!!domainPrice && formatPrice(fromWei(domainPrice))} SNT to register
       </Typography>
-      <Typography style={{ textAlign: 'center', padding: '1.5em' }}>
+      <Typography style={{textAlign: 'center', padding: '1.5em'}}>
         {registryOwnsDomain ?
-         'Add your contact code to use your name in Status chat.' :
-         'This domain is not owned by the registry'}
+          <span>
+            Add your contact code to use
+            <br />
+            your name in Status chat.
+          </span>
+          :
+          <span>This domain is not owned by the registry'</span>}
       </Typography>
     </Hidden>
   </Fragment>
@@ -320,29 +336,29 @@ const InnerForm = ({
         <StatusLogo />
         <img style={{maxWidth: '150px', alignSelf: 'center'}} src={EnsLogo} alt="Ens Logo"/>
       </span>
-     </Hidden>
-    {!status|| !status.address ?
-      <LookupForm {...{ handleSubmit, values, handleChange }} isWarningDisplayed={status && status.isInvalidDomain}/>
+    </Hidden>
+    {!status || !status.address ?
+      <LookupForm {...{handleSubmit, values, handleChange}} isWarningDisplayed={status && status.isInvalidDomain}/>
       :
       validAddress(status.address) || defaultAccount === status.ownerAddress ?
-     <DisplayAddress
-       {...{ handleSubmit, values, handleChange }}
-       domainName={status.domainName}
-       address={status.address}
-       statusAccount={status.statusAccount}
-       expirationTime={status.expirationTime}
-       creationTime={status.creationTime}ownerAddress={status.ownerAddress}
-       registryOwnsDomain={status.registryOwnsDomain}
-       setStatus={setStatus} /> :
-     <div>
-       <LookupForm {...{ handleSubmit, values, handleChange }} isWarningDisplayed={false} />
-       <ConnectedRegister
-         style={{ position: 'relative' }}
-         setStatus={setStatus}
-         registryOwnsDomain={status.registryOwnsDomain}
-         ownerAddress={status.ownerAddress}
-         domainName={status.domainName}  />
-     </div>
+        <DisplayAddress
+          {...{handleSubmit, values, handleChange}}
+          domainName={status.domainName}
+          address={status.address}
+          statusAccount={status.statusAccount}
+          expirationTime={status.expirationTime}
+          creationTime={status.creationTime} ownerAddress={status.ownerAddress}
+          registryOwnsDomain={status.registryOwnsDomain}
+          setStatus={setStatus}/> :
+        <div>
+          <LookupForm {...{handleSubmit, values, handleChange}} isWarningDisplayed={false}/>
+          <ConnectedRegister
+            style={{position: 'relative'}}
+            setStatus={setStatus}
+            registryOwnsDomain={status.registryOwnsDomain}
+            ownerAddress={status.ownerAddress}
+            domainName={status.domainName}/>
+        </div>
     }
   </div>
 );

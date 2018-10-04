@@ -23,7 +23,7 @@ const WelcomeContent = () => (
         <ol className="ens-welcome__list">
             <li className="item">
                 <div className="title">Simplify your ETH address</div>
-                <div className="text">Your complex wallet address (0x...) becomes an easy to read, remember & share URL: <span className="text-primary">myname.stateofus.eth</span></div>
+                <div className="text">Your complex wallet address (0x...) becomes an easy to read, remember & share URL: <span className="ens-welcome__highlight">myname.stateofus.eth</span></div>
             </li>
             <li className="item">
                 <div className="title">100 SNT to register</div>
