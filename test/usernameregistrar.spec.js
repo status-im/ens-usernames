@@ -986,6 +986,74 @@ contract('UsernameRegistrar', function () {
     });
   });
   
+describe('eraseNode(bytes32[])', function() {
+  it('should clear unowned subdomains of users', async () => {;
+    const registrant = accountsArr[6];
+    const anyone = accountsArr[5];
+    await TestToken.methods.mint(registry.price).send({from: registrant});
+    await TestToken.methods.approve(UsernameRegistrar.address, registry.price).send({from: registrant});  
+    const username = "root";
+    const usernameHash = namehash.hash(username + '.' + registry.registry);
+    const label = web3Utils.sha3(username);
+    const labels = [
+      web3Utils.sha3("10"),
+      web3Utils.sha3("9"),
+      web3Utils.sha3("8"),
+      web3Utils.sha3("7"),
+      web3Utils.sha3("6"),
+      web3Utils.sha3("5"),
+      web3Utils.sha3("4"),
+      web3Utils.sha3("3"),
+      web3Utils.sha3("2"),
+      web3Utils.sha3("1"),
+      web3Utils.sha3("0"),
+      web3Utils.sha3(username),
+    ];
+    await UsernameRegistrar.methods.register(
+      label,
+      utils.zeroAddress,
+      utils.zeroBytes32,
+      utils.zeroBytes32
+    ).send({from: registrant});
+    assert.equal(await ens.methods.owner(usernameHash).call(), registrant);    
+    const releaseDelay = await UsernameRegistrar.methods.releaseDelay().call();
+    await utils.increaseTime(releaseDelay)
+    await utils.increaseTime(1000)
+    await utils.increaseTime(1000)
+    let subnode = usernameHash;
+    for (let index = labels.length - 1; index > 0; index--) {
+      const label = labels[index - 1];
+      await ENSRegistry.methods.setSubnodeOwner(subnode, label, registrant).send({from: registrant}); 
+      subnode = web3Utils.soliditySha3(subnode, label);
+      assert.equal(await ens.methods.owner(subnode).call(), registrant);   
+      
+    }
+   
+    const resultRelease = await UsernameRegistrar.methods.release(web3Utils.sha3(username)).send({from: registrant});
+    
+    subnode = usernameHash;
+    for (let index = labels.length - 1; index > 0; index--) {
+      const label = labels[index - 1];
+      subnode = web3Utils.soliditySha3(subnode, label);
+      assert.equal(await ens.methods.owner(subnode).call(), registrant);   
+    }
+
+    const resultErase = await UsernameRegistrar.methods.eraseNode(
+      labels
+    ).send({from: anyone});
+    //TODO: check events
+    
+    subnode = usernameHash;
+    for (let index = labels.length - 1; index > 0; index--) {
+      const label = labels[index - 1];
+      subnode = web3Utils.soliditySha3(subnode, label);
+      assert.equal(await ens.methods.owner(subnode).call(), utils.zeroAddress);   
+    }
+  });
+
+
+});
+
   describe('moveRegistry(address)', function() {
     it('should move registry to new registry and migrate', async () => {
       const result = await UsernameRegistrar.methods.moveRegistry(UpdatedUsernameRegistrar.address).send();

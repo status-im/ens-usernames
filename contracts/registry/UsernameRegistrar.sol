@@ -275,6 +275,28 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
+     * @notice Clear resolver and ownership of unowned subdomians.
+     * @param _labels Sequence to erase.
+     */
+    function eraseNode(
+        bytes32[] _labels
+    ) 
+        external 
+    {
+        uint len = _labels.length;
+        require(len != 0, "Nothing to erase");
+        bytes32 label = _labels[len - 1];
+        bytes32 subnode = keccak256(abi.encodePacked(ensNode, label));
+        require(ensRegistry.owner(subnode) == address(0), "First slash/release top level subdomain");
+        ensRegistry.setSubnodeOwner(ensNode, label, address(this));
+        if(len > 1) {
+            eraseNodeHierarchy(len - 2, _labels, subnode);
+        }
+        ensRegistry.setResolver(subnode, 0);
+        ensRegistry.setOwner(subnode, 0);
+    }
+
+    /**
      * @notice Migrate account to new registry, opt-in to new contract.
      * @param _label Username hash.
      **/
@@ -697,7 +719,34 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         state = _state;
         emit RegistryState(_state);
     }
-     
+
+    /**
+     * @notice recursively erase all _labels in _subnode
+     * @param _idx recursive position of _labels to erase
+     * @param _labels list of subnode labes
+     * @param _subnode subnode being erased
+     */
+    function eraseNodeHierarchy(
+        uint _idx,
+        bytes32[] _labels,
+        bytes32 _subnode
+    ) 
+        private 
+    {
+        // Take ownership of the node
+        ensRegistry.setSubnodeOwner(_subnode, _labels[_idx], address(this));
+        bytes32 subnode = keccak256(abi.encodePacked(_subnode, _labels[_idx]));
+
+        // Recurse if there are more labels
+        if (_idx > 0) {
+            eraseNodeHierarchy(_idx - 1, _labels, subnode);
+        }
+
+        // Erase the resolver and owner records
+        ensRegistry.setResolver(subnode, 0);
+        ensRegistry.setOwner(subnode, 0);
+    }
+
     /**
      * @dev Decodes abi encoded data with selector for "register(bytes32,address,bytes32,bytes32)".
      * @param _data Abi encoded data.
