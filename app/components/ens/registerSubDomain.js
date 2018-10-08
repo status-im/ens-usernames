@@ -20,7 +20,6 @@ import { YOUR_CONTACT_CODE } from './constants';
 
 const { soliditySha3, fromWei } = web3.utils;
 
-
 const formRef = React.createRef();
 const displayTerms = status => status === 'terms';
 const InnerForm = ({
@@ -41,7 +40,7 @@ const InnerForm = ({
   SNTBalance,
 }) => (
   <form onSubmit={handleSubmit} ref={formRef}>
-    <div style={{ margin: '10px' }}>
+    <div style={{ margin: '12px' }}>
       {!subDomain &&
        <FieldGroup
          id="subDomain"

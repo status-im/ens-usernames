@@ -33,15 +33,16 @@ import IDNANormalizer from 'idna-normalize';
 import { nullAddress, getResolver } from './utils/domain';
 import { YOUR_CONTACT_CODE } from './constants';
 import DisplayBox from './DisplayBox';
+import styled from "styled-components";
 
 const normalizer = new IDNANormalizer();
 const invalidSuffix = '0000000000000000000000000000000000000000'
-const validAddress = address => address != nullAddress;
+const validAddress = address => address !== nullAddress;
 const validStatusAddress = address => !address.includes(invalidSuffix);
 const formatName = domainName => domainName.includes('.') ? normalizer.normalize(domainName) : normalizer.normalize(`${domainName}.stateofus.eth`);
 const getDomain = fullDomain => formatName(fullDomain).split('.').slice(1).join('.');
 const hashedDomain = domainName => hash(getDomain(domainName));
-const registryIsOwner = address => address == UsernameRegistrar._address;
+const registryIsOwner = address => address === UsernameRegistrar._address;
 const { soliditySha3, fromWei } = web3.utils;
 
 
@@ -70,8 +71,8 @@ const pastReleaseDate = timestamp => new Date > new Date(timestamp * 1000);
 
 const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTime, creationTime, defaultAccount, isOwner, edit, onSubmit, handleChange, values, handleSubmit }) => (
   <Fragment>
-    <LookupForm {...{ handleSubmit, values, handleChange }} justSearch />
-    <Info background={isOwner ? '#44D058' : '#000000'} style={{ margin: '0.4em', boxShadow: '0px 6px 10px rgba(0, 0, 0, 0.2)' }}>
+    <LookupForm {...{ handleSubmit, values, handleChange }} />
+    <Info background={isOwner ? '#44D058' : '#000000'} style={{ margin: '0.5em', boxShadow: '0px 6px 10px rgba(0, 0, 0, 0.2)' }}>
       <Typography variant="title" style={
         { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly', height: '4em', color: '#ffffff', textAlign: 'center', margin: '10%' }
       }>
@@ -109,10 +110,10 @@ class RenderAddresses extends PureComponent {
   state = { copied: false, editMenu: false, editAction: false }
 
   render() {
-    const { domainName, address, statusAccount, expirationTime, defaultAccount, ownerAddress, setStatus, registryOwnsDomain } = this.props
+    const { domainName, address, statusAccount, expirationTime, defaultAccount, ownerAddress, setStatus, registryOwnsDomain } = this.props;
     const { copied, editMenu, editAction, submitted } = this.state
     const markCopied = (v) => { this.setState({ copied: v }) }
-    const isCopied = address => address == copied;
+    const isCopied = address => address === copied;
     const renderCopied = address => isCopied(address) && <span style={{ color: theme.positive }}><IconCheck/>Copied!</span>;
     const onClose = value => { this.setState({ editAction: value, editMenu: false }) }
     const onClickEdit = () => { validAddress(address) ? this.setState({ editMenu: true }) : this.setState({ editAction: 'edit' }) }
@@ -120,7 +121,7 @@ class RenderAddresses extends PureComponent {
     const canBeReleased = validTimestamp(expirationTime) && pastReleaseDate(expirationTime);
     const closeReleaseAlert = value => {
       if (!isNil(value)) {
-        this.setState({ submitted: true })
+        this.setState({ submitted: true });
         release(
           soliditySha3(domainName)
         )
@@ -155,6 +156,16 @@ class RenderAddresses extends PureComponent {
   }
 }
 
+const InfoHeading = styled.h2`
+  line-height: 26px;
+  font-size: 22px;
+  text-align: center;
+  letter-spacing: -0.275px;
+  margin: 0 0 12px 0;
+  
+  color: #FFFFFF;
+`;
+
 const RegisterInfoCard = ({ formattedDomain, domainPrice, registryOwnsDomain }) => (
   <Fragment>
     <Hidden mdDown>
@@ -163,30 +174,35 @@ const RegisterInfoCard = ({ formattedDomain, domainPrice, registryOwnsDomain }) 
       </Info.Action>
     </Hidden>
     <Hidden mdUp>
-      <Info background="#415be3" style={{ margin: '0.4em' }}>
-        <Typography variant="title" style={
-          { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly', height: '4em', color: '#ffffff', textAlign: 'center', margin: '10%' }
+      <Info background="#415be3" style={{ margin: '12px' }}>
+        <div style={
+          { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly', height: '4em', color: '#ffffff', textAlign: 'center', margin: '36px 18px' }
         }>
-          <img src={CheckCircle} style={{ maxWidth: '2.5em', marginBottom: '0.5em' }} />
-          <b>{formattedDomain.toLowerCase()}</b>
+          <img src={CheckCircle} style={{ maxWidth: '2.5em', marginBottom: '14px' }} />
+          <InfoHeading>{formattedDomain.toLowerCase()}</InfoHeading>
           <div style={{ fontWeight: 300, fontSize: '15px' }}>
             available
           </div>
-        </Typography>
+        </div>
       </Info>
     </Hidden>
     <Hidden mdUp>
       <Typography style={{ textAlign: 'center', fontSize: '17px', fontWeight: '500', margin: '1.5em 0 0.3em 0' }}>
         {!!domainPrice && formatPrice(fromWei(domainPrice))} SNT to register
       </Typography>
-      <Typography style={{ textAlign: 'center', padding: '1.5em' }}>
+      <Typography style={{textAlign: 'center', padding: '1.5em'}}>
         {registryOwnsDomain ?
-         'Add your contact code to use your name in Status chat.' :
-         'This domain is not owned by the registry'}
+          <span>
+            Add your contact code to use
+            <br />
+            your name in Status chat.
+          </span>
+          :
+          <span>This domain is not owned by the registry'</span>}
       </Typography>
     </Hidden>
   </Fragment>
-)
+);
 
 const TransactionComplete = ({ type, setStatus }) => (
   <div style={{ textAlign: 'center', margin: '40% 15 10' }}>
@@ -269,7 +285,7 @@ const DisplayAddress = connect(mapStateToProps)((props) => (
   </Fragment>
 ))
 
-const LookupForm = ({ handleSubmit, values, handleChange, justSearch }) => (
+const LookupForm = ({ handleSubmit, values, handleChange, isWarningDisplayed }) => (
   <Fragment>
     <form onSubmit={handleSubmit} onBlur={handleSubmit} >
       <Hidden mdDown>
@@ -291,7 +307,7 @@ const LookupForm = ({ handleSubmit, values, handleChange, justSearch }) => (
           onChange={handleChange}
           required
           wide />
-        {!justSearch && <Warning>Names are made with<br/>letters and numbers only</Warning>}
+        {isWarningDisplayed && <Warning>Names are made with<br/>letters and numbers only</Warning>}
       </Hidden>
       <Hidden mdDown>
         <Button mode="strong" type="submit" style={{ marginLeft: '3%', maxWidth: '95%' }} wide>
@@ -318,58 +334,75 @@ const InnerForm = ({
     <Hidden mdDown>
       <span style={{ display: 'flex', justifyContent: 'space-evenly', margin: '50 0 10 0' }}>
         <StatusLogo />
-        <img  style={{ maxWidth: '150px', alignSelf: 'center' }} src={EnsLogo} alt="Ens Logo"/>
+        <img style={{maxWidth: '150px', alignSelf: 'center'}} src={EnsLogo} alt="Ens Logo"/>
       </span>
-     </Hidden>
-    {!status
-     ? <LookupForm {...{ handleSubmit, values, handleChange }} />
-     : validAddress(status.address) || defaultAccount === status.ownerAddress ?
-     <DisplayAddress
-       {...{ handleSubmit, values, handleChange }}
-       domainName={status.resolvedDomainName}
-       address={status.address}
-       statusAccount={status.statusAccount}
-       expirationTime={status.expirationTime}
-       creationTime={status.creationTime}
-       ownerAddress={status.ownerAddress}
-       registryOwnsDomain={status.registryOwnsDomain}
-       setStatus={setStatus} /> :
-     <div>
-       <LookupForm {...{ handleSubmit, values, handleChange }} justSearch />
-       <ConnectedRegister
-         style={{ position: 'relative' }}
-         setStatus={setStatus}
-         registryOwnsDomain={status.registryOwnsDomain}
-         ownerAddress={status.ownerAddress}
-         domainName={status.resolvedDomainName}  />
-     </div>
+    </Hidden>
+    {!status || !status.address ?
+      <LookupForm {...{handleSubmit, values, handleChange}} isWarningDisplayed={status && status.isInvalidDomain}/>
+      :
+      validAddress(status.address) || defaultAccount === status.ownerAddress ?
+        <DisplayAddress
+          {...{handleSubmit, values, handleChange}}
+          domainName={status.domainName}
+          address={status.address}
+          statusAccount={status.statusAccount}
+          expirationTime={status.expirationTime}
+          creationTime={status.creationTime} ownerAddress={status.ownerAddress}
+          registryOwnsDomain={status.registryOwnsDomain}
+          setStatus={setStatus}/> :
+        <div>
+          <LookupForm {...{handleSubmit, values, handleChange}} isWarningDisplayed={false}/>
+          <ConnectedRegister
+            style={{position: 'relative'}}
+            setStatus={setStatus}
+            registryOwnsDomain={status.registryOwnsDomain}
+            ownerAddress={status.ownerAddress}
+            domainName={status.domainName}/>
+        </div>
     }
   </div>
-)
+);
+
+const isValidDomainName = val => /^([a-z0-9]+)$/.test(val.toLowerCase());
 
 const NameLookup = withFormik({
   mapPropsToValues: props => ({ domainName: '' }),
+
   async handleSubmit(values, { status, setSubmitting, setStatus }) {
     const { domainName } = values;
-    const { methods: { owner, resolver } } = ENSRegistry;
-    const lookupHash = hash(formatName(domainName));
-    const subdomainHash = soliditySha3(domainName);
-    const resolverContract = await getResolver(lookupHash);
-    const { addr, pubkey } = resolverContract.methods;
-    const address = addr(lookupHash).call();
-    const keys = pubkey(lookupHash).call();
-    const ownerAddress = owner(lookupHash).call();
-    const suffixOwner = owner(hash(getDomain(domainName))).call();
-    const expirationTime = getExpirationTime(subdomainHash).call();
-    const creationTime = getCreationTime(subdomainHash).call();
-    Promise.all([address, keys, ownerAddress, expirationTime, creationTime, suffixOwner])
-           .then(([ address, keys, ownerAddress, expirationTime, creationTime, suffixOwner ]) => {
-             const statusAccount = keyFromXY(keys[0], keys[1]);
-             const registryOwnsDomain = registryIsOwner(suffixOwner)
-             const resolvedDomainName = domainName;
-             setStatus({ address, statusAccount, expirationTime, creationTime, ownerAddress, registryOwnsDomain, resolvedDomainName });
-           })
+
+    if (isValidDomainName(domainName)) {
+      const { methods: { owner, resolver } } = ENSRegistry;
+      const lookupHash = hash(formatName(domainName));
+      const subdomainHash = soliditySha3(domainName);
+      const resolverContract = await getResolver(lookupHash);
+      const { addr, pubkey } = resolverContract.methods;
+      const address = addr(lookupHash).call();
+      const keys = pubkey(lookupHash).call();
+      const ownerAddress = owner(lookupHash).call();
+      const suffixOwner = owner(hash(getDomain(domainName))).call();
+      const expirationTime = getExpirationTime(subdomainHash).call();
+      const creationTime = getCreationTime(subdomainHash).call();
+
+      Promise.all([address, keys, ownerAddress, expirationTime, creationTime,suffixOwner])
+        .then(([ address, keys, ownerAddress, expirationTime, creationTime, suffixOwner ]) => {
+          const statusAccount = keyFromXY(keys[0], keys[1]);
+          const registryOwnsDomain = registryIsOwner(suffixOwner);
+
+          setStatus({
+            address,
+            statusAccount,
+            expirationTime,
+            creationTime,
+            ownerAddress,
+            registryOwnsDomain,
+            domainName
+          });
+        });
+    } else {
+      setStatus({isInvalidDomain: true });
+    }
   }
-})(InnerForm)
+})(InnerForm);
 
 export default connect(mapStateToProps)(NameLookup);
