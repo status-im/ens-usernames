@@ -16,7 +16,7 @@ import Terms from './terms';
 import { generateXY } from '../../utils/ecdsa';
 import { getResolver } from './utils/domain';
 import DisplayBox from './DisplayBox';
-import { YOUR_CONTACT_CODE } from './constants';
+import { YOUR_CONTACT_CODE, YOUR_WALLET_ADDRESS } from './constants';
 
 const { soliditySha3, fromWei } = web3.utils;
 
@@ -110,7 +110,7 @@ const InnerForm = ({
 
       <Hidden mdUp>
 
-        <DisplayBox displayType="Your wallet address" pubKey={values.address} />
+        <DisplayBox displayType={YOUR_WALLET_ADDRESS} pubKey={values.address} />
         <DisplayBox displayType={YOUR_CONTACT_CODE} pubKey={values.statusAddress} />
 
         {/*<div style={{ fontSize: '14px', color: '#939BA1', margin: '0 1em' }}>Your contact code</div>*/}
