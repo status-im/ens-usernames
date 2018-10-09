@@ -23,11 +23,11 @@ const DisplayBox = styled.div`
 `;
 
 const WrappedDisplayBox = ({displayType, pubKey, getStatusContactCode}) => (
-  <div onClick={() => getStatusContactCode(displayType, pubKey)}>
+  <div>
     <DisplayLabel>
       {displayType}
     </DisplayLabel>
-    <DisplayBox>
+    <DisplayBox onClick={() => getStatusContactCode(displayType, pubKey)}>
       <div style={{margin: '16px'}}>
         <Typography type='body1'>{pubKey}</Typography>
       </div>

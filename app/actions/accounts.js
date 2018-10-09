@@ -30,9 +30,9 @@ export const checkAndDispatchStatusContactCode = dispatch => {
           dispatch(receiveStatusContactCode(data));
         })
         .catch(err => {
-          console.log('Error:', err);
+          console.warn('Error:', err);
         })
-}
+};
 
 export const fetchAndDispatchSNTAllowance = dispatch => {
   const { methods: { allowance } } = TestToken;
@@ -43,4 +43,4 @@ export const fetchAndDispatchSNTAllowance = dispatch => {
     .then(allowance => {
       dispatch(receiveSntAllowance(allowance))
     })
-}
+};

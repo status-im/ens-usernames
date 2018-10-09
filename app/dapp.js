@@ -60,7 +60,7 @@ class App extends React.Component {
     const { admin, network } = this.state;
 
     return (
-      <HashRouter>
+      <HashRouter hashType="noslash">
         <div>
           <Hidden mdDown>
             <StatusOptimized/>
