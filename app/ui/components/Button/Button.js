@@ -177,7 +177,7 @@ const StyledButton = styled.button.attrs({ type: 'button' })`
   color: ${textSecondary};
   background: ${contentBackground};
   border: 0;
-  border-radius: 3px;
+  border-radius: 4px;
   outline: 0;
   cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
   &,
