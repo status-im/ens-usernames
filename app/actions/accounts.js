@@ -7,8 +7,6 @@ import { actions as accountActions } from '../reducers/accounts'
 import { isNil } from 'lodash'
 
 const { receiveAccounts, receiveStatusContactCode } = accountActions
-const CONTACT_CODE = 'CONTACT_CODE'
-const getContactCode = event => event.detail.data[CONTACT_CODE]
 
 export const fetchAndDispatchAccountsWithBalances = (web3, dispatch) => {
   web3.eth.getAccounts((err, addresses) => {
@@ -29,7 +27,7 @@ export const checkAndDispatchStatusContactCode = dispatch => {
   window.web3.currentProvider.status
         .getContactCode()
         .then(data => {
-          dispatch(receiveStatusContactCode(getContactCode(data)));
+          dispatch(receiveStatusContactCode(data));
         })
         .catch(err => {
           console.log('Error:', err);
