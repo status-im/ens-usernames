@@ -35,6 +35,8 @@
     "react-copy-to-clipboard": "^5.0.1",
     "react-dom": "^16.4.2",
     "react-redux": "^5.0.7",
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
     "react-toggle": "^4.0.2",
     "redux": "^4.0.0",
     "redux-action-creator": "^2.3.0",

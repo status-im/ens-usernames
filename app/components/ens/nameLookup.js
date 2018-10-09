@@ -34,6 +34,7 @@ import { nullAddress, getResolver } from './utils/domain';
 import { YOUR_CONTACT_CODE } from './constants';
 import DisplayBox from './DisplayBox';
 import styled from "styled-components";
+import { Route } from "react-router-dom";
 
 const normalizer = new IDNANormalizer();
 const invalidSuffix = '0000000000000000000000000000000000000000'
@@ -240,6 +241,7 @@ class Register extends PureComponent {
     const formattedDomain = formatName(domainName);
     const formattedDomainArray = formattedDomain.split('.');
     const isOwner = defaultAccount === ownerAddress;
+
     return (
       <div style={style}>
         {!registered && !submitted ?
@@ -267,7 +269,7 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => ({
   defaultAccount: getDefaultAccount(state)
-})
+});
 
 const ConnectedRegister = connect(mapStateToProps, mapDispatchToProps)(Register);
 
@@ -283,94 +285,51 @@ const DisplayAddress = connect(mapStateToProps)((props) => (
      </Hidden>
     }
   </Fragment>
-))
+));
 
-const LookupForm = ({ handleSubmit, values, handleChange, isWarningDisplayed }) => (
-  <Fragment>
-    <form onSubmit={handleSubmit} onBlur={handleSubmit} >
-      <Hidden mdDown>
-        <Field label="Enter Domain or Status Name" style={{ margin: 50 }}>
-          <TextInput
-            value={values.domainName}
-            name="domainName"
-            onChange={handleChange}
-            wide
-            required />
-        </Field>
-      </Hidden>
-      <Hidden mdUp>
-        <MobileSearch
-          search
-          name="domainName"
-          placeholder='Search for available name'
-          value={values.domainName}
-          onChange={handleChange}
-          required
-          wide />
-        {isWarningDisplayed && <Warning>Names are made with<br/>letters and numbers only</Warning>}
-      </Hidden>
-      <Hidden mdDown>
-        <Button mode="strong" type="submit" style={{ marginLeft: '3%', maxWidth: '95%' }} wide>
-          Lookup Address
-        </Button>
-      </Hidden>
-    </form>
-  </Fragment>
-)
+class LookupForm extends React.Component {
+  render() {
+    const { handleSubmit, values, handleChange, isWarningDisplayed } = this.props;
 
-const InnerForm = ({
-  values,
-  errors,
-  touched,
-  handleChange,
-  handleBlur,
-  handleSubmit,
-  isSubmitting,
-  status,
-  setStatus,
-  defaultAccount
-}) => (
-  <div>
-    <Hidden mdDown>
-      <span style={{ display: 'flex', justifyContent: 'space-evenly', margin: '50 0 10 0' }}>
-        <StatusLogo />
-        <img style={{maxWidth: '150px', alignSelf: 'center'}} src={EnsLogo} alt="Ens Logo"/>
-      </span>
-    </Hidden>
-    {!status || !status.address ?
-      <LookupForm {...{handleSubmit, values, handleChange}} isWarningDisplayed={status && status.isInvalidDomain}/>
-      :
-      validAddress(status.address) || defaultAccount === status.ownerAddress ?
-        <DisplayAddress
-          {...{handleSubmit, values, handleChange}}
-          domainName={status.domainName}
-          address={status.address}
-          statusAccount={status.statusAccount}
-          expirationTime={status.expirationTime}
-          creationTime={status.creationTime} ownerAddress={status.ownerAddress}
-          registryOwnsDomain={status.registryOwnsDomain}
-          setStatus={setStatus}/> :
-        <div>
-          <LookupForm {...{handleSubmit, values, handleChange}} isWarningDisplayed={false}/>
-          <ConnectedRegister
-            style={{position: 'relative'}}
-            setStatus={setStatus}
-            registryOwnsDomain={status.registryOwnsDomain}
-            ownerAddress={status.ownerAddress}
-            domainName={status.domainName}/>
-        </div>
-    }
-  </div>
-);
+    return (
+      <Fragment>
+        <form onSubmit={handleSubmit} onBlur={handleSubmit}>
+          <Hidden mdDown>
+            <Field label="Enter Domain or Status Name" style={{margin: 50}}>
+              <TextInput
+                value={values.domainName}
+                name="domainName"
+                onChange={handleChange}
+                wide
+                required/>
+            </Field>
+          </Hidden>
+          <Hidden mdUp>
+            <MobileSearch
+              search
+              name="domainName"
+              placeholder='Search for available name'
+              value={values.domainName}
+              onChange={handleChange}
+              required
+              wide/>
+            {isWarningDisplayed && <Warning>Names are made with<br/>letters and numbers only</Warning>}
+          </Hidden>
+          <Hidden mdDown>
+            <Button mode="strong" type="submit" style={{marginLeft: '3%', maxWidth: '95%'}} wide>
+              Lookup Address
+            </Button>
+          </Hidden>
+        </form>
+      </Fragment>
+    );
+  }
+}
 
 const isValidDomainName = val => /^([a-z0-9]+)$/.test(val.toLowerCase());
 
-const NameLookup = withFormik({
-  mapPropsToValues: props => ({ domainName: '' }),
-
-  async handleSubmit(values, { status, setSubmitting, setStatus }) {
-    const { domainName } = values;
-
+class SearchResultsPage extends React.Component {
+  async loadDomainInformation({setStatus, domainName}) {
     if (isValidDomainName(domainName)) {
       const { methods: { owner, resolver } } = ENSRegistry;
       const lookupHash = hash(formatName(domainName));
@@ -403,6 +362,109 @@ const NameLookup = withFormik({
       setStatus({isInvalidDomain: true });
     }
   }
-})(InnerForm);
 
-export default connect(mapStateToProps)(NameLookup);
+  componentDidMount() {
+    const { setValues } = this.props;
+    const domainName = this.props.match.params.domainName;
+    setValues({domainName: domainName});
+
+    this.loadDomainInformation({
+      setStatus: this.props.setStatus,
+      domainName: domainName
+    });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { setValues, match } = this.props;
+
+    const oldDomainName = match.params.domainName;
+    const newDomainName = nextProps.match.params.domainName;
+
+    if (oldDomainName !== newDomainName) {
+      setValues({domainName: newDomainName});
+      this.loadDomainInformation({
+        setStatus: this.props.setStatus,
+        domainName: newDomainName
+      });
+    }
+  }
+
+  render() {
+    const {
+      values,
+      handleChange,
+      handleSubmit,
+      status,
+      setStatus,
+      defaultAccount
+    } = this.props;
+
+    return (
+      <div>
+        {!status || !status.address ?
+          <LookupForm {...this.props} isWarningDisplayed={status && status.isInvalidDomain}/>
+          :
+          validAddress(status.address) || defaultAccount === status.ownerAddress ?
+            <DisplayAddress
+              {...{handleSubmit, values, handleChange}}
+              domainName={status.domainName}
+              address={status.address}
+              statusAccount={status.statusAccount}
+              expirationTime={status.expirationTime}
+              creationTime={status.creationTime} ownerAddress={status.ownerAddress}
+              registryOwnsDomain={status.registryOwnsDomain}
+              setStatus={setStatus}/> :
+            <div>
+              <LookupForm {...this.props} isWarningDisplayed={false}/>
+              <ConnectedRegister
+                style={{position: 'relative'}}
+                setStatus={setStatus}
+                registryOwnsDomain={status.registryOwnsDomain}
+                ownerAddress={status.ownerAddress}
+                domainName={status.domainName}/>
+            </div>
+        }
+      </div>
+    );
+  }
+}
+
+class NameLookupContainer extends React.Component {
+  render() {
+    const {match, status} = this.props;
+
+    return (
+      <div>
+        <Hidden mdDown>
+      <span style={{ display: 'flex', justifyContent: 'space-evenly', margin: '50 0 10 0' }}>
+        <StatusLogo />
+        <img style={{maxWidth: '150px', alignSelf: 'center'}} src={EnsLogo} alt="Ens Logo"/>
+      </span>
+        </Hidden>
+
+        {match &&
+        <div>
+          <Route
+            exact
+            path={match.url}
+            render={() => <LookupForm {...this.props} isWarningDisplayed={status && status.isInvalidDomain}/>}/>
+          <Route
+            path={`${match.url}/:domainName`}
+            render={({match}) => <SearchResultsPage {...this.props} match={match}/>}/>
+        </div>
+        }
+      </div>
+    )
+  }
+}
+
+const NameLookupContainerWrapped = withFormik({
+  mapPropsToValues: () => ({ domainName: '' }),
+
+  async handleSubmit(values, { props }) {
+    const { domainName } = values;
+    props.history.push(`${props.match.url}/${domainName}`);
+  }
+})(NameLookupContainer);
+
+export default connect(mapStateToProps)(NameLookupContainerWrapped);

@@ -2,27 +2,44 @@ import web3 from "Embark/web3"
 import UsernameRegistrar from 'Embark/contracts/UsernameRegistrar';
 import TestToken from 'Embark/contracts/TestToken';
 import React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import Hidden from '@material-ui/core/Hidden';
+import {withStyles} from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { Button, MobileButton } from '../../ui/components';
-import { withFormik } from 'formik';
-import { hash } from 'eth-ens-namehash';
-import { zeroAddress, zeroBytes32, formatPrice } from './utils';
-import { getStatusContactCode, getSNTAllowance, getCurrentAccount } from '../../reducers/accounts';
+import {Button, MobileButton} from '../../ui/components';
+import {withFormik} from 'formik';
+import {hash} from 'eth-ens-namehash';
+import {zeroAddress, zeroBytes32, formatPrice} from './utils';
+import {getStatusContactCode, getSNTAllowance, getCurrentAccount} from '../../reducers/accounts';
 import FieldGroup from '../standard/FieldGroup';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Terms from './terms';
-import { generateXY } from '../../utils/ecdsa';
-import { getResolver } from './utils/domain';
+import {generateXY} from '../../utils/ecdsa';
+import {getResolver} from './utils/domain';
 import DisplayBox from './DisplayBox';
-import { YOUR_CONTACT_CODE } from './constants';
+import { YOUR_CONTACT_CODE, YOUR_WALLET_ADDRESS } from './constants';
+import classNames from "classnames";
 
 const { soliditySha3, fromWei } = web3.utils;
 
+const styles = theme => ({
+  button: {
+    margin: theme.spacing.unit,
+    backgroundColor: 'rgba(67, 96, 223, 0.1)',
+  },
+  buttonText: {
+    color: '#4360df',
+    margin: '0 20px',
+    fontWeight: 400,
+    textTransform: 'uppercase'
+  }
+});
+
 const formRef = React.createRef();
 const displayTerms = status => status === 'terms';
+
 const InnerForm = ({
+  classes,
   values,
   errors,
   handleChange,
@@ -64,13 +81,14 @@ const InnerForm = ({
          button={
            <Button
              mode="strong"
-                   style={{ marginTop: '5px' }}
-           onClick={() => {
+             style={{marginTop: '5px'}}
+             onClick={() => {
                UsernameRegistrar.methods.getPrice()
-                                .call()
-                                .then((res) => { setFieldValue('price', fromWei(res)); });
-           }}
-             >
+                 .call()
+                 .then((res) => {
+                   setFieldValue('price', fromWei(res));
+                 });
+             }}>
              Get Price
            </Button>
          }
@@ -110,47 +128,26 @@ const InnerForm = ({
 
       <Hidden mdUp>
 
-        <DisplayBox displayType="Your wallet address" pubKey={values.address} />
+        <DisplayBox displayType={YOUR_WALLET_ADDRESS} pubKey={values.address} />
         <DisplayBox displayType={YOUR_CONTACT_CODE} pubKey={values.statusAddress} />
 
-        {/*<div style={{ fontSize: '14px', color: '#939BA1', margin: '0 1em' }}>Your contact code</div>*/}
-        {/*<div style={{ border: '1px solid #EEF2F5', borderRadius: '8px', margin: '0.5 1em 1em', display: 'flex', flexDirection: 'column', justifyContent: 'space-around', minHeight: '4em' }}>*/}
-          {/*<div style={{ margin: '3%', wordBreak: 'break-word' }}>*/}
-          {/*<Typography type='body1' onClick={() => setFieldValue('statusAddress', '')} style={{ textAlign: 'center', padding: '30px 0', color: 'blue', cursor: 'pointer'}}>*/}
-          {/*Grant Access*/}
-          {/*</Typography>*/}
-          {/*</div>*/}
-          {/*</div>*/}
-
-        {/*<Field label="Your Wallet Address">*/}
-          {/*<MobileSearch*/}
-          {/*name="address"*/}
-          {/*style={{ marginTop: '10px' }}*/}
-          {/*placeholder="Your wallet address"*/}
-          {/*value={values.address}*/}
-          {/*onChange={handleChange}*/}
-          {/*onClick={() => setFieldValue('address', '')}*/}
-          {/*required*/}
-          {/*wide />*/}
-          {/*</Field>*/}
-        {/*<Field label="Your contact code">*/}
-          {/*<MobileSearch*/}
-          {/*name="statusAddress"*/}
-          {/*style={{ marginTop: '10px' }}*/}
-          {/*placeholder="Status Messenger Address"*/}
-          {/*value={values.statusAddress}*/}
-          {/*onChange={handleChange}*/}
-          {/*onClick={() => setFieldValue('statusAddress', '')}*/}
-          {/*wide />*/}
-          {/*</Field>*/}
-        <div style={{ position: 'relative', left: 0, right: 0, bottom: 0 }}>
-          {!isSubmitting ? <MobileButton onClick={() => { setStatus('terms') }} text={`${editAccount ? 'Save' : 'Register'} with transaction`} style={{ width: '100%' }} /> : <CircularProgress style={{ marginLeft: '45%' }} />}
+        <div style={{ position: 'relative', left: 0, right: 0, bottom: 0, textAlign: 'center' }}>
+          {!isSubmitting ?
+            <Button onClick={() => {setStatus('terms')}} className={classNames(classes.button)}>
+              <div className={classNames(classes.buttonText)}>
+                {`${editAccount ? 'Save' : 'Register'} with transaction`}
+              </div>
+            </Button>
+            :
+            <CircularProgress />}
           <Terms open={displayTerms(status)} onSubmit={() => { setStatus(null); formRef.current.dispatchEvent(new Event('submit')) }} form={formRef} />
         </div>
       </Hidden>
     </div>
   </form>
 );
+
+const StyledInnerForm = withStyles(styles)(InnerForm);
 
 const RegisterSubDomain = withFormik({
   mapPropsToValues: props => ({ subDomain: '', domainName: '', price: '', statusAddress: props.statusContactCode || '', address: web3.eth.defaultAccount || '' }),
@@ -219,7 +216,7 @@ const RegisterSubDomain = withFormik({
       });
     }
   }
-})(InnerForm);
+})(StyledInnerForm);
 
 const mapStateToProps = state => ({
   statusContactCode: getStatusContactCode(state),
