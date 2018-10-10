@@ -206,7 +206,9 @@ const RegisterSubDomain = withFormik({
           console.dir(err)
         }).finally(() => {
           // REQUIRED UNTIL THIS ISSUES IS RESOLVED: https://github.com/jaredpalmer/formik/issues/597
-          setTimeout(() => { registeredCallbackFn(resolveToAddr, statusAddress || zeroBytes32); }, 200);
+          setTimeout(() => {
+            registeredCallbackFn(resolveToAddr, statusAddress || zeroBytes32);
+          }, 200);
           setSubmitting(false);
         });
       }).catch(err => {
