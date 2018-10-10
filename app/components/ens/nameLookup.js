@@ -251,7 +251,7 @@ class Register extends PureComponent {
              domainName={formattedDomainArray.slice(1).join('.')}
              domainPrice={domainPrice}
              preRegisteredCallback={() => { this.setState({ submitted: true }) }}
-             registeredCallbackFn={this.onRegistered} />}
+             registeredCallbackFn={console.log} />}
          </Fragment> :
          submitted && !registered ? <TransactionComplete type="registered"  setStatus={setStatus} /> : <RenderAddresses {...this.props} address={registered.address} statusAccount={registered.statusAccount} />}
       </div>
