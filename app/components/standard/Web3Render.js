@@ -1,9 +1,9 @@
 import React, { Fragment } from 'react';
-import NoConnection from './NoConnection';
+import Warning from '../../ui/components/Warning';
 
 const Web3Render = ({ ready, children, network }) => (
   <Fragment>
-    {ready ? <Fragment>{children}</Fragment> : <NoConnection network={network} />}
+    {ready ? <Fragment>{children}</Fragment> : <Warning>Please connect to Ethereum {network}<br />to continue.</Warning>}
   </Fragment>
 );
 

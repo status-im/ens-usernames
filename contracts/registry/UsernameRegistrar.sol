@@ -506,7 +506,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _label Username hash.
      * @return Exact time when username can be released.
      **/
-    function getReleaseTime(bytes32 _label)
+    function getExpirationTime(bytes32 _label)
         external
         view
         returns(uint256 releaseTime)

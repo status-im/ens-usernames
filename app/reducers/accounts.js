@@ -56,12 +56,12 @@ export default function(state = { loading: true, accounts: [] }, action) {
     }
   }
   case types.RECEIVE_STATUS_CONTACT_CODE: {
-    const { statusContactCode } = action.payload
-    return { ...state, statusContactCode }
+    const { statusContactCode } = action.payload;
+    return { ...state, statusContactCode };
   }
   case types.RECEIVE_SNT_ALLOWANCE: {
-    const { SNTAllowance } = action.payload
-    return { ...state, SNTAllowance }
+    const { SNTAllowance } = action.payload;
+    return { ...state, SNTAllowance };
   }
   default:
     return state;

@@ -7,11 +7,6 @@ import { actions as accountActions } from '../reducers/accounts'
 import { isNil } from 'lodash'
 
 const { receiveAccounts, receiveStatusContactCode } = accountActions
-const CONTACT_CODE = 'CONTACT_CODE'
-const STATUS_API_REQUEST = 'STATUS_API_REQUEST'
-const hasContactCode = () => !isNil(STATUS_API) && !isNil(STATUS_API[CONTACT_CODE])
-const statusApiSuccess = event => event.detail.permissions[0] === CONTACT_CODE
-const getContactCode = event => event.detail.data[CONTACT_CODE]
 
 export const fetchAndDispatchAccountsWithBalances = (web3, dispatch) => {
   web3.eth.getAccounts((err, addresses) => {
@@ -29,15 +24,15 @@ export const fetchAndDispatchAccountsWithBalances = (web3, dispatch) => {
   })
 }
 export const checkAndDispatchStatusContactCode = dispatch => {
-  window.addEventListener('statusapi', function (event) {
-    if (statusApiSuccess(event)) dispatch(receiveStatusContactCode(getContactCode(event)))
-  });
-
-  setTimeout(
-    () => { window.postMessage({ type: STATUS_API_REQUEST, permissions: ["CONTACT_CODE", "CONTACTS"] }, '*') },
-    1000
-  )
-}
+  window.web3.currentProvider.status
+        .getContactCode()
+        .then(data => {
+          dispatch(receiveStatusContactCode(data));
+        })
+        .catch(err => {
+          console.warn('Error:', err);
+        })
+};
 
 export const fetchAndDispatchSNTAllowance = dispatch => {
   const { methods: { allowance } } = TestToken;
@@ -48,4 +43,4 @@ export const fetchAndDispatchSNTAllowance = dispatch => {
     .then(allowance => {
       dispatch(receiveSntAllowance(allowance))
     })
-}
+};
