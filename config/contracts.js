@@ -32,7 +32,7 @@ module.exports = {
           "$TestToken",
           "$ENSRegistry",
           "$PublicResolver",
-          "0x5f7791d31ca0493e9ca7c9ca16695ecd9d5044768674d14d31ab5d8277518fff",
+          "0xa9b5c92757edc45765dcdfbb101c37f1cdd06425a96eeb067d73cb4ec2c96e54",
           3,
           merkleTree.getHexRoot(),
           "0x9e183BC54Bb4f3cCa1A478CA6f2c3EdC37B60478"

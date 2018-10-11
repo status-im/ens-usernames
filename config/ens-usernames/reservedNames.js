@@ -31,7 +31,7 @@ exports.ReservedUsernames = [
 	//Status reserved words
 	'snt',
     'status',
-    'stateofus',
+    'imtheone',
     'statusnetwork',
     'statusnetworktoken',
 	

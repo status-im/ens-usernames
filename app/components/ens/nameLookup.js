@@ -40,7 +40,7 @@ const normalizer = new IDNANormalizer();
 const invalidSuffix = '0000000000000000000000000000000000000000'
 const validAddress = address => address !== nullAddress;
 const validStatusAddress = address => !address.includes(invalidSuffix);
-const formatName = domainName => domainName.includes('.') ? normalizer.normalize(domainName) : normalizer.normalize(`${domainName}.stateofus.eth`);
+const formatName = domainName => domainName.includes('.') ? normalizer.normalize(domainName) : normalizer.normalize(`${domainName}.imtheone.eth`);
 const getDomain = fullDomain => formatName(fullDomain).split('.').slice(1).join('.');
 const hashedDomain = domainName => hash(getDomain(domainName));
 const registryIsOwner = address => address === UsernameRegistrar._address;
@@ -97,7 +97,7 @@ const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTi
     </Typography>
     {edit && <RegisterSubDomain
                subDomain={domainName}
-               domainName="stateofus.eth"
+               domainName="imtheone.eth"
                domainPrice="DO NOT SHOW"
                editAccount={true}
                preRegisteredCallback={onSubmit}

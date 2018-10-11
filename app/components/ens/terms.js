@@ -64,7 +64,7 @@ const Terms = ({ classes, open, onSubmit }) => (
             that sent them.
           </li>
           <li>Your address(es) will be publicly associated with your ENS name.</li>
-          <li>Usernames are created as subdomain nodes of stateofus.eth and are subject to the ENS smart contract
+          <li>Usernames are created as subdomain nodes of imtheone.eth and are subject to the ENS smart contract
             terms.
           </li>
           <li>You authorize the contract to transfer SNT on your behalf. This can only occur when you approve a

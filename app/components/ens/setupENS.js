@@ -12,10 +12,10 @@ const dispatchSetup = (ENSRegistry) => {
   setSubnodeOwner(zeroBytes32, sha3('eth'), getUserAddress(ENSRegistry))
     .send()
     .then(res => { console.log(res) })
-  setSubnodeOwner(hash('eth'), sha3('stateofus'), UsernameRegistrar._address)
+  setSubnodeOwner(hash('eth'), sha3('imtheone'), UsernameRegistrar._address)
     .send()
     .then(res => { console.log(res) })
-  setSubnodeOwner(hash('eth'), sha3('stateofus'), UsernameRegistrar._address)
+  setSubnodeOwner(hash('eth'), sha3('imtheone'), UsernameRegistrar._address)
     .send()
     .then(res => { console.log(res) })
 }

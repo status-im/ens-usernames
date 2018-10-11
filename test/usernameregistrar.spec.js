@@ -10,10 +10,10 @@ const UsernameRegistrar = require('Embark/contracts/UsernameRegistrar');
 const { MerkleTree } = require('../utils/merkleTree.js');
 const { ReservedUsernames } = require('../config/ens-usernames/reservedNames')
 const registry = {
-  name: 'stateofus',
-  registry:  'stateofus.eth',
-  label: web3Utils.sha3('stateofus'),
-  namehash: namehash.hash('stateofus.eth'),
+  name: 'imtheone',
+  registry:  'imtheone.eth',
+  label: web3Utils.sha3('imtheone'),
+  namehash: namehash.hash('imtheone.eth'),
   price: 100000000
 }
 
