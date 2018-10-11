@@ -2,7 +2,7 @@ const { MerkleTree } = require('../utils/merkleTree.js');
 const { ReservedUsernames } = require('./ens-usernames/reservedNames.js');
 
 const merkleTree = new MerkleTree(ReservedUsernames);
-
+//"0x744d70fdbe2ba4cf95131626614a1763df805b9e","0x314159265dd8dbb310642f98f50c066173c1259b", "0x5FfC014343cd971B7eb70732021E26C35B744cc4","0xa9b5c92757edc45765dcdfbb101c37f1cdd06425a96eeb067d73cb4ec2c96e54",3,"0x631ed59b5e3491557773f5a948344a0c7d873f5acaec8208caa1d01b9b8c375c","0x0000000000000000000000000000000000000000"
 module.exports = {
   "default": {
     "deployment": {
@@ -76,7 +76,7 @@ module.exports = {
         "address": "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
       },
       "UsernameRegistrar": {
-        "address": "0xDBf9038cf5Aaa030890790dB87E746E00Fc352b3"
+        "address": "0x4C9CDc0454c5E9d7aeC727770007f901633A6EbF"
       },
       "MerkleProof": {
         "address": "0x713ED9846463235df08D92B886938651105D3940"
