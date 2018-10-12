@@ -631,7 +631,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         internal 
         returns(bytes32 namehash)
     {
-        require(state == RegistrarState.Active, "Registry unavailable.");
+        require(state == RegistrarState.Active, "Registry not active.");
         namehash = keccak256(abi.encodePacked(ensNode, _label));
         require(ensRegistry.owner(namehash) == address(0), "ENS node already owned.");
         require(accounts[_label].creationTime == 0, "Username already registered.");
