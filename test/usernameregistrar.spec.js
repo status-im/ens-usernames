@@ -63,7 +63,7 @@ var contractsConfig = {
       registry.namehash,
       "3", 
       merkleRoot,
-      "0x0"
+      "0x0000000000000000000000000000000000000000"
     ],
     "onDeploy": [
       "ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+registry.label+"', UsernameRegistrar.address).send()",
@@ -90,7 +90,7 @@ var contractsConfig = {
       dummyRegistry.namehash,
       "3", 
       merkleRoot,
-      "0x0"
+      "0x0000000000000000000000000000000000000000"
     ],
     "onDeploy": [
       "ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+dummyRegistry.label+"', DummyUsernameRegistrar.address).send()",
@@ -117,7 +117,7 @@ var contractsConfig = {
       dummy2Registry.namehash,
       "3", 
       utils.zeroBytes32,
-      "0x0"
+      "0x0000000000000000000000000000000000000000"
     ],
     "onDeploy": [
       "ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+dummy2Registry.label+"', Dummy2UsernameRegistrar.address).send()",
