@@ -3,12 +3,9 @@
 const utils = require('../utils/testUtils.js');
 const web3Utils = require('web3-utils');
 const namehash = require('eth-ens-namehash');
-const TestToken = require('Embark/contracts/TestToken');
-const ENSRegistry = require('Embark/contracts/ENSRegistry');
-const PublicResolver = require('Embark/contracts/PublicResolver');
-const UsernameRegistrar = require('Embark/contracts/UsernameRegistrar');
 const { MerkleTree } = require('../utils/merkleTree.js');
 const { ReservedUsernames } = require('../config/ens-usernames/reservedNames')
+
 const registry = {
   name: 'stateofus',
   registry:  'stateofus.eth',
@@ -16,8 +13,6 @@ const registry = {
   namehash: namehash.hash('stateofus.eth'),
   price: 100000000
 }
-
-
 
 const dummyRegistry = {
   name: 'dummyreg',
@@ -40,123 +35,124 @@ const dummy2Registry = {
 
 const merkleTree = new MerkleTree(ReservedUsernames);
 const merkleRoot = merkleTree.getHexRoot();
-
-var contractsConfig = {
-  "TestToken": {
-
-  },
-  "ENSRegistry": {
-    "onDeploy": [
-      "ENSRegistry.methods.setSubnodeOwner('0x0000000000000000000000000000000000000000000000000000000000000000', '0x4f5b812789fc606be1b3b16908db13fc7a9adf7ca72641f84d75b47069d3d7f0', web3.eth.defaultAccount).send()"
-    ]
-  },
-  "PublicResolver": {
-    "args": [
-      "$ENSRegistry"
-    ]
-  },
-  "UsernameRegistrar": {
-    "args": [
-      "$TestToken",
-      "$ENSRegistry",
-      "$PublicResolver",
-      registry.namehash,
-      "3", 
-      merkleRoot,
-      "0x0000000000000000000000000000000000000000"
-    ],
-    "onDeploy": [
-      "ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+registry.label+"', UsernameRegistrar.address).send()",
-    ]
-  },
-  "UpdatedUsernameRegistrar": {
-    "instanceOf" : "UsernameRegistrar",
-    "args": [
-      "$TestToken",
-      "$ENSRegistry",
-      "$PublicResolver",
-      registry.namehash,
-      "3", 
-      merkleRoot,
-      "$UsernameRegistrar"
-    ]
-  },
-  "DummyUsernameRegistrar": {
-    "instanceOf" : "UsernameRegistrar",
-    "args": [
-      "$TestToken",
-      "$ENSRegistry",
-      "$PublicResolver",
-      dummyRegistry.namehash,
-      "3", 
-      merkleRoot,
-      "0x0000000000000000000000000000000000000000"
-    ],
-    "onDeploy": [
-      "ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+dummyRegistry.label+"', DummyUsernameRegistrar.address).send()",
-    ]
-  },
-  "UpdatedDummyUsernameRegistrar": {
-    "instanceOf" : "UsernameRegistrar",
-    "args": [
-      "$TestToken",
-      "$ENSRegistry",
-      "$PublicResolver",
-      dummyRegistry.namehash,
-      "3", 
-      merkleRoot,
-      "$DummyUsernameRegistrar"
-    ]
-  },
-  "Dummy2UsernameRegistrar": {
-    "instanceOf" : "UsernameRegistrar",
-    "args": [
-      "$TestToken",
-      "$ENSRegistry",
-      "$PublicResolver",
-      dummy2Registry.namehash,
-      "3", 
-      utils.zeroBytes32,
-      "0x0000000000000000000000000000000000000000"
-    ],
-    "onDeploy": [
-      "ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+dummy2Registry.label+"', Dummy2UsernameRegistrar.address).send()",
-      "Dummy2UsernameRegistrar.methods.activate("+dummy2Registry.price+").send()"
-    ]
-  },
-  "UpdatedDummy2UsernameRegistrar": {
-    "instanceOf" : "UsernameRegistrar",
-    "args": [
-      "$TestToken",
-      "$ENSRegistry",
-      "$PublicResolver",
-      dummy2Registry.namehash,
-      "3", 
-      merkleRoot,
-      "$Dummy2UsernameRegistrar"
-    ]
+let accountsArr;
+config(
+  {
+    contracts: {        
+      "TestToken": { },
+      "ENSRegistry": {
+        "onDeploy": [
+          "await ENSRegistry.methods.setSubnodeOwner('0x0000000000000000000000000000000000000000000000000000000000000000', '0x4f5b812789fc606be1b3b16908db13fc7a9adf7ca72641f84d75b47069d3d7f0', web3.eth.defaultAccount).send()"
+        ]
+      },
+      "PublicResolver": {
+        "args": [
+          "$ENSRegistry"
+        ]
+      },
+      "UsernameRegistrar": {
+        "args": [
+          "$TestToken",
+          "$ENSRegistry",
+          "$PublicResolver",
+          registry.namehash,
+          "3", 
+          merkleRoot,
+          "0x0"
+        ],
+        "onDeploy": [
+          "await ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+registry.label+"', UsernameRegistrar.address).send()",
+        ]
+      },
+      "UpdatedUsernameRegistrar": {
+        "instanceOf" : "UsernameRegistrar",
+        "args": [
+          "$TestToken",
+          "$ENSRegistry",
+          "$PublicResolver",
+          registry.namehash,
+          "3", 
+          merkleRoot,
+          "$UsernameRegistrar"
+        ]
+      },
+      "DummyUsernameRegistrar": {
+        "instanceOf" : "UsernameRegistrar",
+        "args": [
+          "$TestToken",
+          "$ENSRegistry",
+          "$PublicResolver",
+          dummyRegistry.namehash,
+          "3", 
+          merkleRoot,
+          "0x0"
+        ],
+        "onDeploy": [
+          "await ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+dummyRegistry.label+"', DummyUsernameRegistrar.address).send()",
+        ]
+      },
+      "UpdatedDummyUsernameRegistrar": {
+        "instanceOf" : "UsernameRegistrar",
+        "args": [
+          "$TestToken",
+          "$ENSRegistry",
+          "$PublicResolver",
+          dummyRegistry.namehash,
+          "3", 
+          merkleRoot,
+          "$DummyUsernameRegistrar"
+        ]
+      },
+      "Dummy2UsernameRegistrar": {
+        "instanceOf" : "UsernameRegistrar",
+        "args": [
+          "$TestToken",
+          "$ENSRegistry",
+          "$PublicResolver",
+          dummy2Registry.namehash,
+          "3", 
+          utils.zeroBytes32,
+          "0x0"
+        ],
+        "onDeploy": [
+          "await ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+dummy2Registry.label+"', Dummy2UsernameRegistrar.address).send()",
+          "await Dummy2UsernameRegistrar.methods.activate("+dummy2Registry.price+").send()"
+        ]
+      },
+      "UpdatedDummy2UsernameRegistrar": {
+        "instanceOf" : "UsernameRegistrar",
+        "args": [
+          "$TestToken",
+          "$ENSRegistry",
+          "$PublicResolver",
+          dummy2Registry.namehash,
+          "3", 
+          merkleRoot,
+          "$Dummy2UsernameRegistrar"
+        ]
+      }
+    }
+  }, (_err, web3_accounts) => {
+    accountsArr = web3_accounts
   }
+);
 
-};
-
-config({ contracts: contractsConfig });
+const TestToken = require('Embark/contracts/TestToken');
+const ENSRegistry = require('Embark/contracts/ENSRegistry');
+const PublicResolver = require('Embark/contracts/PublicResolver');
+const UsernameRegistrar = require('Embark/contracts/UsernameRegistrar');
+const UpdatedUsernameRegistrar = require('Embark/contracts/UpdatedUsernameRegistrar');
+const DummyUsernameRegistrar = require('Embark/contracts/DummyUsernameRegistrar');
+const UpdatedDummyUsernameRegistrar = require('Embark/contracts/UpdatedDummyUsernameRegistrar');
+const Dummy2UsernameRegistrar = require('Embark/contracts/Dummy2UsernameRegistrar');
+const UpdatedDummy2UsernameRegistrar = require('Embark/contracts/UpdatedDummy2UsernameRegistrar');
 
 contract('UsernameRegistrar', function () {
-  let ens;
-  let accountsArr;
-
-  before(function(done) {
-    web3.eth.getAccounts().then(async (accounts) => {
-      ens = ENSRegistry;
-      accountsArr = accounts;
-      await utils.increaseTime(1 * utils.timeUnits.days) //time cannot start zero
-      await utils.increaseTime(1000)
-      done();
-    })
-  });
 
   describe('activate(uint256)', function() {
     it('should activate registry', async () => {
+      await utils.increaseTime(1 * utils.timeUnits.days) //time cannot start zero
+      await utils.increaseTime(1000)
       const initialPrice = 100
       const resultSetRegistryPrice = await UsernameRegistrar.methods.activate(initialPrice).send({from: accountsArr[0]});
       assert.equal(resultSetRegistryPrice.events.RegistryPrice.returnValues.price, initialPrice, "event RegistryPrice wrong price");
@@ -202,8 +198,8 @@ contract('UsernameRegistrar', function () {
       assert.equal(utils.eventAddress(resultRegister.events['1'].raw.data), registrant, "Wrong subnode owner");
       assert.equal(resultRegister.events.UsernameOwner.returnValues.owner, registrant, "event UsernameOwner owner mismatch");
       assert.equal(resultRegister.events.UsernameOwner.returnValues.nameHash, usernameHash, "event UsernameOwner usernameHash mismatch");   
-      assert.equal(await ens.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
-      assert.equal(await ens.methods.resolver(usernameHash).call(), utils.zeroAddress, "Resolver wrongly defined");
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
+      assert.equal(await ENSRegistry.methods.resolver(usernameHash).call(), utils.zeroAddress, "Resolver wrongly defined");
       assert.equal(await UsernameRegistrar.methods.getAccountBalance(label).call(), registryPrice, "Registry username account balance wrong");
       assert.equal(await UsernameRegistrar.methods.getAccountOwner(label).call(), registrant, "Account owner mismatch");
       assert.equal(await TestToken.methods.balanceOf(registrant).call(), +initialRegistrantBalance-registryPrice, "User final balance wrong")
@@ -242,8 +238,8 @@ contract('UsernameRegistrar', function () {
       assert.equal(utils.eventAddress(resultRegister.events['4'].raw.data), registrant, "Wrong registry.namehash owner");
       assert.equal(resultRegister.events.UsernameOwner.returnValues.owner, registrant, "event UsernameOwner owner mismatch");
       assert.equal(resultRegister.events.UsernameOwner.returnValues.nameHash, usernameHash, "event UsernameOwner usernameHash mismatch");   
-      assert.equal(await ens.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
-      assert.equal(await ens.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
+      assert.equal(await ENSRegistry.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
       assert.equal(await UsernameRegistrar.methods.getAccountBalance(label).call(), registry.price, "Wrong account balance");
       assert.equal(await UsernameRegistrar.methods.getAccountOwner(label).call(), registrant, "Account owner mismatch");
       assert.equal(await PublicResolver.methods.addr(usernameHash).call(), registrant, "Resolved address not set");      
@@ -285,8 +281,8 @@ contract('UsernameRegistrar', function () {
       assert.equal(utils.eventAddress(resultRegister.events['4'].raw.data), registrant, "Wrong registry.namehash owner");
       assert.equal(resultRegister.events.UsernameOwner.returnValues.owner, registrant, "event UsernameOwner owner mismatch");
       assert.equal(resultRegister.events.UsernameOwner.returnValues.nameHash, usernameHash, "event UsernameOwner usernameHash mismatch");   
-      assert.equal(await ens.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
-      assert.equal(await ens.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
+      assert.equal(await ENSRegistry.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
       assert.equal(await UsernameRegistrar.methods.getAccountBalance(label).call(), registry.price, "Wrong account balance");
       assert.equal(await UsernameRegistrar.methods.getAccountOwner(label).call(), registrant, "Account owner mismatch");
       assert.equal(await PublicResolver.methods.addr(usernameHash).call(), utils.zeroAddress, "Resolved address not set");      
@@ -331,8 +327,8 @@ contract('UsernameRegistrar', function () {
       assert.equal(utils.eventAddress(resultRegister.events['5'].raw.data), registrant, "Wrong registry.namehash owner");
       assert.equal(resultRegister.events.UsernameOwner.returnValues.owner, registrant, "event UsernameOwner owner mismatch");
       assert.equal(resultRegister.events.UsernameOwner.returnValues.nameHash, usernameHash, "event UsernameOwner usernameHash mismatch");   
-      assert.equal(await ens.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
-      assert.equal(await ens.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
+      assert.equal(await ENSRegistry.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
       assert.equal(await UsernameRegistrar.methods.getAccountBalance(label).call(), registry.price, "Wrong account balance");
       assert.equal(await UsernameRegistrar.methods.getAccountOwner(label).call(), registrant, "Account owner mismatch");
       assert.equal(await PublicResolver.methods.addr(usernameHash).call(), registrant, "Resolved address not set");      
@@ -361,8 +357,8 @@ contract('UsernameRegistrar', function () {
       ).encodeABI();
       const approveAndCallResult = await TestToken.methods.approveAndCall(UsernameRegistrar.address, registry.price, registerCall).send({from: registrant});  
       // TODO: check events
-      assert.equal(await ens.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
-      assert.equal(await ens.methods.resolver(usernameHash).call(), utils.zeroAddress, "Resolver wrongly defined");
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
+      assert.equal(await ENSRegistry.methods.resolver(usernameHash).call(), utils.zeroAddress, "Resolver wrongly defined");
       assert.equal(await UsernameRegistrar.methods.getAccountBalance(label).call(), registryPrice, "Registry username account balance wrong");
       assert.equal(await UsernameRegistrar.methods.getAccountOwner(label).call(), registrant, "Account owner mismatch");
       assert.equal(await TestToken.methods.balanceOf(registrant).call(), +initialRegistrantBalance-registryPrice, "User final balance wrong")
@@ -385,8 +381,8 @@ contract('UsernameRegistrar', function () {
       const approveAndCallResult = await TestToken.methods.approveAndCall(UsernameRegistrar.address, registry.price, registerCall).send({from: registrant});  
       // TODO: check events
 
-      assert.equal(await ens.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
-      assert.equal(await ens.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
+      assert.equal(await ENSRegistry.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
       assert.equal(await UsernameRegistrar.methods.getAccountBalance(label).call(), registry.price, "Wrong account balance");
       assert.equal(await UsernameRegistrar.methods.getAccountOwner(label).call(), registrant, "Account owner mismatch");
       assert.equal(await PublicResolver.methods.addr(usernameHash).call(), registrant, "Resolved address not set");      
@@ -412,8 +408,8 @@ contract('UsernameRegistrar', function () {
 
       const approveAndCallResult = await TestToken.methods.approveAndCall(UsernameRegistrar.address, registry.price, registerCall).send({from: registrant});  
       // TODO: check events
-      assert.equal(await ens.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
-      assert.equal(await ens.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
+      assert.equal(await ENSRegistry.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
       assert.equal(await UsernameRegistrar.methods.getAccountBalance(label).call(), registry.price, "Wrong account balance");
       assert.equal(await UsernameRegistrar.methods.getAccountOwner(label).call(), registrant, "Account owner mismatch");
       assert.equal(await PublicResolver.methods.addr(usernameHash).call(), utils.zeroAddress, "Resolved address not set");      
@@ -438,8 +434,8 @@ contract('UsernameRegistrar', function () {
 
       const approveAndCallResult = await TestToken.methods.approveAndCall(UsernameRegistrar.address, registry.price, registerCall).send({from: registrant});  
       // TODO: check events
-      assert.equal(await ens.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
-      assert.equal(await ens.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
+      assert.equal(await ENSRegistry.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
       assert.equal(await UsernameRegistrar.methods.getAccountBalance(label).call(), registry.price, "Wrong account balance");
       assert.equal(await UsernameRegistrar.methods.getAccountOwner(label).call(), registrant, "Account owner mismatch");
       assert.equal(await PublicResolver.methods.addr(usernameHash).call(), registrant, "Resolved address not set");      
@@ -514,7 +510,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32,
         utils.zeroBytes32
       ).send({from: registrant});
-      await ens.methods.setOwner(usernameHash, newOwner).send({from: registrant});
+      await ENSRegistry.methods.setOwner(usernameHash, newOwner).send({from: registrant});
       let releaseDelay = await UsernameRegistrar.methods.releaseDelay().call();
       await utils.increaseTime(releaseDelay)
       await utils.increaseTime(1000)
@@ -550,8 +546,8 @@ contract('UsernameRegistrar', function () {
       const initialRegistryBalance = await TestToken.methods.balanceOf(DummyUsernameRegistrar.address).call();
       await DummyUsernameRegistrar.methods.moveRegistry(UpdatedDummyUsernameRegistrar.address).send();
 
-      assert.equal(await ens.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
-      assert.equal(await ens.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
+      assert.equal(await ENSRegistry.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
       assert.equal(await PublicResolver.methods.addr(usernameHash).call(), registrant, "Resolved address not set");      
       
       const resultRelease = await DummyUsernameRegistrar.methods.release(
@@ -560,8 +556,8 @@ contract('UsernameRegistrar', function () {
       //TODO: verify events
       assert.equal(await TestToken.methods.balanceOf(registrant).call(), (+initialRegistrantBalance)+(+initialAccountBalance), "New owner token balance didnt increase")
       assert.equal(await TestToken.methods.balanceOf(DummyUsernameRegistrar.address).call(), (+initialRegistryBalance)-(+initialAccountBalance), "Registry token balance didnt decrease")
-      assert.equal(await ens.methods.resolver(usernameHash).call(), utils.zeroAddress, "Resolver not undefined");
-      assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress, "Owner not removed");
+      assert.equal(await ENSRegistry.methods.resolver(usernameHash).call(), utils.zeroAddress, "Resolver not undefined");
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress, "Owner not removed");
       //We are not cleaning PublicResolver or any resolver, so the value should remain the same.
       assert.equal(await PublicResolver.methods.addr(usernameHash).call(), registrant, "Resolved address not set");      
     });
@@ -583,7 +579,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32,
         utils.zeroBytes32
       ).send({from: registrant});
-      await ens.methods.setOwner(usernameHash, newOwner).send({from: registrant});
+      await ENSRegistry.methods.setOwner(usernameHash, newOwner).send({from: registrant});
       let resultUpdateOwner = await UsernameRegistrar.methods.updateAccountOwner(
         label
       ).send({from: newOwner});
@@ -608,7 +604,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});
       await utils.increaseTime(20000)
-      assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       assert.notEqual(await UsernameRegistrar.methods.getCreationTime(label).call(), 0);
       const creationTime = await UsernameRegistrar.methods.getCreationTime(web3Utils.sha3(username)).call();
       const reserveSecret = 1337;
@@ -617,7 +613,7 @@ contract('UsernameRegistrar', function () {
       await UsernameRegistrar.methods.slashInvalidUsername(username, 4, reserveSecret).send()
       //TODO: check events
       assert.equal(await UsernameRegistrar.methods.getCreationTime(label).call(), 0);
-      assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
     it('should not slash valid username', async () => {
       const username = 'legituser';
@@ -661,7 +657,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});
       await utils.increaseTime(20000)
-      assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const creationTime = await UsernameRegistrar.methods.getCreationTime(web3Utils.sha3(username)).call();
       const reserveSecret = 1337;
       const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
@@ -688,7 +684,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});
       await utils.increaseTime(20000)
-      assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const creationTime = await UsernameRegistrar.methods.getCreationTime(web3Utils.sha3(username)).call();
       const reserveSecret = 1337;
       const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
@@ -715,14 +711,14 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});
       await utils.increaseTime(20000)
-      assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const creationTime = await UsernameRegistrar.methods.getCreationTime(web3Utils.sha3(username)).call();
       const reserveSecret = 1337;
       const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
       await UsernameRegistrar.methods.reserveSlash(secret).send();
       result = await UsernameRegistrar.methods.slashReservedUsername(username, merkleTree.getHexProof(username), reserveSecret).send()  
       //TODO: check events
-      assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
   });
 
@@ -767,13 +763,13 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});  
       await utils.increaseTime(20000)
-      assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const creationTime = await UsernameRegistrar.methods.getCreationTime(web3Utils.sha3(username)).call();
       const reserveSecret = 1337;
       const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
       await UsernameRegistrar.methods.reserveSlash(secret).send();
       result = await UsernameRegistrar.methods.slashSmallUsername(username, reserveSecret).send()    
-      assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
   });
   
@@ -792,13 +788,13 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});
       await utils.increaseTime(1000)
-      assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const creationTime = await UsernameRegistrar.methods.getCreationTime(userlabelHash).call();
       const reserveSecret = 1337;
       const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
       await UsernameRegistrar.methods.reserveSlash(secret).send();
       result = await UsernameRegistrar.methods.slashAddressLikeUsername(username, reserveSecret).send()    
-      assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
     it('should not slash username that starts with 0x but is smaller then 12', async () => {
       let username = "0xc6b95bd26";
@@ -899,7 +895,7 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});
       await utils.increaseTime(20000)
       const partReward = await UsernameRegistrar.methods.getSlashRewardPart(label).call();
-      assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const initialSlasherBalance = await TestToken.methods.balanceOf(slasher).call();
       const creationTime = await UsernameRegistrar.methods.getCreationTime(label).call();
       const reserveSecret = 1337;
@@ -908,7 +904,7 @@ contract('UsernameRegistrar', function () {
       await UsernameRegistrar.methods.slashSmallUsername(username, reserveSecret).send({from: slasher})
       //TODO: check events
       assert.equal(await TestToken.methods.balanceOf(slasher).call(), (+initialSlasherBalance)+((+partReward)*2));    
-      assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
     
     it('should slash a username of a not migrated subnode that became unallowed', async () => {
@@ -935,8 +931,8 @@ contract('UsernameRegistrar', function () {
       
       await Dummy2UsernameRegistrar.methods.moveRegistry(UpdatedDummy2UsernameRegistrar.address).send();
 
-      assert.equal(await ens.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
-      assert.equal(await ens.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
+      assert.equal(await ENSRegistry.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
       assert.equal(await PublicResolver.methods.addr(usernameHash).call(), registrant, "Resolved address not set");      
       const creationTime = await UsernameRegistrar.methods.getCreationTime(label).call();
       const reserveSecret = 1337;
@@ -949,8 +945,8 @@ contract('UsernameRegistrar', function () {
       ).send({from: notRegistrant });
       //TODO: verify events
       
-      assert.equal(await ens.methods.resolver(usernameHash).call(), utils.zeroAddress, "Resolver not undefined");
-      assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress, "Owner not removed");
+      assert.equal(await ENSRegistry.methods.resolver(usernameHash).call(), utils.zeroAddress, "Resolver not undefined");
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress, "Owner not removed");
       //We are not cleaning PublicResolver or any resolver, so the value should remain the same.
       assert.equal(await PublicResolver.methods.addr(usernameHash).call(), registrant, "Resolved address not set");      
     });
@@ -972,7 +968,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});
       await utils.increaseTime(20000)
-      assert.equal(await ens.methods.owner(usernameHash).call(), registrant);
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const partReward = await UsernameRegistrar.methods.getSlashRewardPart(label).call();
       const initialSlashReserverBalance = await TestToken.methods.balanceOf(slashReserverCaller).call();
       const creationTime = await UsernameRegistrar.methods.getCreationTime(label).call();
@@ -982,7 +978,7 @@ contract('UsernameRegistrar', function () {
       await UsernameRegistrar.methods.slashSmallUsername(username, reserveSecret).send({from: slashReserverCaller})
       //TODO: check events
       assert.equal(await TestToken.methods.balanceOf(slashReserverCaller).call(), (+initialSlashReserverBalance)+(+partReward*2));    
-      assert.equal(await ens.methods.owner(usernameHash).call(), utils.zeroAddress);
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
   });
   
@@ -1015,7 +1011,7 @@ describe('eraseNode(bytes32[])', function() {
       utils.zeroBytes32,
       utils.zeroBytes32
     ).send({from: registrant});
-    assert.equal(await ens.methods.owner(usernameHash).call(), registrant);    
+    assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);    
     const releaseDelay = await UsernameRegistrar.methods.releaseDelay().call();
     await utils.increaseTime(releaseDelay)
     await utils.increaseTime(1000)
@@ -1025,7 +1021,7 @@ describe('eraseNode(bytes32[])', function() {
       const label = labels[index - 1];
       await ENSRegistry.methods.setSubnodeOwner(subnode, label, registrant).send({from: registrant}); 
       subnode = web3Utils.soliditySha3(subnode, label);
-      assert.equal(await ens.methods.owner(subnode).call(), registrant);   
+      assert.equal(await ENSRegistry.methods.owner(subnode).call(), registrant);   
       
     }
    
@@ -1035,7 +1031,7 @@ describe('eraseNode(bytes32[])', function() {
     for (let index = labels.length - 1; index > 0; index--) {
       const label = labels[index - 1];
       subnode = web3Utils.soliditySha3(subnode, label);
-      assert.equal(await ens.methods.owner(subnode).call(), registrant);   
+      assert.equal(await ENSRegistry.methods.owner(subnode).call(), registrant);   
     }
 
     const resultErase = await UsernameRegistrar.methods.eraseNode(
@@ -1047,7 +1043,7 @@ describe('eraseNode(bytes32[])', function() {
     for (let index = labels.length - 1; index > 0; index--) {
       const label = labels[index - 1];
       subnode = web3Utils.soliditySha3(subnode, label);
-      assert.equal(await ens.methods.owner(subnode).call(), utils.zeroAddress);   
+      assert.equal(await ENSRegistry.methods.owner(subnode).call(), utils.zeroAddress);   
     }
   });
 
@@ -1058,7 +1054,7 @@ describe('eraseNode(bytes32[])', function() {
     it('should move registry to new registry and migrate', async () => {
       const result = await UsernameRegistrar.methods.moveRegistry(UpdatedUsernameRegistrar.address).send();
       //TODO: check events
-      assert.equal(await ens.methods.owner(registry.namehash).call(), UpdatedUsernameRegistrar.address, "registry ownership not moved correctly")
+      assert.equal(await ENSRegistry.methods.owner(registry.namehash).call(), UpdatedUsernameRegistrar.address, "registry ownership not moved correctly")
       assert.equal(await UpdatedUsernameRegistrar.methods.getPrice().call(), registry.price, "updated registry didnt migrated price")
     });
   });
