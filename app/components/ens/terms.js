@@ -46,9 +46,7 @@ const StyledButton = styled(Button)`
   }
 `;
 
-const buttonText = { color: '#4360df', margin: '0 20px', fontWeight: 300 };
-
-const Terms = ({ classes, open, onSubmit }) => (
+const Terms = ({ open, onSubmit }) => (
   <Dialog fullScreen open={open}>
     <TermsContainer>
       <InfoHeading className="ens-terms__title">Terms of name registration</InfoHeading>
@@ -56,32 +54,21 @@ const Terms = ({ classes, open, onSubmit }) => (
       <TermsDescription>
         <ListContainer>
           <li>Funds are deposited for 1 year. Your SNT will be locked, but not spent.</li>
-          <li>After 1 year, you can release the name and get your deposit back, or take no action to keep the name.</li>
-          <li>If terms of the contract change — e.g. Status makes contract upgrades — user has the right to release the
-            username regardless of time held.
+          <li>After 1 year, you can release the name and get your deposit back. The name is yours until you release it.</li>
+          <li>Names are created as a subdomain of <i>stateofus.eth</i>. They are property of Status and may be subject to new terms.</li>
+          <li>If the <i>stateofus.eth</i> contract terms change—e.g. Status makes contract upgrades—you have the right to get your deposit back, even for names held less than 1 year.</li>
+          <li> Names may not:
+            <ol type="1">
+              <li>contain less than 4 characters;</li>
+              <li>n non-alphanumeric characters;</li>
+              <li>contain uppercase letters;</li>
+              <li>appear on this <a href="https://github.com/status-im/ens-usernames/blob/master/config/ens-usernames/reservedNames.js">reserved list</a></li>
+              <li>mimic an Ethereum address (start with <code>Ox</code> and contain only hexadecimal characters in the first 12 digits)</li>
+            </ol>
           </li>
-          <li>The contract controller cannot access your deposited funds. They can only be moved back to the address
-            that sent them.
-          </li>
-          <li>Your address(es) will be publicly associated with your ENS name.</li>
-          <li>Usernames are created as subdomain nodes of stateofus.eth and are subject to the ENS smart contract
-            terms.
-          </li>
-          <li>You authorize the contract to transfer SNT on your behalf. This can only occur when you approve a
-            transaction to authorize the transfer.
-          </li>
+          <li>Registering an illegal name via the registry contract will result in the loss of your SNT deposit and removal of the name.</li>
+          <li>Contact codes and wallet addresses associated with your name are publicly available information.</li>
         </ListContainer>
-
-        <p>These terms are guaranteed by the smart contract logic at addresses:</p>
-
-        <ListContainer>
-          <li>0xb1C47B61CDaeee3fA85Fe8B93FcE6311165E6291 (ENSSubdomainRegistry — Status)</li>
-        </ListContainer>
-
-        <ListContainer>
-          <li>0x112234455C3a32FD11230C42E7Bccd4A84e02010 (ENS).</li>
-        </ListContainer>
-
         <div style={{textAlign: 'center'}}>
           <StyledButton type="submit" onClick={onSubmit}>
             <div>Let's Go</div>
