@@ -41,7 +41,6 @@ const WelcomeContent = () => (
         <div className="text">Share your name to chat on Status or receive ETH and tokens.</div>
       </li>
     </ol>
-    <div className="ens-welcome__info">Already have a Status subdomain? <a href="">Manage it</a></div>
     <div className="text-light">
       <small>Powered by Ethereum Name Services</small>
     </div>

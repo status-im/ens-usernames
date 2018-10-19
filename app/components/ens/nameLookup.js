@@ -35,6 +35,7 @@ import { YOUR_CONTACT_CODE } from './constants';
 import DisplayBox from './DisplayBox';
 import styled from "styled-components";
 import { Route } from "react-router-dom";
+import { ReservedUsernames } from '../../../config/ens-usernames/reservedNames'
 
 const normalizer = new IDNANormalizer();
 const invalidSuffix = '0000000000000000000000000000000000000000'
@@ -72,7 +73,7 @@ const pastReleaseDate = timestamp => new Date > new Date(timestamp * 1000);
 
 const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTime, creationTime, defaultAccount, isOwner, edit, onSubmit, handleChange, values, handleSubmit }) => (
   <Fragment>
-    <LookupForm {...{ handleSubmit, values, handleChange }} />
+    <LookupForm {...{ handleSubmit, values, handleChange }} warningCanBeDisplayed={false} />
     <Info background={isOwner ? '#44D058' : '#000000'} style={{ margin: '0.5em', boxShadow: '0px 6px 10px rgba(0, 0, 0, 0.2)' }}>
       <Typography variant="title" style={
         { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly', height: '4em', color: '#ffffff', textAlign: 'center', margin: '10%' }
@@ -287,9 +288,23 @@ const DisplayAddress = connect(mapStateToProps)((props) => (
   </Fragment>
 ));
 
+class WarningBlock extends React.Component {
+  render() {
+    const { status } = this.props;
+
+    if (status && status.domainNameStatus === DomainNameStatus.InvalidName) {
+      return <Warning>Names are made with<br/>letters and numbers only</Warning>
+    }
+    else if (status) {
+      return <Warning>This name is reserved for security purposes. Please try another.</Warning>
+    }
+    return null;
+  }
+}
+
 class LookupForm extends React.Component {
   render() {
-    const { handleSubmit, values, handleChange, isWarningDisplayed } = this.props;
+    const { handleSubmit, values, handleChange, warningCanBeDisplayed } = this.props;
 
     return (
       <Fragment>
@@ -306,14 +321,13 @@ class LookupForm extends React.Component {
           </Hidden>
           <Hidden mdUp>
             <MobileSearch
-              search
               name="domainName"
               placeholder='Search for available name'
               value={values.domainName}
               onChange={handleChange}
               required
               wide/>
-            {isWarningDisplayed && <Warning>Names are made with<br/>letters and numbers only</Warning>}
+            {warningCanBeDisplayed && <WarningBlock {...this.props} />}
           </Hidden>
           <Hidden mdDown>
             <Button mode="strong" type="submit" style={{marginLeft: '3%', maxWidth: '95%'}} wide>
@@ -326,11 +340,24 @@ class LookupForm extends React.Component {
   }
 }
 
-const isValidDomainName = val => /^([a-z0-9]+)$/.test(val.toLowerCase());
+const DomainNameStatus = Object.freeze({"Correct": 1, "InvalidName": 2, "ReservedName": 3});
+const getDomainNameStatus = val => {
+  const value = val.toLowerCase().trim();
+
+  if (/^([a-z0-9]+)$/.test(value)) {
+    if (ReservedUsernames.includes(value)) {
+      return DomainNameStatus.ReservedName;
+    }
+    return DomainNameStatus.Correct;
+  } else {
+    return DomainNameStatus.InvalidName;
+  }
+}
 
 class SearchResultsPage extends React.Component {
   async loadDomainInformation({setStatus, domainName}) {
-    if (isValidDomainName(domainName)) {
+    const status = getDomainNameStatus(domainName);
+    if (status === DomainNameStatus.Correct) {
       const { methods: { owner, resolver } } = ENSRegistry;
       const lookupHash = hash(formatName(domainName));
       const subdomainHash = soliditySha3(domainName);
@@ -359,7 +386,7 @@ class SearchResultsPage extends React.Component {
           });
         });
     } else {
-      setStatus({isInvalidDomain: true });
+      setStatus({domainNameStatus: status });
     }
   }
 
@@ -402,7 +429,7 @@ class SearchResultsPage extends React.Component {
     return (
       <div>
         {!status || !status.address ?
-          <LookupForm {...this.props} isWarningDisplayed={status && status.isInvalidDomain}/>
+          <LookupForm {...this.props} warningCanBeDisplayed={true}/>
           :
           validAddress(status.address) || defaultAccount === status.ownerAddress ?
             <DisplayAddress
@@ -415,7 +442,7 @@ class SearchResultsPage extends React.Component {
               registryOwnsDomain={status.registryOwnsDomain}
               setStatus={setStatus}/> :
             <div>
-              <LookupForm {...this.props} isWarningDisplayed={false}/>
+              <LookupForm {...this.props} warningCanBeDisplayed={false}/>
               <ConnectedRegister
                 style={{position: 'relative'}}
                 setStatus={setStatus}
@@ -447,7 +474,7 @@ class NameLookupContainer extends React.Component {
           <Route
             exact
             path={match.url}
-            render={() => <LookupForm {...this.props} isWarningDisplayed={status && status.isInvalidDomain}/>}/>
+            render={() => <LookupForm {...this.props} warningCanBeDisplayed={true}/>}/>
           <Route
             path={`${match.url}/:domainName`}
             render={({match}) => <SearchResultsPage {...this.props} match={match}/>}/>
