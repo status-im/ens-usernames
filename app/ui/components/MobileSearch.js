@@ -16,11 +16,17 @@ const searchWrapper = {
   boxSizing: 'border-box',
 };
 
-const pasteStyle = {
-  ...searchWrapper,
-  paddingLeft: '17em',
-  color: theme.accent
-};
+const SearchWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 11px;
+  box-sizing: border-box;
+`;
 
 const MobileInput = styled.input`
   display: block;
@@ -33,20 +39,20 @@ const MobileInput = styled.input`
   appearance: none;
   box-shadow: none;
   padding-left: ${({ search }) => (search ? '45px' : '15px')};
+  
   &:focus {
-  outline: none;
-  border-color: ${theme.contentBorderActive};
+    outline: none;
+    border-color: ${theme.contentBorderActive};
   }
 `;
 
 const MobileSearch = props => (
   <div style={{ position: 'relative' }}>
-    {props.search && <div style={searchWrapper}>
+    {props.search && <SearchWrapper>
       <SearchIcon style={{ color: theme.accent }} />
-    </div>}
+    </SearchWrapper>}
     <div style={{ display: 'flex' }}>
       <MobileInput {...props} autoCapitalize="none" />
-      {!props.value && props.paste && <Button style={{ color: theme.accent }} onClick={props.paste}>Paste</Button>}
     </div>
   </div>
 );
