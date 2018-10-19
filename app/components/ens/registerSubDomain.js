@@ -81,13 +81,13 @@ const InnerForm = ({
          button={
            <Button
              mode="strong"
-             style={{marginTop: '5px'}}
+                   style={{marginTop: '5px'}}
              onClick={() => {
-               UsernameRegistrar.methods.getPrice()
-                 .call()
-                 .then((res) => {
-                   setFieldValue('price', fromWei(res));
-                 });
+                 UsernameRegistrar.methods.getPrice()
+                                  .call()
+                                  .then((res) => {
+                                    setFieldValue('price', fromWei(res));
+                                  });
              }}>
              Get Price
            </Button>
@@ -133,13 +133,13 @@ const InnerForm = ({
 
         <div style={{ position: 'relative', left: 0, right: 0, bottom: 0, textAlign: 'center' }}>
           {!isSubmitting ?
-            <Button onClick={() => {setStatus('terms')}} className={classNames(classes.button)}>
-              <div className={classNames(classes.buttonText)}>
-                {`${editAccount ? 'Save' : 'Register'} with transaction`}
-              </div>
-            </Button>
-            :
-            <CircularProgress />}
+           <Button onClick={() => {setStatus('terms')}} className={classNames(classes.button)}>
+             <div className={classNames(classes.buttonText)}>
+               {`${editAccount ? 'Save' : 'Register'} with transaction`}
+             </div>
+           </Button>
+           :
+           <CircularProgress />}
           <Terms open={displayTerms(status)} onSubmit={() => { setStatus(null); formRef.current.dispatchEvent(new Event('submit')) }} form={formRef} />
         </div>
       </Hidden>
@@ -193,24 +193,26 @@ const RegisterSubDomain = withFormik({
         const gas = editAccount ? gasEstimated + 1000 : gasEstimated * 2;
         console.log("Register would work. :D Gas estimated: " + gasEstimated, { gas }, gasEstimated + 1000);
         console.log("Trying: register(\"" + subdomainHash + "\",\"" + domainNameHash + "\",\"" + resolveToAddr + "\",\"" + zeroBytes32 + "\",\"" + zeroBytes32 + "\")");
-        if (preRegisteredCallback) preRegisteredCallback();
-        toSend.send({ gas }).then((txId) => {
-          if (txId.status == "0x1" || txId.status == "0x01"){
-            console.log("Register send success. :)");
-          } else {
-            console.log("Register send errored. :( Out of gas? ");
-          }
-          console.dir(txId)
-        }).catch(err => {
-          console.log("Register send errored. :( Out of gas?");
-          console.dir(err)
-        }).finally(() => {
-          // REQUIRED UNTIL THIS ISSUES IS RESOLVED: https://github.com/jaredpalmer/formik/issues/597
-          setTimeout(() => {
-            registeredCallbackFn(resolveToAddr, statusAddress || zeroBytes32);
-          }, 200);
-          setSubmitting(false);
-        });
+        toSend.send({ gas })
+              .on('transactionHash', (txHash) => { if (preRegisteredCallback) preRegisteredCallback(txHash); })
+              .then((txId) => {
+                if (txId.status == "0x1" || txId.status == "0x01"){
+                  console.log("Register send success. :)");
+                } else {
+                  console.log("Register send errored. :( Out of gas? ");
+                }
+                console.dir(txId)
+              }).catch(err => {
+                console.log("Register send errored. :( Out of gas?");
+                console.dir(err)
+              })
+              .on('confirmation', (confirmationNumber, receipt) => {
+                // REQUIRED UNTIL THIS ISSUES IS RESOLVED: https://github.com/jaredpalmer/formik/issues/597
+                setTimeout(() => {
+                  registeredCallbackFn(resolveToAddr, statusAddress || zeroBytes32);
+                }, 200);
+                setSubmitting(false);
+              })
       }).catch(err => {
         console.log("Register would error. :/ Already Registered? Have Token Balance? Is Allowance set?")
         console.dir(err)
