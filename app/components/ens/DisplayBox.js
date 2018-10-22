@@ -1,8 +1,5 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import { connect } from 'react-redux';
-import { YOUR_CONTACT_CODE } from './constants';
-import { checkAndDispatchStatusContactCode } from '../../actions/accounts';
 import styled from "styled-components";
 
 const DisplayLabel = styled.div`
@@ -11,34 +8,46 @@ const DisplayLabel = styled.div`
   margin: 0 1em;
 `;
 
-const DisplayBox = styled.div`
+const DisplayBoxDiv = styled.div`
   border: 1px solid #EEF2F5;
   border-radius: 8px;
   margin: 7px 12px 14px 12px;
   display: flex;
   flex-direction: column;
-  justifyContent: space-around;
-  min-height: 4em;
+  justify-content: space-around;
+  align-items: ${props => props.showBlueBox ? "center" : "initial"};
   word-wrap: break-word;
+  min-height: ${props => props.onClick ? "112px" : "0px"};
 `;
 
-const WrappedDisplayBox = ({displayType, pubKey, getStatusContactCode}) => (
+const InnerDisplayBox = styled.div`
+  margin: 16px;
+`;
+
+const BlueBox = styled.div`
+  color: #4360df;
+`;
+
+const DisplayBox = ({displayType, text, onClick, showBlueBox}) => (
   <div>
     <DisplayLabel>
       {displayType}
     </DisplayLabel>
-    <DisplayBox onClick={() => getStatusContactCode(displayType, pubKey)}>
-      <div style={{margin: '16px'}}>
-        <Typography type='body1'>{pubKey}</Typography>
-      </div>
-    </DisplayBox>
+    <DisplayBoxDiv showBlueBox={showBlueBox} onClick={onClick}>
+      <InnerDisplayBox>
+        {
+          showBlueBox && onClick ?
+          <BlueBox>
+            Grant access
+          </BlueBox>
+          :
+          <Typography type='body1'>
+            {text}
+          </Typography>
+        }
+      </InnerDisplayBox>
+    </DisplayBoxDiv>
   </div>
 );
 
-const mapDispatchToDisplayBoxProps = dispatch => ({
-  getStatusContactCode(displayType, pubKey) {
-    if (displayType === YOUR_CONTACT_CODE && !pubKey) checkAndDispatchStatusContactCode(dispatch);
-  },
-});
-
-export default connect(null, mapDispatchToDisplayBoxProps)(WrappedDisplayBox);
+export default DisplayBox;

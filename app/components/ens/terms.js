@@ -1,8 +1,6 @@
 import React from 'react';
-import classNames from 'classnames';
-import {withStyles} from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
-import {Button} from '../../ui/components';
+import {StyledButton} from '../../ui/components';
 import styled from "styled-components";
 
 const TermsContainer = styled.div`
@@ -35,18 +33,9 @@ const ListContainer = styled.ul`
   }
 `;
 
-const StyledButton = styled(Button)`
-  background-color: rgba(67, 96, 223, 0.1);
-  
-  div {
-    color: #4360df;
-    margin: 0 20px;
-    font-weight: 400;
-    text-transform: uppercase;
-  }
-`;
+const buttonText = { color: '#4360df', margin: '0 20px', fontWeight: 300 };
 
-const Terms = ({ open, onSubmit }) => (
+const Terms = ({ classes, open, onSubmit }) => (
   <Dialog fullScreen open={open}>
     <TermsContainer>
       <InfoHeading className="ens-terms__title">Terms of name registration</InfoHeading>
