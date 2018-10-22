@@ -1,24 +1,9 @@
 import React from 'react';
-import classNames from 'classnames';
-import {withStyles} from '@material-ui/core/styles';
-import {Button} from '../../ui/components';
+import {StyledButton} from '../../ui/components';
 import StatusCards from '../../ui/icons/svg/intro_name.svg';
-import {BrowserRouter as Router, Route, Link} from "react-router-dom";
+import {Link} from "react-router-dom";
 
 import './welcome.css';
-
-const styles = theme => ({
-  button: {
-    margin: theme.spacing.unit,
-    backgroundColor: 'rgba(67, 96, 223, 0.1)',
-  },
-  buttonText: {
-    color: '#4360df',
-    margin: '0 20px',
-    fontWeight: 400,
-    textTransform: 'uppercase'
-  }
-});
 
 const WelcomeContent = () => (
   <div>
@@ -47,19 +32,19 @@ const WelcomeContent = () => (
   </div>
 );
 
-const Welcome = ({ classes }) => (
+const Welcome = () => (
   <div className="ens-welcome">
     <img className="ens-welcome__img" src={StatusCards} />
     <h2 className="ens-welcome__title">
         ENS names transform those crazy-long addresses into unique usernames
     </h2>
     <Link to="/search">
-      <Button className={classNames(classes.button)}>
-        <div className={classNames(classes.buttonText)}>Let's Go</div>
-      </Button>
+      <StyledButton>
+        <div>Let's Go</div>
+      </StyledButton>
     </Link>
     <WelcomeContent/>
   </div>
 );
 
-export default withStyles(styles)(Welcome);
+export default Welcome;

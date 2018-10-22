@@ -6,7 +6,7 @@ import { getDefaultAccount } from '../utils/web3Helpers'
 import { actions as accountActions } from '../reducers/accounts'
 import { isNil } from 'lodash'
 
-const { receiveAccounts, receiveStatusContactCode } = accountActions
+const { receiveAccounts, receiveStatusContactCode } = accountActions;
 
 export const fetchAndDispatchAccountsWithBalances = (web3, dispatch) => {
   web3.eth.getAccounts((err, addresses) => {
@@ -23,15 +23,16 @@ export const fetchAndDispatchAccountsWithBalances = (web3, dispatch) => {
     }
   })
 }
-export const checkAndDispatchStatusContactCode = dispatch => {
+export const checkAndDispatchStatusContactCode = (dispatch, callback) => {
   window.web3.currentProvider.status
-        .getContactCode()
-        .then(data => {
-          dispatch(receiveStatusContactCode(data));
-        })
-        .catch(err => {
-          console.warn('Error:', err);
-        })
+    .getContactCode()
+    .then(data => {
+      callback(data);
+      dispatch(receiveStatusContactCode(data));
+    })
+    .catch(err => {
+      console.warn('Error:', err);
+    })
 };
 
 export const fetchAndDispatchSNTAllowance = dispatch => {
