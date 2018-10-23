@@ -2,6 +2,7 @@
 
 export * from './Button';
 export { default as StyledButton } from './StyledButton.js';
+export { default as ArrowButton } from './ArrowButton.js';
 export { default as Card } from './Card.js';
 export { default as Field } from './Field.js';
 export { default as Text } from './Text.js';

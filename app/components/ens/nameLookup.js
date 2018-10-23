@@ -322,6 +322,7 @@ class LookupForm extends React.Component {
           <Hidden mdUp>
             <MobileSearch
               name="domainName"
+              type="search"
               placeholder='Search for available name'
               value={values.domainName}
               onChange={handleChange}

@@ -5,7 +5,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import Hidden from '@material-ui/core/Hidden';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import {Button, StyledButton} from '../../ui/components';
+import {ArrowButton, Button} from '../../ui/components';
 import {withFormik} from 'formik';
 import {hash} from 'eth-ens-namehash';
 import {zeroAddress, zeroBytes32, formatPrice} from './utils';
@@ -142,15 +142,22 @@ class InnerForm extends React.Component {
                         showBlueBox={!values.statusAddress}
                         onClick={() => this.requestStatusContactCode(this.props)}/>
 
-            <div style={{position: 'relative', left: 0, right: 0, bottom: 0, textAlign: 'center'}}>
+            <div style={{display: 'flex', flexDirection: 'row-reverse', marginTop: '16px', marginBottom: '16px'}}>
               {!isSubmitting ?
-                <StyledButton onClick={() => this.onRegisterClick(this.props)}>
+                <ArrowButton onClick={(e) => {
+                  this.onRegisterClick(this.props);
+                  e.preventDefault();
+                }}>
                   <div>
                     {`${editAccount ? 'Save' : 'Register'}`}
                   </div>
-                </StyledButton>
+                </ArrowButton>
                 :
-                <CircularProgress/>}
+                <div style={{flex: 1, textAlign: 'center'}}>
+                  <CircularProgress/>
+                </div>
+              }
+
               <Terms open={displayTerms(status)}
                      onSubmit={() => {
                        setStatus(null);
@@ -158,6 +165,8 @@ class InnerForm extends React.Component {
                      }}
                      form={formRef}/>
             </div>
+
+
           </Hidden>
         </div>
       </form>
