@@ -1,6 +1,6 @@
 import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import {StyledButton} from '../../ui/components';
+import {ArrowButton} from '../../ui/components';
 import styled from "styled-components";
 
 const TermsContainer = styled.div`
@@ -33,9 +33,7 @@ const ListContainer = styled.ul`
   }
 `;
 
-const buttonText = { color: '#4360df', margin: '0 20px', fontWeight: 300 };
-
-const Terms = ({ classes, open, onSubmit }) => (
+const Terms = ({ open, onSubmit }) => (
   <Dialog fullScreen open={open}>
     <TermsContainer>
       <InfoHeading className="ens-terms__title">Terms of name registration</InfoHeading>
@@ -58,12 +56,14 @@ const Terms = ({ classes, open, onSubmit }) => (
           <li>Registering an illegal name via the registry contract will result in the loss of your SNT deposit and removal of the name.</li>
           <li>Contact codes and wallet addresses associated with your name are publicly available information.</li>
         </ListContainer>
-        <div style={{textAlign: 'center'}}>
-          <StyledButton type="submit" onClick={onSubmit}>
-            <div>Let's Go</div>
-          </StyledButton>
-        </div>
       </TermsDescription>
+
+      <div style={{display: 'flex', flexDirection: 'row-reverse', marginBottom: '16px', marginRight: '8px'}}>
+        <ArrowButton type="submit" onClick={onSubmit}>
+          <div>Send SNT</div>
+        </ArrowButton>
+      </div>
+
     </TermsContainer>
   </Dialog>
 );
