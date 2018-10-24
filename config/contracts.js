@@ -76,7 +76,7 @@ module.exports = {
         "address": "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
       },
       "UsernameRegistrar": {
-        "address": "0xDBf9038cf5Aaa030890790dB87E746E00Fc352b3"
+        "address": "0xDB5ac1a559b02E12F29fC0eC0e37Be8E046DEF49"
       },
       "MerkleProof": {
         "address": "0x713ED9846463235df08D92B886938651105D3940"

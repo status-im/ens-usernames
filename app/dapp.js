@@ -3,6 +3,7 @@ import 'typeface-roboto'
 import Toggle from 'react-toggle';
 import EmbarkJS from 'Embark/EmbarkJS';
 import TestToken from 'Embark/contracts/TestToken';
+import { startCase } from 'lodash';
 import UsernameRegistrar from 'Embark/contracts/UsernameRegistrar';
 import NameLookup from './components/ens/nameLookup';
 import AdminMode from './components/AdminMode';
@@ -22,8 +23,17 @@ const symbols = {
   'main': 'SNT'
 }
 
-const Web3RenderContent = ({ network, history, match }) => (
-  <Web3Render ready={network === 'ropsten'} network={'Ropsten'}>
+const isReady = (network, environment) => {
+  if (!network || !environment) return;
+  const formattedNetwork = network.toLowerCase();
+  if (formattedNetwork.includes('main') || formattedNetwork.includes('live')) {
+    if (environment === 'livenet') return true
+  }
+  return formattedNetwork.inclues(environment.toLowerCase());
+}
+
+const Web3RenderContent = ({ network, history, match, environment }) => (
+  <Web3Render ready={isReady(network, environment)} network={startCase(environment)}>
     <div>
       <NameLookup {...{history, match}}/>
       <Hidden mdDown>
@@ -52,12 +62,15 @@ class App extends React.Component {
 
   componentDidMount(){
     EmbarkJS.onReady((err) => {
-      getNetworkType().then(network => { this.setState({ network })});
+      getNetworkType().then(network => {
+        const { environment } = EmbarkJS
+        this.setState({ network, environment })
+      });
     });
   }
 
   render() {
-    const { admin, network } = this.state;
+    const { admin, network, environment } = this.state;
 
     return (
       <HashRouter hashType="noslash">
@@ -71,7 +84,7 @@ class App extends React.Component {
 
           <Route exact path="/" component={Welcome}/>
           <Route path="/search" render={({history, match}) => (
-            <Web3RenderContent {...{history, match, network}} />
+            <Web3RenderContent {...{history, match, network, environment}} />
           )}/>
         </div>
       </HashRouter>
