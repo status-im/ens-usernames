@@ -32,11 +32,7 @@ class InnerForm extends React.Component {
   };
 
   onRegisterClick = ({values, setStatus}) => {
-    if (values.statusAddress) {
-      setStatus("terms");
-    } else {
-      alert("You have to grant access to your contact code first")
-    }
+    setStatus("terms");
   };
 
   render() {
@@ -241,9 +237,6 @@ const RegisterSubDomain = withFormik({
       }).catch(err => {
         console.log("Register would error. :/ Already Registered? Have Token Balance? Is Allowance set?")
         console.dir(err);
-        if (err && err.message) {
-          alert(err.message);
-        }
         setSubmitting(false);
       });
     }
