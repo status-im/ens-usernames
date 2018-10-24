@@ -35,7 +35,7 @@ module.exports = {
           "0x5f7791d31ca0493e9ca7c9ca16695ecd9d5044768674d14d31ab5d8277518fff",
           3,
           merkleTree.getHexRoot(),
-          "0x9e183BC54Bb4f3cCa1A478CA6f2c3EdC37B60478"
+          "0x0000000000000000000000000000000000000000"
         ]
       }
     }
@@ -76,7 +76,7 @@ module.exports = {
         "address": "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
       },
       "UsernameRegistrar": {
-        "address": "0xDBf9038cf5Aaa030890790dB87E746E00Fc352b3"
+        "address": "0xDB5ac1a559b02E12F29fC0eC0e37Be8E046DEF49"
       },
       "MerkleProof": {
         "address": "0x713ED9846463235df08D92B886938651105D3940"
