@@ -131,10 +131,10 @@ class InnerForm extends React.Component {
           <Hidden mdUp>
 
             <DisplayBox displayType={YOUR_WALLET_ADDRESS}
-                        text={values.address}/>
+                        pubKey={values.address}/>
 
             <DisplayBox displayType={YOUR_CONTACT_CODE}
-                        text={values.statusAddress}
+                        pubKey={values.statusAddress}
                         showBlueBox={!values.statusAddress}
                         onClick={() => this.requestStatusContactCode(this.props)}/>
 
