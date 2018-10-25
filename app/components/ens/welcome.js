@@ -16,7 +16,7 @@ const WelcomeContent = () => (
           className="ens-welcome__highlight">myname.stateofus.eth</span></div>
       </li>
       <li className="item">
-        <div className="title">100 SNT to register</div>
+        <div className="title">10 SNT to register</div>
         <div className="text">Register once to keep the name forever. After 1 year, you can release the name and get
           your SNT back.
         </div>

@@ -4,7 +4,7 @@ DApp to register usernames for Status Network, using ENS subnodes as usernames a
 
 
 ### Stateofus.eth Terms of name registration
-- 100 SNT is deposited, not spent; the amount is locked up for 1 year; only user can control their deposited funds.
+- Funds are deposited for 1 year. Your SNT will be locked, but not spent.
 - After 1 year, the user can release the name for being registered again, and receive their deposit back.
 - Usernames are created as a subdomain of `stateofus.eth` [ENS domain](https://ens.domains/).
 - Usernames not allowed are less then 4 characters, or contained in this list (link to list), or starts with `0x` and more then 12 characters. 
