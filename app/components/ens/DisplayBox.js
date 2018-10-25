@@ -28,7 +28,7 @@ const BlueBox = styled.div`
   color: #4360df;
 `;
 
-const DisplayBox = ({ displayType, pubKey, onClick, showBlueBox }) => (
+const DisplayBox = ({ displayType, text, onClick, showBlueBox }) => (
   <div>
     <DisplayLabel>
       {displayType}
@@ -42,7 +42,7 @@ const DisplayBox = ({ displayType, pubKey, onClick, showBlueBox }) => (
           </BlueBox>
           :
           <Typography type='body1'>
-            {pubKey}
+            {text}
           </Typography>
         }
       </InnerDisplayBox>
