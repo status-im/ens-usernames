@@ -103,8 +103,8 @@ const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTi
                editAccount={true}
                preRegisteredCallback={onSubmit}
                registeredCallbackFn={console.log} />}
-    {!edit && <DisplayBox displayType='Your wallet address' pubKey={address} />}
-    {!edit && validStatusAddress(statusAccount) && <DisplayBox displayType={YOUR_CONTACT_CODE} pubKey={statusAccount} />}
+    {!edit && <DisplayBox displayType='Your wallet address' text={address} />}
+    {!edit && validStatusAddress(statusAccount) && <DisplayBox displayType={YOUR_CONTACT_CODE} text={statusAccount} />}
   </Fragment>
 )
 
