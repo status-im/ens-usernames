@@ -303,9 +303,14 @@ class WarningBlock extends React.Component {
   }
 }
 
+const onMobileSearchChange = (e, setFieldValue) => {
+  const domain = e.target.value.toLowerCase();
+  setFieldValue('domainName', domain, false)
+}
+
 class LookupForm extends React.Component {
   render() {
-    const { handleSubmit, values, handleChange, warningCanBeDisplayed } = this.props;
+    const { handleSubmit, values, handleChange, warningCanBeDisplayed, setFieldValue } = this.props;
 
     return (
       <Fragment>
@@ -326,7 +331,7 @@ class LookupForm extends React.Component {
               type="search"
               placeholder='Search for available name'
               value={values.domainName}
-              onChange={handleChange}
+              onChange={ev => onMobileSearchChange(ev, setFieldValue)}
               required
               wide/>
             {warningCanBeDisplayed && <WarningBlock {...this.props} />}
