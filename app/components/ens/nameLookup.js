@@ -303,11 +303,6 @@ class WarningBlock extends React.Component {
   }
 }
 
-const onMobileSearchChange = (e, setFieldValue) => {
-  const domain = e.target.value.toLowerCase();
-  setFieldValue('domainName', domain, false)
-}
-
 class LookupForm extends React.Component {
   render() {
     const { handleSubmit, values, handleChange, warningCanBeDisplayed, setFieldValue } = this.props;
@@ -329,9 +324,10 @@ class LookupForm extends React.Component {
             <MobileSearch
               name="domainName"
               type="search"
+              style={{ textTransform: 'lowercase' }}
               placeholder='Search for available name'
               value={values.domainName}
-              onChange={ev => onMobileSearchChange(ev, setFieldValue)}
+              onChange={handleChange}
               required
               wide/>
             {warningCanBeDisplayed && <WarningBlock {...this.props} />}
