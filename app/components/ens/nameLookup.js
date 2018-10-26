@@ -294,8 +294,9 @@ class WarningBlock extends React.Component {
 
     if (status && status.domainNameStatus === DomainNameStatus.InvalidName) {
       return <Warning>Names are made with<br/>letters and numbers only</Warning>
-    }
-    else if (status) {
+    } else if (status && status.domainNameStatus === DomainNameStatus.TosViolation) {
+      return <Warning>This name is not allowed by the terms & conditions. Please try another.</Warning>
+    } else if (status) {
       return <Warning>This name is reserved for security purposes. Please try another.</Warning>
     }
     return null;
@@ -341,9 +342,13 @@ class LookupForm extends React.Component {
   }
 }
 
-const DomainNameStatus = Object.freeze({"Correct": 1, "InvalidName": 2, "ReservedName": 3});
+const DomainNameStatus = Object.freeze({"Correct": 1, "InvalidName": 2, "ReservedName": 3, "TosViolation": 4});
 const getDomainNameStatus = val => {
   const value = val.toLowerCase().trim();
+
+  if (value !== val.trim()) return DomainNameStatus.TosViolation;
+  if (value.length < 4) return DomainNameStatus.TosViolation;
+  if (value.slice(0, 2) === '0x') return DomainNameStatus.TosViolation;
 
   if (/^([a-z0-9]+)$/.test(value)) {
     if (ReservedUsernames.includes(value)) {
