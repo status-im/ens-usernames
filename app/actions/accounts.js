@@ -23,12 +23,15 @@ export const fetchAndDispatchAccountsWithBalances = (web3, dispatch) => {
     }
   })
 }
-export const checkAndDispatchStatusContactCode = (dispatch, callback) => {
+export const checkAndDispatchStatusContactCode = (dispatch) => {
   window.web3.currentProvider.status
     .getContactCode()
     .then(data => {
-      callback(data);
-      dispatch(receiveStatusContactCode(data));
+      setTimeout(() => {
+        // This seems to be required with Status api calls.
+        // This could be a bug with the client itself as the issue is found in other contexts.
+        dispatch(receiveStatusContactCode(data))
+      }, 0);
     })
     .catch(err => {
       console.warn('Error:', err);

@@ -3,7 +3,6 @@ import web3 from 'web3';
 import EmbarkJS from 'Embark/EmbarkJS';
 import { connect } from 'react-redux';
 import { actions as accountActions, getDefaultAccount } from '../../reducers/accounts';
-import { checkAndDispatchStatusContactCode } from '../../actions/accounts';
 import { hash } from 'eth-ens-namehash';
 import { isNil } from 'lodash';
 import Hidden from '@material-ui/core/Hidden';

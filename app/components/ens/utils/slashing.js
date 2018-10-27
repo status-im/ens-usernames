@@ -3,7 +3,6 @@ export const addressLikeUsername = username => {
   const firstIsZero = username[0] === "0";
   const secondIsX = username[1].toLowerCase() === "x";
   let isAddress = false;
-  debugger
   if (length > 12 && firstIsZero && secondIsX) {
     username.slice(2, 7).split("").forEach(letter => {
       const code = letter.charCodeAt();

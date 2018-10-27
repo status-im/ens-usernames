@@ -25,12 +25,6 @@ const formRef = React.createRef();
 const displayTerms = status => status === 'terms';
 
 class InnerForm extends React.Component {
-  requestStatusContactCode = ({getStatusContactCode, setValues, values}) => {
-    getStatusContactCode((result) => {
-      setValues({...values, statusAddress: result});
-    });
-  };
-
   onRegisterClick = ({values, setStatus}) => {
     setStatus("terms");
   };
@@ -49,7 +43,9 @@ class InnerForm extends React.Component {
       domainPrice,
       editAccount,
       setStatus,
-      status
+      status,
+      statusContactCode,
+      requestStatusContactCode
     } = this.props;
 
     return (
@@ -134,9 +130,9 @@ class InnerForm extends React.Component {
                         text={values.address}/>
 
             <DisplayBox displayType={YOUR_CONTACT_CODE}
-                        text={values.statusAddress}
-                        showBlueBox={!values.statusAddress}
-                        onClick={() => this.requestStatusContactCode(this.props)}/>
+                        text={statusContactCode}
+                        showBlueBox={!statusContactCode}
+                        onClick={() => requestStatusContactCode()}/>
 
             <div style={{display: 'flex', flexDirection: 'row-reverse', marginTop: '16px', marginBottom: '16px'}}>
               {!isSubmitting ?
@@ -250,8 +246,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToDisplayBoxProps = dispatch => ({
-  getStatusContactCode(callback) {
-    checkAndDispatchStatusContactCode(dispatch, callback);
+  requestStatusContactCode() {
+    checkAndDispatchStatusContactCode(dispatch);
   },
 });
 
