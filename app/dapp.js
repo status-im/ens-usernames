@@ -29,7 +29,7 @@ const isReady = (network, environment) => {
   if (formattedNetwork.includes('main') || formattedNetwork.includes('live')) {
     if (environment === 'livenet') return true
   }
-  return formattedNetwork.inclues(environment.toLowerCase());
+  return formattedNetwork.includes(environment.toLowerCase());
 }
 
 const Web3RenderContent = ({ network, history, match, environment }) => (
