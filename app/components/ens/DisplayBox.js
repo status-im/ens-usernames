@@ -9,12 +9,13 @@ const DisplayLabel = styled.div`
 `;
 
 const DisplayBoxDiv = styled.div`
-  border: 1px solid #EEF2F5;
+  border: ${props => props.showBlueBox ? "0px" : "1px solid #EEF2F5"};
   border-radius: 8px;
   margin: 7px 12px 14px 12px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  background:  ${props => props.showBlueBox ? "rgba(67, 96, 223, 0.1)" : "white"};
   align-items: ${props => props.showBlueBox ? "center" : "initial"};
   word-wrap: break-word;
   min-height: ${props => props.onClick ? "112px" : "0px"};
