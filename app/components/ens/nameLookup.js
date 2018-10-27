@@ -36,6 +36,7 @@ import DisplayBox from './DisplayBox';
 import styled from "styled-components";
 import { Route } from "react-router-dom";
 import { ReservedUsernames } from '../../../config/ens-usernames/reservedNames'
+import { addressLikeUsername } from '../ens/utils/slashing';
 
 const normalizer = new IDNANormalizer();
 const invalidSuffix = '0000000000000000000000000000000000000000'
@@ -164,7 +165,6 @@ const InfoHeading = styled.h2`
   text-align: center;
   letter-spacing: -0.275px;
   margin: 0 0 12px 0;
-  
   color: #FFFFFF;
 `;
 
@@ -349,7 +349,7 @@ const getDomainNameStatus = val => {
 
   if (value !== val.trim()) return DomainNameStatus.TosViolation;
   if (value.length < 4) return DomainNameStatus.TosViolation;
-  if (value.slice(0, 2) === '0x') return DomainNameStatus.TosViolation;
+  if (addressLikeUsername(value)) return DomainNameStatus.TosViolation;
 
   if (/^([a-z0-9]+)$/.test(value)) {
     if (ReservedUsernames.includes(value)) {
