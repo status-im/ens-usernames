@@ -3,7 +3,6 @@ import web3 from 'web3';
 import EmbarkJS from 'Embark/EmbarkJS';
 import { connect } from 'react-redux';
 import { actions as accountActions, getDefaultAccount } from '../../reducers/accounts';
-import { checkAndDispatchStatusContactCode } from '../../actions/accounts';
 import { hash } from 'eth-ens-namehash';
 import { isNil } from 'lodash';
 import Hidden from '@material-ui/core/Hidden';
@@ -36,6 +35,7 @@ import DisplayBox from './DisplayBox';
 import styled from "styled-components";
 import { Route } from "react-router-dom";
 import { ReservedUsernames } from '../../../config/ens-usernames/reservedNames'
+import { addressLikeUsername } from '../ens/utils/slashing';
 
 const normalizer = new IDNANormalizer();
 const invalidSuffix = '0000000000000000000000000000000000000000'
@@ -149,7 +149,7 @@ class RenderAddresses extends PureComponent {
         </Hidden>
         <Hidden mdUp>
           {submitted ? <TransactionComplete type={editAction} setStatus={setStatus} /> : <MobileAddressDisplay {...this.props} isOwner={isOwner} edit={editAction === 'edit'} onSubmit={() => { this.setState({ submitted: true}) }}/>}
-          {/* {isOwner && !editAction && <MobileButton text="Edit" style={{ margin: 'auto', display: 'block' }} onClick={onClickEdit}/>} */}
+          {isOwner && !editAction && <MobileButton text="Edit" style={{ margin: 'auto', display: 'block' }} onClick={onClickEdit}/>}
           <EditOptions open={editMenu} onClose={onClose} canBeReleased={canBeReleased} />
           <ReleaseDomainAlert open={editAction === 'release' && !submitted} handleClose={closeReleaseAlert} />
         </Hidden>
@@ -164,7 +164,6 @@ const InfoHeading = styled.h2`
   text-align: center;
   letter-spacing: -0.275px;
   margin: 0 0 12px 0;
-  
   color: #FFFFFF;
 `;
 
@@ -294,8 +293,9 @@ class WarningBlock extends React.Component {
 
     if (status && status.domainNameStatus === DomainNameStatus.InvalidName) {
       return <Warning>Names are made with<br/>letters and numbers only</Warning>
-    }
-    else if (status) {
+    } else if (status && status.domainNameStatus === DomainNameStatus.TosViolation) {
+      return <Warning>This name is not allowed by the terms & conditions. Please try another.</Warning>
+    } else if (status) {
       return <Warning>This name is reserved for security purposes. Please try another.</Warning>
     }
     return null;
@@ -304,7 +304,7 @@ class WarningBlock extends React.Component {
 
 class LookupForm extends React.Component {
   render() {
-    const { handleSubmit, values, handleChange, warningCanBeDisplayed } = this.props;
+    const { handleSubmit, values, handleChange, warningCanBeDisplayed, setFieldValue } = this.props;
 
     return (
       <Fragment>
@@ -323,6 +323,7 @@ class LookupForm extends React.Component {
             <MobileSearch
               name="domainName"
               type="search"
+              style={{ textTransform: 'lowercase' }}
               placeholder='Search for available name'
               value={values.domainName}
               onChange={handleChange}
@@ -341,9 +342,13 @@ class LookupForm extends React.Component {
   }
 }
 
-const DomainNameStatus = Object.freeze({"Correct": 1, "InvalidName": 2, "ReservedName": 3});
+const DomainNameStatus = Object.freeze({"Correct": 1, "InvalidName": 2, "ReservedName": 3, "TosViolation": 4});
 const getDomainNameStatus = val => {
   const value = val.toLowerCase().trim();
+
+  if (value !== val.trim()) return DomainNameStatus.TosViolation;
+  if (value.length < 4) return DomainNameStatus.TosViolation;
+  if (addressLikeUsername(value)) return DomainNameStatus.TosViolation;
 
   if (/^([a-z0-9]+)$/.test(value)) {
     if (ReservedUsernames.includes(value)) {

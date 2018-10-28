@@ -1,7 +1,7 @@
 import web3 from "Embark/web3"
 import UsernameRegistrar from 'Embark/contracts/UsernameRegistrar';
 import TestToken from 'Embark/contracts/TestToken';
-import React from 'react';
+import React, { Fragment } from 'react';
 import {connect} from 'react-redux';
 import Hidden from '@material-ui/core/Hidden';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -11,6 +11,8 @@ import {hash} from 'eth-ens-namehash';
 import {zeroAddress, zeroBytes32, formatPrice} from './utils';
 import {getStatusContactCode, getSNTAllowance, getCurrentAccount} from '../../reducers/accounts';
 import FieldGroup from '../standard/FieldGroup';
+import Field from '../../ui/components/Field';
+import MobileSearch from '../../ui/components/MobileSearch';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Terms from './terms';
 import {generateXY} from '../../utils/ecdsa';
@@ -25,14 +27,13 @@ const formRef = React.createRef();
 const displayTerms = status => status === 'terms';
 
 class InnerForm extends React.Component {
-  requestStatusContactCode = ({getStatusContactCode, setValues, values}) => {
-    getStatusContactCode((result) => {
-      setValues({...values, statusAddress: result});
-    });
-  };
-
-  onRegisterClick = ({values, setStatus}) => {
-    setStatus("terms");
+  onRegisterClick = ({ values, setStatus, editAccount }) => {
+    if (editAccount) {
+      setStatus(null);
+      formRef.current.dispatchEvent(new Event('submit'));
+    } else {
+      setStatus("terms");
+    }
   };
 
   render() {
@@ -49,54 +50,56 @@ class InnerForm extends React.Component {
       domainPrice,
       editAccount,
       setStatus,
-      status
+      status,
+      statusContactCode,
+      requestStatusContactCode
     } = this.props;
 
     return (
       <form onSubmit={handleSubmit} ref={formRef}>
         <div style={{margin: '12px'}}>
           {!subDomain &&
-          <FieldGroup
-            id="subDomain"
-            name="subDomain"
-            type="text"
-            label="Sub Domain"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.subDomain}
-            error={errors.subDomain}
-          />}
+           <FieldGroup
+             id="subDomain"
+             name="subDomain"
+             type="text"
+             label="Sub Domain"
+             onChange={handleChange}
+             onBlur={handleBlur}
+             value={values.subDomain}
+             error={errors.subDomain}
+           />}
           {!domainName &&
-          <FieldGroup
-            id="domainName"
-            name="domainName"
-            type="text"
-            label="Domain Name"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.domainName}
-            button={
-              <Button
-                mode="strong"
-                style={{marginTop: '5px'}}
+           <FieldGroup
+             id="domainName"
+             name="domainName"
+             type="text"
+             label="Domain Name"
+             onChange={handleChange}
+             onBlur={handleBlur}
+             value={values.domainName}
+             button={
+               <Button
+                 mode="strong"
+                       style={{marginTop: '5px'}}
                 onClick={() => {
-                  UsernameRegistrar.methods.getPrice()
-                    .call()
-                    .then((res) => {
-                      setFieldValue('price', fromWei(res));
-                    });
+                    UsernameRegistrar.methods.getPrice()
+                                     .call()
+                                     .then((res) => {
+                                       setFieldValue('price', fromWei(res));
+                                     });
                 }}>
-                Get Price
-              </Button>
-            }
-          />}
+                 Get Price
+               </Button>
+             }
+           />}
           {!domainPrice &&
-          <FieldGroup
-            id="price"
-            name="price"
-            label="Domain Price"
-            disabled
-            value={values.price ? `${formatPrice(values.price)} SNT` : ''}/>}
+           <FieldGroup
+             id="price"
+             name="price"
+             label="Domain Price"
+             disabled
+             value={values.price ? `${formatPrice(values.price)} SNT` : ''}/>}
           <Hidden mdDown>
             <FieldGroup
               id="statusAddress"
@@ -119,47 +122,71 @@ class InnerForm extends React.Component {
               value={values.address}
               error={errors.address}
               button={<Button mode="strong"
-                              style={{padding: '5px 15px 5px 15px', marginTop: '5px'}}
+                                    style={{padding: '5px 15px 5px 15px', marginTop: '5px'}}
                               onClick={() => setFieldValue('address', web3.eth.defaultAccount)}>Use My Primary
                 Address</Button>}
             />
             {!isSubmitting ? <Button wide mode="strong" type="submit"
-                                     disabled={isSubmitting || !!Object.keys(errors).length}>{!isSubmitting ? 'Submit' : 'Submitting to the Blockchain - (this may take awhile)'}</Button> :
-              <LinearProgress/>}
+                               disabled={isSubmitting || !!Object.keys(errors).length}>{!isSubmitting ? 'Submit' : 'Submitting to the Blockchain - (this may take awhile)'}</Button> :
+             <LinearProgress/>}
           </Hidden>
 
           <Hidden mdUp>
 
-            <DisplayBox displayType={YOUR_WALLET_ADDRESS}
-                        text={values.address}/>
+            {!editAccount ? <Fragment>
+              <DisplayBox displayType={YOUR_WALLET_ADDRESS}
+                text={values.address}/>
 
-            <DisplayBox displayType={YOUR_CONTACT_CODE}
-                        text={values.statusAddress}
-                        showBlueBox={!values.statusAddress}
-                        onClick={() => this.requestStatusContactCode(this.props)}/>
+              <DisplayBox displayType={YOUR_CONTACT_CODE}
+                text={statusContactCode}
+                showBlueBox={!statusContactCode}
+                onClick={() => requestStatusContactCode()}/>
+            </Fragment> :
+            <Fragment>
+              <Field label="Your Wallet Address">
+                <MobileSearch
+                  name="address"
+                  style={{ marginTop: '10px' }}
+                  placeholder="Your wallet address"
+                  value={values.address}
+                  onChange={handleChange}
+                  onClick={() => setFieldValue('address', '')}
+                  required
+                  wide />
+              </Field>
+              <Field label="Your contact code">
+                <MobileSearch
+                  name="statusAddress"
+                  style={{ marginTop: '10px' }}
+                  placeholder="Enter Your Status Messenger Address Here"
+                  value={values.statusAddress}
+                  onChange={handleChange}
+                  onClick={() => setFieldValue('statusAddress', '')}
+                  wide />
+              </Field>
+            </Fragment>}
 
             <div style={{display: 'flex', flexDirection: 'row-reverse', marginTop: '16px', marginBottom: '16px'}}>
               {!isSubmitting ?
-                <ArrowButton onClick={(e) => {
-                  this.onRegisterClick(this.props);
-                  e.preventDefault();
-                }}>
-                  <div>
-                    {`${editAccount ? 'Save' : 'Register'}`}
-                  </div>
-                </ArrowButton>
-                :
-                <div style={{flex: 1, textAlign: 'center'}}>
-                  <CircularProgress/>
-                </div>
+               <ArrowButton onClick={(e) => {
+                   this.onRegisterClick(this.props);
+               }}>
+                 <div>
+                   {`${editAccount ? 'Update' : 'Register'}`}
+                 </div>
+               </ArrowButton>
+               :
+               <div style={{flex: 1, textAlign: 'center'}}>
+                 <CircularProgress/>
+               </div>
               }
 
               <Terms open={displayTerms(status)}
-                     onSubmit={() => {
-                       setStatus(null);
-                       formRef.current.dispatchEvent(new Event('submit'))
-                     }}
-                     form={formRef}/>
+                onSubmit={() => {
+                    setStatus(null);
+                    formRef.current.dispatchEvent(new Event('submit'))
+                }}
+                form={formRef}/>
             </div>
 
 
@@ -202,7 +229,7 @@ const RegisterSubDomain = withFormik({
     ];
     if (editAccount) {
       if (address !== web3.eth.defaultAccount) funcsToSend.push(setAddr(node, resolveToAddr));
-      if (statusAddress && statusAddress !== props.statusContactCode) funcsToSend.push(setPubkey(node, args[3], args[4]));
+      if (statusAddress && statusAddress !== props.statusContactCode) funcsToSend.push(setPubkey(node, args[2], args[3]));
     } else {
       funcsToSend.push(
         approveAndCall(UsernameRegistrar.address, domainPrice, register(...args).encodeABI())
@@ -250,8 +277,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToDisplayBoxProps = dispatch => ({
-  getStatusContactCode(callback) {
-    checkAndDispatchStatusContactCode(dispatch, callback);
+  requestStatusContactCode() {
+    checkAndDispatchStatusContactCode(dispatch);
   },
 });
 
