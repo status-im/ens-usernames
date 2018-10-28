@@ -170,7 +170,6 @@ class InnerForm extends React.Component {
               {!isSubmitting ?
                <ArrowButton onClick={(e) => {
                    this.onRegisterClick(this.props);
-                   //e.preventDefault();
                }}>
                  <div>
                    {`${editAccount ? 'Update' : 'Register'}`}
