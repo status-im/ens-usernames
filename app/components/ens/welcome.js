@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import {StyledButton} from '../../ui/components';
 import StatusCards from '../../ui/icons/svg/intro_name.svg';
@@ -11,7 +12,7 @@ const WelcomeContent = () => (
 
     <ol className="ens-welcome__list">
       <li className="item">
-        <div className="title">Simplify your ETH address</div>
+        <div className="title">{lang.t('welcome.step.one.title')}</div>
         <div className="text">Your complex wallet address (0x...) becomes an easy to read, remember & share URL: <span
           className="ens-welcome__highlight">myname.stateofus.eth</span></div>
       </li>
