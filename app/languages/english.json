@@ -1,10 +1,23 @@
 {
   "welcome": {
+    "cta": "Let's Go",
+    "disclaimer": "Powered by Ethereum Name Services",
+    "eth_address_example": "myname.stateofus.eth",
+    "how": "How it works",
     "step": {
       "one": {
-        "title": "Simplify your ETH address"
+        "title": "Simplify your ETH address",
+        "subtitle": "Your complex wallet address (0x...) becomes an easy to read, remember & share URL:"
+      },
+      "two": {
+        "title": "10 SNT to register",
+        "subtitle": "Register once to keep the name forever. After 1 year, you can release the name and get your SNT back."
+      },
+      "three": {
+        "title": "Connect & get paid",
+        "subtitle": "Share your name to chat on Status or receive ETH and tokens."
       }
-    }
+    },
+    "title": "ENS names transform those crazy-long addresses into unique usernames"
   }
-
 }

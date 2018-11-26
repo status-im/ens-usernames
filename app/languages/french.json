@@ -1,10 +1,23 @@
 {
   "welcome": {
+    "cta": "C'est parti",
+    "disclaimer": "Propulsé par Ethereum Name Services",
+    "eth_address_example": "myname.stateofus.eth",
+    "how": "Comment ça marche",
     "step": {
       "one": {
-        "title": "Simplifiez votre adresse ETH"
+        "title": "Simplifiez votre adresse ETH",
+        "subtitle": "Votre complexe adresse de portefeuille (0x...) devient facile à lire, à mémoriser et à partager l'URL:"
+      },
+      "two": {
+        "title": "10 SNT pour l'enregister",
+        "subtitle": "Enregistrez le nom pour toujours. Après une année, vous pouvez libérer le nom et recevoir vos SNT en retour."
+      },
+      "three": {
+        "title": "Connectez-vous et recevez des paiements",
+        "subtitle": "Partagez votre nom sur le chat de Status ou recevez des ETH ainsi que des tokens."
       }
-    }
+    },
+    "title": "Les noms ENS transforment vos très longues adresses en d'unique noms d'utilisateur"
   }
-
 }
