@@ -1,4 +1,8 @@
 {
+  "constants" : {
+    "contact_code": "Votre code de contact",
+    "wallet_address": "Votre adresse de portefeuille"
+  },
   "error": {
     "connect": "Veuillez vous connecter au réseau Ethereum %{network} pour continuer."
   },
