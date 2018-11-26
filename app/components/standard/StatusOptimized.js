@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -32,7 +33,7 @@ function ButtonAppBar(props) {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="title" color="inherit" className={classes.flex}>
-            This site is optimized for Status. Get the App to enable all features and get the best experience.
+            {lang.t('optimized')}
           </Typography>
           <IconButton color="inherit" aria-label="iPhone" href="https://status.im/success.html" target="_blank">
             <IPhone />
