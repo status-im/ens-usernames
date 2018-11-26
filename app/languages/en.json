@@ -2,6 +2,9 @@
   "error": {
     "connect": "Please connect to Ethereum %{network} to continue."
   },
+  "navbar":{
+     "brand": "Status.im Demo"
+  },
   "optimized": "This site is optimized for Status. Get the App to enable all features and get the best experience.",
   "welcome": {
     "cta": "Let's Go",
