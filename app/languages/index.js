@@ -1,9 +1,9 @@
-import english from './english.json';
-import french from './french.json';
+import en from './en.json';
+import fr from './fr.json';
 
 const translations = {
-  en: english,
-  fr: french,
+  en,
+  fr,
 };
 
 export default translations;
