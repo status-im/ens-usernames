@@ -2,9 +2,12 @@
   "action" : {
     "edit_contact_code": "Edit Contact Code",
     "grant_access": "Grant access",
+    "register": "Register",
     "release_name": "Release Name",
     "submit": "Submit",
-    "submitting_to_blockchain": "Submitting to the Blockchain - (this may take awhile)"
+    "submitting_to_blockchain": "Submitting to the Blockchain - (this may take awhile)",
+    "update": "Update",
+    "use_my_primary_address": "Use My Primary Address"
   },
   "constants" : {
     "contact_code": "Your contact code",
@@ -31,12 +34,28 @@
     },
     "subheading": "Follow the progress in the Transaction History section of your wallet."
   },
+  "domain": {
+    "ethereum_address": {
+      "error": "Not a valid address",
+      "label": "Ethereum address domain resolves to"
+    },
+    "move": {
+      "new_address": "New Controller Address"
+    },
+    "name": {
+      "label": "Domain Name"
+    },
+    "price": {
+      "label": "Domain Price"
+    },
+    "status_address": {
+      "label": "Status messenger address domain resolves to",
+      "placeholder": "Enter Your Status Messenger Address Here"
+    }
+  },
   "error": {
     "connect": "Please connect to Ethereum %{network} to continue.",
     "valid_address": "Please enter a valid address"
-  },
-  "move_domain": {
-    "new_address": "New Controller Address"
   },
   "navbar":{
      "brand": "Status.im Demo"
@@ -56,6 +75,12 @@
       "label": "Registry Price",
       "placeholder": "(Optional) Registry will be free if left blank"
     }
+  },
+  "sub_domain": {
+    "error": {
+      "required": "Required"
+    },
+    "label": "Sub Domain"
   },
   "welcome": {
     "cta": "Let's Go",
