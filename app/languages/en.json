@@ -18,6 +18,21 @@
      "brand": "Status.im Demo"
   },
   "optimized": "This site is optimized for Status. Get the App to enable all features and get the best experience.",
+  "registry": {
+    "error": {
+      "name": {
+        "owned": "This registry is not owned by registry",
+        "required": "Required"
+      }
+    },
+    "name": {
+      "label": "Registry Name"
+    },
+    "price": {
+      "label": "Registry Price",
+      "placeholder": "(Optional) Registry will be free if left blank"
+    }
+  },
   "welcome": {
     "cta": "Let's Go",
     "disclaimer": "Powered by Ethereum Name Services",

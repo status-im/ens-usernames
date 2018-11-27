@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import UsernameRegistrar from 'Embark/contracts/UsernameRegistrar';
 import web3 from 'web3';
 import ENSRegistry from 'Embark/contracts/ENSRegistry';
@@ -36,7 +37,7 @@ const InnerForm = ({
       id="registryName"
       name="registryName"
       type="text"
-      label="Registry Name"
+      label={lang.t('registry.name.label')}
       onChange={handleChange}
       onBlur={handleBlur}
       value={values.registryName}
@@ -46,13 +47,13 @@ const InnerForm = ({
       id="registryPrice"
       name="registryPrice"
       type="number"
-      label="Registry Price"
-      placeholder="(Optional) Registry will be free if left blank"
+      label={lang.t('registry.price.label')}
+      placeholder={lang.t('registry.price.placeholder')}
       onChange={handleChange}
       onBlur={handleBlur}
       value={values.registryPrice}
     />
-    <Button bsStyle="primary" type="submit" disabled={isSubmitting || !!Object.keys(errors).length}>{!isSubmitting ? 'Submit' : 'Submitting to the Blockchain - (this may take awhile)'}</Button>
+    <Button bsStyle="primary" type="submit" disabled={isSubmitting || !!Object.keys(errors).length}>{!isSubmitting ? lang.t('action.submit') : lang.t('action.submitting_to_blockchain')}</Button>
   </form>
 )
 
@@ -61,8 +62,8 @@ const AddRegistry = withFormik({
   async validate(values) {
     const { registryName } = values;
     const errors = {};
-    if (!registryName) errors.registryName = 'Required';
-    if (registryName && !await getAndIsOwner(registryName)) errors.registryName = 'This registry is not owned by registry';
+    if (!registryName) errors.registryName = lang.t('registry.error.name.required');
+    if (registryName && !await getAndIsOwner(registryName)) errors.registryName = lang.t('registry.error.name.owned');
     if (Object.keys(errors).length) throw errors;
   },
   async handleSubmit(values, { setSubmitting }) {
