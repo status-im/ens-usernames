@@ -3,6 +3,8 @@
     "cancel": "Cancel",
     "edit_contact_code": "Edit Contact Code",
     "grant_access": "Grant access",
+    "mint": "Mint",
+    "mint_test_token": "Mint Test Token",
     "register": "Register",
     "release_name": "Release Name",
     "setup_ens": "ADD INITIAL NODES TO ENS",

@@ -3,6 +3,8 @@
     "cancel": "Annuler",
     "edit_contact_code": "Editez le code de contact",
     "grant_access": "Donnez l'accès",
+    "mint": "Minter",
+    "mint_test_token": "Mintez Jeton de Test",
     "register": "Enregistrer",
     "release_name": "Libérez le nom",
     "setup_ens": "AJOUTEZ LES NODES INITIAUX À ENS",
