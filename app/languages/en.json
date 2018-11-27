@@ -1,5 +1,6 @@
 {
   "action" : {
+    "cancel": "Cancel",
     "edit_contact_code": "Edit Contact Code",
     "grant_access": "Grant access",
     "register": "Register",
@@ -7,7 +8,8 @@
     "submit": "Submit",
     "submitting_to_blockchain": "Submitting to the Blockchain - (this may take awhile)",
     "update": "Update",
-    "use_my_primary_address": "Use My Primary Address"
+    "use_my_primary_address": "Use My Primary Address",
+    "yes": "Yes"
   },
   "constants" : {
     "contact_code": "Your contact code",
@@ -47,6 +49,12 @@
     },
     "price": {
       "label": "Domain Price"
+    },
+    "release": {
+      "alert": {
+        "text": "Your SNT deposit will be returned and name will be available to other users.",
+        "title": "Release domain?"
+      }
     },
     "status_address": {
       "label": "Status messenger address domain resolves to",

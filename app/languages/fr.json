@@ -1,5 +1,6 @@
 {
   "action" : {
+    "cancel": "Annuler",
     "edit_contact_code": "Editez le code de contact",
     "grant_access": "Donnez l'accès",
     "register": "Enregistrer",
@@ -7,7 +8,8 @@
     "submit": "Envoyer",
     "submitting_to_blockchain": "En cours d'envoie à la Blockchain - (ceci peut prendre quelque temps)",
     "update": "Mettre à jour",
-    "use_my_primary_address": "Utiliser mon adresse principale"
+    "use_my_primary_address": "Utiliser mon adresse principale",
+    "yes": "Oui"
   },
   "constants" : {
     "contact_code": "Votre code de contact",
@@ -47,6 +49,12 @@
     },
     "price": {
       "label": "Prix du domaine"
+    },
+    "release": {
+      "alert": {
+        "text": "Votre dépot de SNT vous sera retourné et le nom sera disponible pour d'autres utilisateurs.",
+        "title": "Libérez le domaine ?"
+      }
     },
     "status_address": {
       "label": "Adresse Status messenger du domaine résout vers",
