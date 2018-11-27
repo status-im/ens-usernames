@@ -1,5 +1,6 @@
 {
   "action" : {
+    "grant_access": "Grant access",
     "submit": "Submit",
     "submitting_to_blockchain": "Submitting to the Blockchain - (this may take awhile)"
   },

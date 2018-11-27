@@ -1,5 +1,6 @@
 {
   "action" : {
+    "grant_access": "Donnez l'accès",
     "submit": "Envoyer",
     "submitting_to_blockchain": "En cours d'envoie à la Blockchain - (ceci peut prendre quelque temps)"
   },
