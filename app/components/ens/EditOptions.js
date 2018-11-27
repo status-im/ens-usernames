@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -47,13 +48,13 @@ class SimpleDialog extends React.Component {
             <ListItemIcon>
                 <EditIcon />
             </ListItemIcon>
-            <ListItemText primary="Edit Contact Code" />
+            <ListItemText primary={lang.t('action.edit_contact_code')} />
           </ListItem>
           {canBeReleased && <ListItem button onClick={() => this.handleListItemClick('release')}>
             <ListItemIcon>
                 <DeleteOutline />
             </ListItemIcon>
-            <ListItemText primary="Release Name" />
+            <ListItemText primary={lang.t('action.release_name')} />
           </ListItem>}
         </List>
       </Dialog>
@@ -69,4 +70,3 @@ SimpleDialog.propTypes = {
 
 const SimpleDialogWrapped = withStyles(styles)(SimpleDialog);
 export default SimpleDialogWrapped;
-

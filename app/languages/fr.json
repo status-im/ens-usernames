@@ -1,6 +1,8 @@
 {
   "action" : {
+    "edit_contact_code": "Editez le code de contact",
     "grant_access": "Donnez l'accès",
+    "release_name": "Libérez le nom",
     "submit": "Envoyer",
     "submitting_to_blockchain": "En cours d'envoie à la Blockchain - (ceci peut prendre quelque temps)"
   },

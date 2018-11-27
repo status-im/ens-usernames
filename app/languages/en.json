@@ -1,6 +1,8 @@
 {
   "action" : {
+    "edit_contact_code": "Edit Contact Code",
     "grant_access": "Grant access",
+    "release_name": "Release Name",
     "submit": "Submit",
     "submitting_to_blockchain": "Submitting to the Blockchain - (this may take awhile)"
   },
