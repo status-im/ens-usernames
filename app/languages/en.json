@@ -42,11 +42,11 @@
       "error": "Not a valid address",
       "label": "Ethereum address domain resolves to"
     },
-    "move": {
-      "new_address": "New Controller Address"
-    },
     "name": {
       "label": "Domain Name"
+    },
+    "new_address": {
+      "label": "New Controller Address"
     },
     "price": {
       "label": "Domain Price"

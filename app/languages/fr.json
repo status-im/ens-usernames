@@ -42,11 +42,11 @@
       "error": "Adresse invalide",
       "label": "Adresse Ethereum du domaine résout vers"
     },
-    "move": {
-      "new_address": "Nouvelle adresse du contrôleur"
-    },
     "name": {
       "label": "Nom du domaine"
+    },
+    "new_address": {
+      "label": "Nouvelle adresse du contrôleur"
     },
     "price": {
       "label": "Prix du domaine"
