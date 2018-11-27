@@ -1,10 +1,18 @@
 {
+  "action" : {
+    "submit": "Submit",
+    "submitting_to_blockchain": "Submitting to the Blockchain - (this may take awhile)"
+  },
   "constants" : {
     "contact_code": "Your contact code",
     "wallet_address": "Your wallet address"
   },
   "error": {
-    "connect": "Please connect to Ethereum %{network} to continue."
+    "connect": "Please connect to Ethereum %{network} to continue.",
+    "valid_address": "Please enter a valid address"
+  },
+  "move_domain": {
+    "new_address": "New Controller Address"
   },
   "navbar":{
      "brand": "Status.im Demo"

@@ -1,10 +1,18 @@
 {
+  "action" : {
+    "submit": "Envoyer",
+    "submitting_to_blockchain": "En cours d'envoie à la Blockchain - (ceci peut prendre quelque temps)"
+  },
   "constants" : {
     "contact_code": "Votre code de contact",
     "wallet_address": "Votre adresse de portefeuille"
   },
   "error": {
-    "connect": "Veuillez vous connecter au réseau Ethereum %{network} pour continuer."
+    "connect": "Veuillez vous connecter au réseau Ethereum %{network} pour continuer.",
+    "valid_address": "Veuillez entrer une adresse valide"
+  },
+  "move_domain": {
+    "new_address": "Nouvelle adresse du contrôleur"
   },
   "navbar":{
      "brand": "Démo Status.im"

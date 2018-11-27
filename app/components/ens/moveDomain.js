@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import UsernameRegistrar from 'Embark/contracts/UsernameRegistrar';
 import web3 from 'web3';
 import React from 'react';
@@ -18,13 +19,13 @@ const InnerForm = ({
       id="newAddress"
       name="newAddress"
       type="text"
-      label="New Controller Address"
+      label={lang.t('move_domain.new_address')}
       onChange={handleChange}
       onBlur={handleBlur}
       value={values.newAddress}
       error={errors.newAddress}
     />
-    <Button bsStyle="primary" type="submit" disabled={isSubmitting || !!Object.keys(errors).length}>{!isSubmitting ? 'Submit' : 'Submitting to the Blockchain - (this may take awhile)'}</Button>
+    <Button bsStyle="primary" type="submit" disabled={isSubmitting || !!Object.keys(errors).length}>{!isSubmitting ? lang.t('action.submit') : lang.t('action.submitting_to_blockchain')}</Button>
   </form>
 )
 
@@ -34,7 +35,7 @@ const MoveDomain = withFormik({
     const { utils: { isAddress } } = web3;
     const { newAddress } = values;
     const errors = {};
-    if (!isAddress(newAddress)) errors.newAddress = 'Please enter a valid address'
+    if (!isAddress(newAddress)) errors.newAddress = lang.t('error.valid_address')
     if (Object.keys(errors).length) throw errors;
   },
   async handleSubmit(values, { setSubmitting }) {
