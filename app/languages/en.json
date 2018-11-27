@@ -5,6 +5,7 @@
     "grant_access": "Grant access",
     "register": "Register",
     "release_name": "Release Name",
+    "setup_ens": "ADD INITIAL NODES TO ENS",
     "submit": "Submit",
     "submitting_to_blockchain": "Submitting to the Blockchain - (this may take awhile)",
     "update": "Update",
