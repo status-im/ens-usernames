@@ -7,6 +7,27 @@
     "contact_code": "Your contact code",
     "wallet_address": "Your wallet address"
   },
+  "copy": {
+    "release": {
+      "title": {
+        "sub": "Done!",
+        "body": "The released username will be available to other users"
+      }
+    },
+    "registered": {
+      "title": {
+        "sub": "Nice!",
+        "body": "The name is yours once the transaction is complete"
+      }
+    },
+    "edit": {
+      "title": {
+        "sub": "Done!",
+        "body": "Your changes will be saved when the transaction is complete"
+      }
+    },
+    "subheading": "Follow the progress in the Transaction History section of your wallet."
+  },
   "error": {
     "connect": "Please connect to Ethereum %{network} to continue.",
     "valid_address": "Please enter a valid address"

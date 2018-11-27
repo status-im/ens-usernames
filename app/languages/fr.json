@@ -7,6 +7,27 @@
     "contact_code": "Votre code de contact",
     "wallet_address": "Votre adresse de portefeuille"
   },
+  "copy": {
+    "release": {
+      "title": {
+        "sub": "Fait!",
+        "body": "Le nom d'utilisateur publié sera disponible pour les autres utilisateurs"
+      }
+    },
+    "registered": {
+      "title": {
+        "sub": "Sympa!",
+        "body": "Le nom est le votre une fois que la transaction est complétée"
+      }
+    },
+    "edit": {
+      "title": {
+        "sub": "Fait!",
+        "body": "Your changes will be saved when the transaction is complete"
+      }
+    },
+    "subheading": "Suivez le progrès dans la rubrique Historique de Transactions de votre portefeuille."
+  },
   "error": {
     "connect": "Veuillez vous connecter au réseau Ethereum %{network} pour continuer.",
     "valid_address": "Veuillez entrer une adresse valide"
