@@ -126,7 +126,7 @@ class InnerForm extends React.Component {
                 <Button
                   mode="strong"
                   style={{padding: '5px 15px 5px 15px', marginTop: '5px'}}
-                  onClick={() => setFieldValue('address', web3.eth.defaultAccount)}\
+                  onClick={() => setFieldValue('address', web3.eth.defaultAccount)}
                 >
                   {lang.t('action.use_my_primary_address')}
                 </Button>

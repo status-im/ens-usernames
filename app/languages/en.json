@@ -1,15 +1,27 @@
 {
+  "account": {
+    "amount": "Amount",
+    "from": "From",
+    "of": "Of",
+    "read_token_balance": "Read account token balance",
+    "read_your_token_balance": "Read your account token balance",
+    "to": "To",
+    "transfer_approve_token_balance": "Transfer/Approve token balance",
+    "your_test_token_balance": "Your test token balance is"
+  },
   "action" : {
+    "approve": "Approve",
     "cancel": "Cancel",
     "edit_contact_code": "Edit Contact Code",
     "grant_access": "Grant access",
-    "mint": "Mint",
     "mint_test_token": "Mint Test Token",
+    "mint": "Mint",
     "register": "Register",
     "release_name": "Release Name",
     "setup_ens": "ADD INITIAL NODES TO ENS",
     "submit": "Submit",
     "submitting_to_blockchain": "Submitting to the Blockchain - (this may take awhile)",
+    "transfer": "Transfer",
     "update": "Update",
     "use_my_primary_address": "Use My Primary Address",
     "yes": "Yes"

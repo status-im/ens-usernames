@@ -1,15 +1,27 @@
 {
+  "account": {
+    "amount": "Montant",
+    "from": "De",
+    "of": "De",
+    "read_token_balance": "Lire le solde de tokens du compte",
+    "read_your_token_balance": "Lisez le solde de tokens de votre compte",
+    "to": "Vers",
+    "transfer_approve_token_balance": "Transférer/Approuver le solde de tokens",
+    "your_test_token_balance": "Votre solde de tokens de test est"
+  },
   "action" : {
+    "approve": "Approuver",
     "cancel": "Annuler",
     "edit_contact_code": "Editez le code de contact",
     "grant_access": "Donnez l'accès",
-    "mint": "Minter",
     "mint_test_token": "Mintez Jeton de Test",
+    "mint": "Minter",
     "register": "Enregistrer",
     "release_name": "Libérez le nom",
     "setup_ens": "AJOUTEZ LES NODES INITIAUX À ENS",
     "submit": "Envoyer",
     "submitting_to_blockchain": "En cours d'envoie à la Blockchain - (ceci peut prendre quelque temps)",
+    "transfer": "Transférer",
     "update": "Mettre à jour",
     "use_my_primary_address": "Utiliser mon adresse principale",
     "yes": "Oui"
