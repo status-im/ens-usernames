@@ -103,7 +103,14 @@
     "error": {
       "required": "Requis"
     },
-    "label": "Sous Domaine"
+    "label": "Sous-Domaine",
+    "management": {
+      "activate_registry": "Activer le registre/Mettre à jour le prix du registre",
+      "change_registry": "Changer le contrôleur du registre",
+      "move_domain": "Déplacer le domaine vers un autre registre",
+      "register_sub_domain": "Enregistrer le sous domaine",
+      "title": "Gestion du sous-domaine"
+    }
   },
   "welcome": {
     "cta": "Allons-y",

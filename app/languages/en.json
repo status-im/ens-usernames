@@ -103,7 +103,14 @@
     "error": {
       "required": "Required"
     },
-    "label": "Sub Domain"
+    "label": "Sub Domain",
+    "management": {
+      "activate_registry": "Activate Registry/Update Registry Price",
+      "change_registry": "Change Registry Controller",
+      "move_domain": "Move Domain To Another Registry",
+      "register_sub_domain": "Register Sub-Domain",
+      "title": "Subdomain Management"
+    }
   },
   "welcome": {
     "cta": "Let's Go",
