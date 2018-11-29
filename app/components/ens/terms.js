@@ -1,7 +1,8 @@
+import lang from 'i18n-js';
+import styled from 'styled-components';
 import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import {ArrowButton} from '../../ui/components';
-import styled from "styled-components";
+import { ArrowButton } from '../../ui/components';
 
 const TermsContainer = styled.div`
   word-wrap: break-word;
@@ -36,31 +37,34 @@ const ListContainer = styled.ul`
 const Terms = ({ open, onSubmit }) => (
   <Dialog fullScreen open={open}>
     <TermsContainer>
-      <InfoHeading className="ens-terms__title">Terms of name registration</InfoHeading>
-
+      <InfoHeading className="ens-terms__title">{lang.t('terms.title')}</InfoHeading>
       <TermsDescription>
         <ListContainer>
-          <li>Funds are deposited for 1 year. Your SNT will be locked, but not spent.</li>
-          <li>After 1 year, you can release the name and get your deposit back. The name is yours until you release it.</li>
-          <li>Names are created as a subdomain of <i>stateofus.eth</i>. They are property of Status and may be subject to new terms.</li>
-          <li>If the <i>stateofus.eth</i> contract terms change—e.g. Status makes contract upgrades—you have the right to get your deposit back, even for names held less than 1 year.</li>
-          <li> Names may not:
+          <li>{lang.t('terms.funds_deposit')}</li>
+          <li>{lang.t('terms.funds_release')}</li>
+          <li>{lang.t('terms.names_creation', { stateofus: <i>stateofus.eth</i> })}</li>
+          <li>{lang.t('terms.contract', { stateofus: <i>stateofus.eth</i> })}</li>
+          <li>{lang.t('terms.rule.title')}
             <ol type="1">
-              <li>contain less than 4 characters;</li>
-              <li>n non-alphanumeric characters;</li>
-              <li>contain uppercase letters;</li>
-              <li>appear on this <a href="https://github.com/status-im/ens-usernames/blob/master/config/ens-usernames/reservedNames.js">reserved list</a></li>
-              <li>mimic an Ethereum address (start with <code>Ox</code> and contain only hexadecimal characters in the first 12 digits)</li>
+              <li>{lang.t('terms.rule.one')}</li>
+              <li>{lang.t('terms.rule.two')}</li>
+              <li>{lang.t('terms.rule.three')}</li>
+              <li>{lang.t('terms.rule.four', { reserved_list_link: <a href="https://github.com/status-im/ens-usernames/blob/master/config/ens-usernames/reservedNames.js">{lang.t('terms.reserved_list')}</a> })}</li>
+              <li>{lang.t('terms.rule.five', { eth_address: <code>Ox</code> })}</li>
             </ol>
           </li>
-          <li>Registering an illegal name via the registry contract will result in the loss of your SNT deposit and removal of the name.</li>
-          <li>Contact codes and wallet addresses associated with your name are publicly available information.</li>
+          <li>{lang.t('terms.illegal_name')}</li>
+          <li>{lang.t('terms.contact')}</li>
         </ListContainer>
       </TermsDescription>
 
-      <div style={{display: 'flex', flexDirection: 'row-reverse', marginBottom: '16px', marginRight: '8px'}}>
+      <div
+        style={{
+          display: 'flex', flexDirection: 'row-reverse', marginBottom: '16px', marginRight: '8px',
+        }}
+      >
         <ArrowButton type="submit" onClick={onSubmit}>
-          <div>Send SNT</div>
+          <div>{lang.t('action.send_snt')}</div>
         </ArrowButton>
       </div>
 

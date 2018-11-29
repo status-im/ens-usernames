@@ -18,6 +18,7 @@
     "mint": "Minter",
     "register": "Enregistrer",
     "release_name": "Libérez le nom",
+    "send_snt": "Envoyer SNT",
     "setup_ens": "AJOUTEZ LES NODES INITIAUX À ENS",
     "submit": "Envoyer",
     "submitting_to_blockchain": "En cours d'envoie à la Blockchain - (ceci peut prendre quelque temps)",
@@ -119,6 +120,24 @@
       "register_sub_domain": "Enregistrer le sous domaine",
       "title": "Gestion du sous-domaine"
     }
+  },
+  "terms": {
+    "title": "Conditions d'enregistrement du nom",
+    "funds_deposit": "Les fonds sont déposés pour une durée d'un an. Vos SNT sont bloqués mais non dépensés.",
+    "funds_release": "Après une année, vous pouvez libérer votre nom et ainsi récupérer votre dépôt. Le nom vous appartient tant que vous ne l'avez pas libéré.",
+    "names_creation": "Les noms sont créés en tant que sous-domaines de %{stateofus}. Ils sont la propriété de Status et peuvent êtres soumis à de nouvelles conditions.",
+    "contract": "Si les conditions du contrat %{stateofus} changent—e.g. Status met à jour le contrat—vous avez le droit de récupérer votre dépôt you, ainsi que vos noms de domaines que vous avez gardé moins d'un an.",
+    "reserved_list": "liste réservée",
+    "rule": {
+      "title": "Les noms ne peuvent pas:",
+      "one": "contenir moins de 4 caractères;",
+      "two": "n caractères non-alphanumérique;",
+      "three": "contenir des lettres majuscules;",
+      "four": "apparaitre sur cette %{reserved_list_link}",
+      "five": "copier une adresse Ethereum (commençant par %{eth_address} et contenant seulement des caractères hexadécimaux parmis les 12 premiers caractères)"
+    },
+    "illegal_name": "Enregistrer un nom illégal via le contrat du registre entraine la perte de votre dépôt de SNT et la supression du nom.",
+    "contact": "Les codes de contact ainsi que l'adresse du portefeuille associé à votre nom sont des informations publiquement disponibles."
   },
   "welcome": {
     "cta": "Allons-y",
