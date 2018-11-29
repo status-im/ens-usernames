@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { Fragment } from 'react';
 import { Tabs, Tab } from 'react-bootstrap';
 import TopNavbar from './topnavbar';
@@ -11,16 +12,16 @@ const AdminMode = () => (
   <Fragment>
     <TopNavbar />
     <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
-      <Tab eventKey={1} title="TestToken">
+      <Tab eventKey={1} title={lang.t('admin.tab.test_token')}>
         <TestTokenUI />
       </Tab>
-      <Tab eventKey={2} title="ERC20Token">
+      <Tab eventKey={2} title={lang.t('admin.tab.erc20_token')}>
         <ERC20TokenUI />
       </Tab>
-      <Tab eventKey={3} title="ENS Management">
+      <Tab eventKey={3} title={lang.t('admin.tab.ens_management')}>
         <ENSSubManagement />
       </Tab>
-      <Tab eventKey={4} title="Name Lookup">
+      <Tab eventKey={4} title={lang.t('admin.tab.name_lookup')}>
         <NameLookup />
       </Tab>
     </Tabs>

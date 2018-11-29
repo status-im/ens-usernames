@@ -26,6 +26,14 @@
     "use_my_primary_address": "Use My Primary Address",
     "yes": "Yes"
   },
+  "admin": {
+    "tab": {
+      "ens_management": "ENS Management",
+      "erc20_token": "ERC20Token",
+      "name_lookup": "Name Lookup",
+      "test_token": "TestToken"
+    }
+  },
   "constants" : {
     "contact_code": "Your contact code",
     "wallet_address": "Your wallet address"
