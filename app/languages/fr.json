@@ -1,0 +1,163 @@
+{
+  "account": {
+    "amount": "Montant",
+    "from": "De",
+    "of": "De",
+    "read_token_balance": "Lire le solde de tokens du compte",
+    "read_your_token_balance": "Lisez le solde de tokens de votre compte",
+    "to": "Vers",
+    "transfer_approve_token_balance": "Transférer/Approuver le solde de tokens",
+    "your_test_token_balance": "Votre solde de tokens de test est"
+  },
+  "action" : {
+    "approve": "Approuver",
+    "cancel": "Annuler",
+    "edit_contact_code": "Editez le code de contact",
+    "grant_access": "Donnez l'accès",
+    "mint_test_token": "Mintez Jeton de Test",
+    "mint": "Minter",
+    "register": "Enregistrer",
+    "release_name": "Libérez le nom",
+    "send_snt": "Envoyer SNT",
+    "setup_ens": "AJOUTEZ LES NODES INITIAUX À ENS",
+    "submit": "Envoyer",
+    "submitting_to_blockchain": "En cours d'envoie à la Blockchain - (ceci peut prendre quelque temps)",
+    "transfer": "Transférer",
+    "update": "Mettre à jour",
+    "use_my_primary_address": "Utiliser mon adresse principale",
+    "yes": "Oui"
+  },
+  "admin": {
+    "tab": {
+      "ens_management": "Gestion ENS",
+      "erc20_token": "Token ERC20",
+      "name_lookup": "Recherche de nom",
+      "test_token": "Token de test"
+    }
+  },
+  "constants" : {
+    "contact_code": "Votre code de contact",
+    "wallet_address": "Votre adresse de portefeuille"
+  },
+  "copy": {
+    "release": {
+      "title": {
+        "sub": "Fait!",
+        "body": "Le nom d'utilisateur publié sera disponible pour les autres utilisateurs"
+      }
+    },
+    "registered": {
+      "title": {
+        "sub": "Sympa!",
+        "body": "Le nom est le votre une fois que la transaction est complétée"
+      }
+    },
+    "edit": {
+      "title": {
+        "sub": "Fait!",
+        "body": "Your changes will be saved when the transaction is complete"
+      }
+    },
+    "subheading": "Suivez le progrès dans la rubrique Historique de Transactions de votre portefeuille."
+  },
+  "domain": {
+    "ethereum_address": {
+      "error": "Adresse invalide",
+      "label": "Adresse Ethereum du domaine résout vers"
+    },
+    "name": {
+      "label": "Nom du domaine"
+    },
+    "new_address": {
+      "label": "Nouvelle adresse du contrôleur"
+    },
+    "price": {
+      "label": "Prix du domaine"
+    },
+    "release": {
+      "alert": {
+        "text": "Votre dépot de SNT vous sera retourné et le nom sera disponible pour d'autres utilisateurs.",
+        "title": "Libérez le domaine ?"
+      }
+    },
+    "status_address": {
+      "label": "Adresse Status messenger du domaine résout vers",
+      "placeholder": "Entrez votre adresse Status Messenger ici"
+    }
+  },
+  "error": {
+    "connect": "Veuillez vous connecter au réseau Ethereum %{network} pour continuer.",
+    "valid_address": "Veuillez entrer une adresse valide"
+  },
+  "navbar":{
+     "brand": "Démo Status.im"
+  },
+  "optimized": "Ce site est optimisé pour Status. Téléchargez l'application pour activer toutes les fonctionnalitées et profiter d'une meilleure expérience.",
+  "registry": {
+    "error": {
+      "name": {
+        "owned": "Cet enregistrement n'est pas possédé par un enregistrement",
+        "required": "Requis"
+      }
+    },
+    "name": {
+      "label": "Nom de l'enregistrement"
+    },
+    "price": {
+      "label": "Prix de l'enregistrement",
+      "placeholder": "(Optionnel) Si laissé vide, l'enregistrement sera gratuit"
+    }
+  },
+  "sub_domain": {
+    "error": {
+      "required": "Requis"
+    },
+    "label": "Sous-Domaine",
+    "management": {
+      "activate_registry": "Activer le registre/Mettre à jour le prix du registre",
+      "change_registry": "Changer le contrôleur du registre",
+      "move_domain": "Déplacer le domaine vers un autre registre",
+      "register_sub_domain": "Enregistrer le sous domaine",
+      "title": "Gestion du sous-domaine"
+    }
+  },
+  "terms": {
+    "title": "Conditions d'enregistrement du nom",
+    "funds_deposit": "Les fonds sont déposés pour une durée d'un an. Vos SNT sont bloqués mais non dépensés.",
+    "funds_release": "Après une année, vous pouvez libérer votre nom et ainsi récupérer votre dépôt. Le nom vous appartient tant que vous ne l'avez pas libéré.",
+    "names_creation": "Les noms sont créés en tant que sous-domaines de %{stateofus}. Ils sont la propriété de Status et peuvent êtres soumis à de nouvelles conditions.",
+    "contract": "Si les conditions du contrat %{stateofus} changent—e.g. Status met à jour le contrat—vous avez le droit de récupérer votre dépôt you, ainsi que vos noms de domaines que vous avez gardé moins d'un an.",
+    "reserved_list": "liste réservée",
+    "rule": {
+      "title": "Les noms ne peuvent pas:",
+      "one": "contenir moins de 4 caractères;",
+      "two": "n caractères non-alphanumérique;",
+      "three": "contenir des lettres majuscules;",
+      "four": "apparaitre sur cette %{reserved_list_link}",
+      "five": "copier une adresse Ethereum (commençant par %{eth_address} et contenant seulement des caractères hexadécimaux parmis les 12 premiers caractères)"
+    },
+    "illegal_name": "Enregistrer un nom illégal via le contrat du registre entraine la perte de votre dépôt de SNT et la supression du nom.",
+    "contact": "Les codes de contact ainsi que l'adresse du portefeuille associé à votre nom sont des informations publiquement disponibles."
+  },
+  "welcome": {
+    "cta": "Allons-y",
+    "disclaimer": "Propulsé par Ethereum Name Services",
+    "eth_address_example": "myname.stateofus.eth",
+    "how": "Comment ça marche",
+    "step": {
+      "one": {
+        "title": "Simplifiez votre adresse ETH",
+        "subtitle": "Votre complexe adresse de portefeuille (0x...) devient facile à lire, à mémoriser et à partager l'URL:"
+      },
+      "two": {
+        "title": "10 SNT pour l'enregister",
+        "subtitle": "Enregistrez le nom pour toujours. Après une année, vous pouvez libérer le nom et recevoir vos SNT en retour."
+      },
+      "three": {
+        "title": "Connectez-vous et recevez des paiements",
+        "subtitle": "Partagez votre nom sur le chat de Status ou recevez des ETH ainsi que des tokens."
+      }
+    },
+    "title": "Les noms ENS transforment vos très longues adresses en d'unique noms d'utilisateur"
+  }
+}

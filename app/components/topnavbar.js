@@ -1,33 +1,29 @@
-import EmbarkJS from 'Embark/EmbarkJS';
+import lang from 'i18n-js';
 import React from 'react';
-import { Navbar, NavItem, Nav, MenuItem , NavDropdown} from 'react-bootstrap';
-import AccountList from './accountList'; 
+import { Navbar } from 'react-bootstrap';
+import AccountList from './accountList';
 
 class TopNavbar extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+  }
 
-    constructor(props) {
-      super(props);
-      this.state = {
-        
-      }
-      
-    }  
-
-    render(){
-
-      return (
+  render() {
+    return (
       <React.Fragment>
-          <Navbar>
+        <Navbar>
           <Navbar.Header>
             <Navbar.Brand>
-              <a href="#home">Status.im Demo</a>
+              <a href="#home">{lang.t('navbar.brand')}</a>
             </Navbar.Brand>
           </Navbar.Header>
           <AccountList classNameNavDropdown="pull-right" />
         </Navbar>
       </React.Fragment>
-      );
-    }
+    );
   }
+}
 
-  export default TopNavbar;
+export default TopNavbar;

@@ -1,6 +1,7 @@
+import lang from 'i18n-js';
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const DisplayLabel = styled.div`
   font-size: 14px;
@@ -29,7 +30,9 @@ const BlueBox = styled.div`
   color: #4360df;
 `;
 
-const DisplayBox = ({ displayType, text, onClick, showBlueBox }) => (
+const DisplayBox = ({
+  displayType, text, onClick, showBlueBox,
+}) => (
   <div>
     <DisplayLabel>
       {displayType}
@@ -37,14 +40,12 @@ const DisplayBox = ({ displayType, text, onClick, showBlueBox }) => (
     <DisplayBoxDiv showBlueBox={showBlueBox} onClick={onClick}>
       <InnerDisplayBox>
         {
-          showBlueBox && onClick ?
-          <BlueBox>
-            Grant access
-          </BlueBox>
+            showBlueBox && onClick ?
+              <BlueBox>{lang.t('action.grant_access')}</BlueBox>
           :
-          <Typography type='body1'>
-            {text}
-          </Typography>
+              <Typography type="body1">
+                {text}
+              </Typography>
         }
       </InnerDisplayBox>
     </DisplayBoxDiv>

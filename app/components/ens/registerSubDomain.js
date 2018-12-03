@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import web3 from "Embark/web3"
 import UsernameRegistrar from 'Embark/contracts/UsernameRegistrar';
 import TestToken from 'Embark/contracts/TestToken';
@@ -63,7 +64,7 @@ class InnerForm extends React.Component {
              id="subDomain"
              name="subDomain"
              type="text"
-             label="Sub Domain"
+             label={lang.t('sub_domain.label')}
              onChange={handleChange}
              onBlur={handleBlur}
              value={values.subDomain}
@@ -74,7 +75,7 @@ class InnerForm extends React.Component {
              id="domainName"
              name="domainName"
              type="text"
-             label="Domain Name"
+             label={lang.t('domain.name.label')}
              onChange={handleChange}
              onBlur={handleBlur}
              value={values.domainName}
@@ -97,7 +98,7 @@ class InnerForm extends React.Component {
            <FieldGroup
              id="price"
              name="price"
-             label="Domain Price"
+             label={lang.t('domain.price.label')}
              disabled
              value={values.price ? `${formatPrice(values.price)} SNT` : ''}/>}
           <Hidden mdDown>
@@ -105,7 +106,7 @@ class InnerForm extends React.Component {
               id="statusAddress"
               name="statusAddress"
               type="text"
-              label="Status messenger address domain resolves to"
+              label={lang.t('domain.status_address.label')}
               onChange={handleChange}
               onBlur={handleBlur}
               value={values.statusAddress}
@@ -116,15 +117,20 @@ class InnerForm extends React.Component {
               id="address"
               name="address"
               type="text"
-              label="Ethereum address domain resolves to"
+              label={lang.t('domain.ethereum_address.label')}
               onChange={handleChange}
               onBlur={handleBlur}
               value={values.address}
               error={errors.address}
-              button={<Button mode="strong"
-                                    style={{padding: '5px 15px 5px 15px', marginTop: '5px'}}
-                              onClick={() => setFieldValue('address', web3.eth.defaultAccount)}>Use My Primary
-                Address</Button>}
+              button={
+                <Button
+                  mode="strong"
+                  style={{padding: '5px 15px 5px 15px', marginTop: '5px'}}
+                  onClick={() => setFieldValue('address', web3.eth.defaultAccount)}
+                >
+                  {lang.t('action.use_my_primary_address')}
+                </Button>
+              }
             />
             {!isSubmitting ? <Button wide mode="strong" type="submit"
                                disabled={isSubmitting || !!Object.keys(errors).length}>{!isSubmitting ? 'Submit' : 'Submitting to the Blockchain - (this may take awhile)'}</Button> :
@@ -143,22 +149,22 @@ class InnerForm extends React.Component {
                 onClick={() => requestStatusContactCode()}/>
             </Fragment> :
             <Fragment>
-              <Field label="Your Wallet Address">
+              <Field label={YOUR_WALLET_ADDRESS}>
                 <MobileSearch
                   name="address"
                   style={{ marginTop: '10px' }}
-                  placeholder="Your wallet address"
+                  placeholder={YOUR_WALLET_ADDRESS}
                   value={values.address}
                   onChange={handleChange}
                   onClick={() => setFieldValue('address', '')}
                   required
                   wide />
               </Field>
-              <Field label="Your contact code">
+              <Field label={YOUR_CONTACT_CODE}>
                 <MobileSearch
                   name="statusAddress"
                   style={{ marginTop: '10px' }}
-                  placeholder="Enter Your Status Messenger Address Here"
+                  placeholder={lang.t('domain.status_address.placeholder')}
                   value={values.statusAddress}
                   onChange={handleChange}
                   onClick={() => setFieldValue('statusAddress', '')}
@@ -172,7 +178,7 @@ class InnerForm extends React.Component {
                    this.onRegisterClick(this.props);
                }}>
                  <div>
-                   {`${editAccount ? 'Update' : 'Register'}`}
+                   {`${editAccount ? lang.t('action.update') : lang.t('action.register')}`}
                  </div>
                </ArrowButton>
                :
@@ -203,8 +209,8 @@ const RegisterSubDomain = withFormik({
     const errors = {};
     const { address } = values;
     const { subDomain } = props || values;
-    if (address && !web3.utils.isAddress(address)) errors.address = 'Not a valid address';
-    if (!subDomain) errors.subDomain = 'Required';
+    if (address && !web3.utils.isAddress(address)) errors.address = lang.t('domain.ethereum_address.error');
+    if (!subDomain) errors.subDomain = lang.t('sub_domain.error.required');
     return errors;
   },
   async handleSubmit(values, { setSubmitting, props }) {

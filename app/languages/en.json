@@ -1,0 +1,163 @@
+{
+  "account": {
+    "amount": "Amount",
+    "from": "From",
+    "of": "Of",
+    "read_token_balance": "Read account token balance",
+    "read_your_token_balance": "Read your account token balance",
+    "to": "To",
+    "transfer_approve_token_balance": "Transfer/Approve token balance",
+    "your_test_token_balance": "Your test token balance is"
+  },
+  "action" : {
+    "approve": "Approve",
+    "cancel": "Cancel",
+    "edit_contact_code": "Edit Contact Code",
+    "grant_access": "Grant access",
+    "mint_test_token": "Mint Test Token",
+    "mint": "Mint",
+    "register": "Register",
+    "release_name": "Release Name",
+    "send_snt": "Send SNT",
+    "setup_ens": "ADD INITIAL NODES TO ENS",
+    "submit": "Submit",
+    "submitting_to_blockchain": "Submitting to the Blockchain - (this may take awhile)",
+    "transfer": "Transfer",
+    "update": "Update",
+    "use_my_primary_address": "Use My Primary Address",
+    "yes": "Yes"
+  },
+  "admin": {
+    "tab": {
+      "ens_management": "ENS Management",
+      "erc20_token": "ERC20Token",
+      "name_lookup": "Name Lookup",
+      "test_token": "TestToken"
+    }
+  },
+  "constants" : {
+    "contact_code": "Your contact code",
+    "wallet_address": "Your wallet address"
+  },
+  "copy": {
+    "release": {
+      "title": {
+        "sub": "Done!",
+        "body": "The released username will be available to other users"
+      }
+    },
+    "registered": {
+      "title": {
+        "sub": "Nice!",
+        "body": "The name is yours once the transaction is complete"
+      }
+    },
+    "edit": {
+      "title": {
+        "sub": "Done!",
+        "body": "Your changes will be saved when the transaction is complete"
+      }
+    },
+    "subheading": "Follow the progress in the Transaction History section of your wallet."
+  },
+  "domain": {
+    "ethereum_address": {
+      "error": "Not a valid address",
+      "label": "Ethereum address domain resolves to"
+    },
+    "name": {
+      "label": "Domain Name"
+    },
+    "new_address": {
+      "label": "New Controller Address"
+    },
+    "price": {
+      "label": "Domain Price"
+    },
+    "release": {
+      "alert": {
+        "text": "Your SNT deposit will be returned and name will be available to other users.",
+        "title": "Release domain?"
+      }
+    },
+    "status_address": {
+      "label": "Status messenger address domain resolves to",
+      "placeholder": "Enter Your Status Messenger Address Here"
+    }
+  },
+  "error": {
+    "connect": "Please connect to Ethereum %{network} to continue.",
+    "valid_address": "Please enter a valid address"
+  },
+  "navbar":{
+     "brand": "Status.im Demo"
+  },
+  "optimized": "This site is optimized for Status. Get the App to enable all features and get the best experience.",
+  "registry": {
+    "error": {
+      "name": {
+        "owned": "This registry is not owned by registry",
+        "required": "Required"
+      }
+    },
+    "name": {
+      "label": "Registry Name"
+    },
+    "price": {
+      "label": "Registry Price",
+      "placeholder": "(Optional) Registry will be free if left blank"
+    }
+  },
+  "sub_domain": {
+    "error": {
+      "required": "Required"
+    },
+    "label": "Sub Domain",
+    "management": {
+      "activate_registry": "Activate Registry/Update Registry Price",
+      "change_registry": "Change Registry Controller",
+      "move_domain": "Move Domain To Another Registry",
+      "register_sub_domain": "Register Sub-Domain",
+      "title": "Subdomain Management"
+    }
+  },
+  "terms": {
+    "title": "Terms of name registration",
+    "funds_deposit": "Funds are deposited for 1 year. Your SNT will be locked, but not spent.",
+    "funds_release": "After 1 year, you can release the name and get your deposit back. The name is yours until you release it.",
+    "names_creation": "Names are created as a subdomain of %{stateofus}. They are property of Status and may be subject to new terms.",
+    "contract": "If the %{stateofus} contract terms change—e.g. Status makes contract upgrades—you have the right to get your deposit back, even for names held less than 1 year.",
+    "reserved_list": "reserved list",
+    "rule": {
+      "title": "Names may not:",
+      "one": "contain less than 4 characters;",
+      "two": "n non-alphanumeric characters;",
+      "three": "contain uppercase letters;",
+      "four": "appear on this %{reserved_list_link}",
+      "five": "mimic an Ethereum address (start with %{eth_address} and contain only hexadecimal characters in the first 12 digits)"
+    },
+    "illegal_name": "Registering an illegal name via the registry contract will result in the loss of your SNT deposit and removal of the name.",
+    "contact": "Contact codes and wallet addresses associated with your name are publicly available information."
+  },
+  "welcome": {
+    "cta": "Let's Go",
+    "disclaimer": "Powered by Ethereum Name Services",
+    "eth_address_example": "myname.stateofus.eth",
+    "how": "How it works",
+    "step": {
+      "one": {
+        "title": "Simplify your ETH address",
+        "subtitle": "Your complex wallet address (0x...) becomes an easy to read, remember & share URL:"
+      },
+      "two": {
+        "title": "10 SNT to register",
+        "subtitle": "Register once to keep the name forever. After 1 year, you can release the name and get your SNT back."
+      },
+      "three": {
+        "title": "Connect & get paid",
+        "subtitle": "Share your name to chat on Status or receive ETH and tokens."
+      }
+    },
+    "title": "ENS names transform those crazy-long addresses into unique usernames"
+  }
+}

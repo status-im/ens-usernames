@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { Fragment, PureComponent } from 'react';
 import web3 from 'web3';
 import EmbarkJS from 'Embark/EmbarkJS';
@@ -27,7 +28,6 @@ import Warning from '../../ui/components/Warning';
 const { getPrice, getExpirationTime, getCreationTime, release } = UsernameRegistrar.methods;
 import NotInterested from '@material-ui/icons/NotInterested';
 import Face from '@material-ui/icons/Face';
-import Copy from './copy';
 import IDNANormalizer from 'idna-normalize';
 import { nullAddress, getResolver } from './utils/domain';
 import { YOUR_CONTACT_CODE } from './constants';
@@ -208,11 +208,11 @@ const RegisterInfoCard = ({ formattedDomain, domainPrice, registryOwnsDomain }) 
 const TransactionComplete = ({ type, setStatus }) => (
   <div style={{ textAlign: 'center', margin: '40% 15 10' }}>
     <Typography variant="title" style={{ marginBottom: '1rem' }}>
-      {Copy[type]['title']['sub']}<br/>
-      {Copy[type]['title']['body']}
+      {lang.t(`copy.${type}.title.sub`)}<br/>
+      {lang.t(`copy.${type}.title.body`)}
     </Typography>
     <Typography variant="subheading" style={{ color: '#939BA1' }}>
-      {Copy[type]['subheading']}
+      {lang.t('copy.subheading')}
     </Typography>
     <MobileButton text="Main Page" style={{ marginTop: '12rem' }} onClick={() => { setStatus(null) } } />
   </div>

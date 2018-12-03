@@ -1,10 +1,11 @@
+import lang from 'i18n-js';
 import React, { Fragment } from 'react';
-import { Form, FormGroup, FormControl, HelpBlock, Button, ControlLabel } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import UsernameRegistrar from 'Embark/contracts/UsernameRegistrar';
 import web3Utils from 'web3-utils'
 import { hash } from 'eth-ens-namehash'
 
-const zeroBytes32 = "0x0000000000000000000000000000000000000000000000000000000000000000";
+const zeroBytes32 = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const getUserAddress = contract => contract._provider.publicConfigStore._state.selectedAddress;
 const dispatchSetup = (ENSRegistry) => {
   const { methods: { setSubnodeOwner } } = ENSRegistry;
@@ -21,8 +22,13 @@ const dispatchSetup = (ENSRegistry) => {
 }
 const SetupEns = ({ ENSRegistry }) => (
   <Fragment>
-    <Button bsStyle="primary" onClick={() => dispatchSetup(ENSRegistry)}>ADD INITIAL NODES TO ENS</Button>
+    <Button
+      bsStyle="primary"
+      onClick={() => dispatchSetup(ENSRegistry)}
+    >
+      {lang.t('action.setup_ens')}
+    </Button>
   </Fragment>
-)
+);
 
 export default SetupEns;
