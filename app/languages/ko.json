@@ -1,0 +1,157 @@
+{
+    "account": {
+        "amount": "수량",
+        "from": "발신인",
+        "to": "수신인",
+        "transfer_approve_token_balance": "전송\/승인 토큰 잔액",
+        "your_test_token_balance": "귀하의 테스트 토큰 잔액"
+    },
+    "action": {
+        "approve": "승인",
+        "cancel": "취소",
+        "edit_contact_code": "연락처 코드 수정",
+        "grant_access": "액세스 권한 부여",
+        "mint_test_token": "민트 테스트 토큰",
+        "mint": "민트 (Mint)",
+        "register": "등록하기",
+        "release_name": "이름 해지",
+        "send_snt": "SNT 보내기",
+        "setup_ens": "ENS에 초기 노드 추가",
+        "submit": "제출",
+        "submitting_to_blockchain": "블록체인에 제출 - (잠시 시간이 소요됩니다)",
+        "transfer": "전송",
+        "update": "업데이트하기",
+        "use_my_primary_address": "내 기본 주소 사용",
+        "yes": "예"
+    },
+    "admin": {
+        "tab": {
+            "ens_management": "ENS 관리",
+            "erc20_token": "ERC20 토큰",
+            "name_lookup": "이름 조회",
+            "test_token": "테스트 토큰"
+        }
+    },
+    "constants": {
+        "contact_code": "귀하의 연락처 코드",
+        "wallet_address": "귀하의 지갑 주소"
+    },
+    "copy": {
+        "release": {
+            "title": {
+                "sub": "완료!",
+                "body": "해지된 사용자 명은 다른 사용자가 사용할 수 있습니다"
+            }
+        },
+        "registered": {
+            "title": {
+                "body": "트랜잭션이 완료되면 이름이 성공적으로 등록됩니다"
+            }
+        },
+        "edit": {
+            "title": {
+                "sub": "완료!",
+                "body": "트랜잭션이 완료되면 변경 사항이 저장됩니다"
+            }
+        },
+        "subheading": "지갑의 거래 내역에서 진행 상황을 확인하세요"
+    },
+    "domain": {
+        "ethereum_address": {
+            "error": "유효한 주소가 아닙니다"
+        },
+        "name": {
+            "label": "도메인 이름"
+        },
+        "new_address": {
+            "label": "새 컨트롤러 주소"
+        },
+        "price": {
+            "label": "도메인 비용"
+        },
+        "release": {
+            "alert": {
+                "text": "SNT 보증금이 반환되며 다른 사용자가 해당 이름을 사용할 수 있습니다.",
+                "title": "도메인을 해지하시겠습니까?"
+            }
+        },
+        "status_address": {
+            "placeholder": "여러분의 스테이터스 메신저 연락처 코드를 입력해주세요"
+        }
+    },
+    "error": {
+        "connect": "계속하려면 이더리움 %{network} 에 연결해주세요",
+        "valid_address": "유효한 주소를 입력해주세요"
+    },
+    "navbar": {
+        "brand": "Status.im 데모"
+    },
+    "optimized": "이 사이트는 스테이터스에 최적화되어 있습니다. 스테이터스(Status) 앱을 설치하여 이 기능을 활용해주세요.",
+    "registry": {
+        "error": {
+            "name": {
+                "owned": "이 레지스트리는 레지스트리 소유가 아닙니다.",
+                "required": "필수"
+            }
+        },
+        "name": {
+            "label": "레지스트리 명"
+        },
+        "price": {
+            "label": "레지스트리 비용",
+            "placeholder": "(선택) 레지스트리를 비워두면 무료로 제공됩니다"
+        }
+    },
+    "sub_domain": {
+        "error": {
+            "required": "필수"
+        },
+        "label": "서브 도메인",
+        "management": {
+            "activate_registry": "레지스트리 활성화 \/ 레지스트리 비용 업데이트",
+            "change_registry": "레지스트리 컨트롤러 변경",
+            "move_domain": "다른 레지스트리로 도메인 이동",
+            "register_sub_domain": "서브-도메인 등록",
+            "title": "서브 도메인 관리"
+        }
+    },
+    "terms": {
+        "title": "등록 약관",
+        "funds_deposit": "계약금은 1년 동안 예치됩니다. 여러분의 SNT는 잠기게 되며, 별도로 지출되지 않습니다.",
+        "funds_release": "1년 후, 등록한 이름의 계약을 해지하고 보증금을 돌려받을 수 있습니다. 등록한 이름은 여러분이 해지하기 전까지 그대로 유지됩니다.",
+        "names_creation": "이름은 %{stateofus} 의 서브도메인으로 생성됩니다. 이는 스테이터스 소유로 새로운 약관을 적용 받을 수 있습니다.",
+        "contract": "스테이터스가 약관을 변경하는 등의 사유로 %{stateofus} 계약 약관이 변경되면, 여러분은 이름을 등록한지 1년이 안되었을 경우에도 계약금을 돌려받을 수 있습니다.",
+        "reserved_list": "예약 목록",
+        "rule": {
+            "title": "아래와 같은 이름은 사용할 수 없습니다:",
+            "one": "4개 미만의 문자",
+            "two": "숫자와 알파벳이 아닌 문자;",
+            "three": "대문자를 포함한 이름;",
+            "four": "다음 목록에 등록된 이름 %{reserved_list_link}",
+            "five": "이더리움 주소와 유사한 경우 (%{eth_address} 로 시작하거나 첫 12 문자가 16진수만 포함하는 경우)"
+        },
+        "illegal_name": "레지스트리 컨트랙트를 통해 올바르지 않은 방법으로 이름을 등록하면 SNT 계약금을 잃게 되고, 등록한 이름이 삭제됩니다.",
+        "contact": "등록한 이름과 관련된 연락처 코드 및 지갑 주소를 공개적으로 사용할 수 있습니다."
+    },
+    "welcome": {
+        "cta": "시작하기",
+        "disclaimer": "Ethereum Name Services 제공",
+        "eth_address_example": "등록한이름.stateofus.eth",
+        "how": "어떻게 활용할까요?",
+        "step": {
+            "one": {
+                "title": "여러분의 ETH 주소를 단순화하세요",
+                "subtitle": "복잡한 지갑 주소(0x...)는 다음과 같이 읽고, 기억하고, 공유하기 쉬운 URL이 됩니다:"
+            },
+            "two": {
+                "title": "10 SNT로 간편히 등록하세요",
+                "subtitle": "한번의 등록을 통해 이름을 영원히 보유할 수 있습니다. 등록으로부터 1년 후, 계약을 종료하고 SNT를 돌려받을 수 있습니다."
+            },
+            "three": {
+                "title": "다른 사람과 연결하고 거래하세요",
+                "subtitle": "여러분의 ENS 이름을 다른 사람에게 공유하여 채팅을 시작하거나 암호화폐를 받아보세요."
+            }
+        },
+        "title": "ENS 이름은 복잡하고 긴 주소를 고유의 사용자 명으로 변환합니다."
+    }
+}
