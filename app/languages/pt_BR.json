@@ -1,0 +1,163 @@
+{
+    "account": {
+        "amount": "Quantidade",
+        "from": "De",
+        "of": "De",
+        "read_token_balance": "Leia o saldo do token da conta",
+        "read_your_token_balance": "Leia o saldo do seu token da conta",
+        "to": "Para",
+        "transfer_approve_token_balance": "Transferir \/ Aprovar saldo do token",
+        "your_test_token_balance": "Seu saldo de token do teste é"
+    },
+    "action": {
+        "approve": "Aprovar",
+        "cancel": "Cancelar",
+        "edit_contact_code": "Editar código de contato",
+        "grant_access": "Garantir acesso",
+        "mint_test_token": "Gerar Token de Teste",
+        "mint": "Gerar Token",
+        "register": "Registre-se",
+        "release_name": "Nome de lançamento",
+        "send_snt": "Enviar SNT",
+        "setup_ens": "ADICIONAR NÓS INICIAIS DE ENS",
+        "submit": "Enviar",
+        "submitting_to_blockchain": "Enviando para o Blockchain - (isso pode demorar um pouco)",
+        "transfer": "Transferir",
+        "update": "Atualizar",
+        "use_my_primary_address": "Usar meu endereço principal",
+        "yes": "Sim"
+    },
+    "admin": {
+        "tab": {
+            "ens_management": "Gestão ENS",
+            "erc20_token": "ERC20Token",
+            "name_lookup": "Pesquisa de nome",
+            "test_token": "Token de Teste"
+        }
+    },
+    "constants": {
+        "contact_code": "Seu código de contato",
+        "wallet_address": "Seu endereço de carteira"
+    },
+    "copy": {
+        "release": {
+            "title": {
+                "sub": "Feito!",
+                "body": "O nome de usuário liberado estará disponível para outros usuários"
+            }
+        },
+        "registered": {
+            "title": {
+                "sub": "Legal!",
+                "body": "O nome é seu assim que a transação estiver concluída"
+            }
+        },
+        "edit": {
+            "title": {
+                "sub": "Feito!",
+                "body": "Suas alterações serão salvas quando a transação for concluída"
+            }
+        },
+        "subheading": "Siga o progresso na seção Histórico de transações da sua carteira."
+    },
+    "domain": {
+        "ethereum_address": {
+            "error": "Não é um endereço válido",
+            "label": "O domínio resolve para o endereço Ethereum"
+        },
+        "name": {
+            "label": "Nome do domínio"
+        },
+        "new_address": {
+            "label": "Novo endereço do controlador"
+        },
+        "price": {
+            "label": "Preço do Domínio"
+        },
+        "release": {
+            "alert": {
+                "text": "Seu depósito SNT será devolvido e o nome estará disponível para outros usuários.",
+                "title": "Liberar domínio?"
+            }
+        },
+        "status_address": {
+            "label": "Domínio de endereço de mensageiro Status resolve para",
+            "placeholder": "Digite seu endereço de contato Status aqui"
+        }
+    },
+    "error": {
+        "connect": "Por favor, conecte-se a rede Ethereum %{network} para continuar.",
+        "valid_address": "Por favor insira um endereço válido"
+    },
+    "navbar": {
+        "brand": "Status.im Demo"
+    },
+    "optimized": "Este site é otimizado para status. Obtenha o aplicativo para ativar todos os recursos e obter a melhor experiência.",
+    "registry": {
+        "error": {
+            "name": {
+                "owned": "Este registro não é de propriedade do registro",
+                "required": "Necessário"
+            }
+        },
+        "name": {
+            "label": "Nome do registro"
+        },
+        "price": {
+            "label": "Preço do Registro",
+            "placeholder": "(Opcional) O registro será gratuito se deixado em branco"
+        }
+    },
+    "sub_domain": {
+        "error": {
+            "required": "Necessário"
+        },
+        "label": "Subdomínio",
+        "management": {
+            "activate_registry": "Ativar Registro \/ Atualizar Preço do Registro",
+            "change_registry": "Alterar o controlador do registro",
+            "move_domain": "Mover o domínio para outro registro",
+            "register_sub_domain": "Registrar subdomínio",
+            "title": "Gerenciamento de subdomínio"
+        }
+    },
+    "terms": {
+        "title": "Termos de registro de nome",
+        "funds_deposit": "Os fundos são depositados por 1 ano. Seu SNT será bloqueado, mas não gasto.",
+        "funds_release": "Após 1 ano, você pode liberar o nome e recuperar seu depósito. O nome é seu até que você o libere.",
+        "names_creation": "Os nomes são criados como um subdomínio de %{stateofus} . Eles são propriedade de Status e podem estar sujeitos a novos termos.",
+        "contract": "Se os termos do contrato %{stateofus} alterados, por exemplo, o Status faz atualização de contrato, você tem o direito de recuperar seu depósito, mesmo para nomes com menos de 1 ano.",
+        "reserved_list": "lista reservadaao",
+        "rule": {
+            "title": "Nomes não podem:",
+            "one": "conter menos de 4 caracteres;",
+            "two": "conter caracteres não alfanuméricos;",
+            "three": "conter letras maiúsculas;",
+            "four": "constar nesta % {reserved_list_link}",
+            "five": "imitar um endereço Ethereum (comece com %{eth_address} e contenha apenas caracteres hexadecimais nos primeiros 12 dígitos)"
+        },
+        "illegal_name": "Registrar um nome ilegal através resultará na perda do seu depósito SNT e na remoção do nome.",
+        "contact": "Os códigos de contato e os endereços de carteira associados ao seu nome são informações disponíveis publicamente."
+    },
+    "welcome": {
+        "cta": "Começar",
+        "disclaimer": "Desenvolvido com Ethereum Name Services",
+        "eth_address_example": "meunome.stateofus.eth",
+        "how": "Como funciona",
+        "step": {
+            "one": {
+                "title": "Simplifique seu endereço ETH",
+                "subtitle": "Seu endereço de carteira complexo (0x...) se torna fácil de ler, lembrar e compartilhar como uma URL:"
+            },
+            "two": {
+                "title": "10 SNT para se registar",
+                "subtitle": "Registre-se uma vez para manter o nome para sempre. Após 1 ano, você pode liberar o nome e recuperar seu SNT."
+            },
+            "three": {
+                "title": "Conecte-se e receba pagamento de contatos",
+                "subtitle": "Compartilhe seu nome para conversar no Status ou receber ETH e tokens."
+            }
+        },
+        "title": "Nomes no ENS transformam endereços longos em nomes de usuário únicos. "
+    }
+}
