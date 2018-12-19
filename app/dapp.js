@@ -30,6 +30,8 @@ const isReady = (network, environment) => {
     if (environment === 'livenet') return true
   } else if(formattedNetwork.includes('ropsten')) {
     if (environment === 'testnet') return true
+  } else if(formattedNetwork.includes('private')) {
+    if (environment === 'development') return true
   }
   return formattedNetwork.includes(environment.toLowerCase());
 }
