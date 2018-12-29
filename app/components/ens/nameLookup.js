@@ -30,7 +30,6 @@ import NotInterested from '@material-ui/icons/NotInterested';
 import Face from '@material-ui/icons/Face';
 import IDNANormalizer from 'idna-normalize';
 import { nullAddress, getResolver } from './utils/domain';
-import { YOUR_CONTACT_CODE } from './constants';
 import DisplayBox from './DisplayBox';
 import styled from "styled-components";
 import { Route } from "react-router-dom";
@@ -104,7 +103,7 @@ const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTi
                preRegisteredCallback={onSubmit}
                registeredCallbackFn={console.log} />}
     {!edit && <DisplayBox displayType='Your wallet address' text={address} />}
-    {!edit && validStatusAddress(statusAccount) && <DisplayBox displayType={YOUR_CONTACT_CODE} text={statusAccount} />}
+    {!edit && validStatusAddress(statusAccount) && <DisplayBox displayType={lang.t('constants.contact_code')} text={statusAccount} />}
   </Fragment>
 )
 

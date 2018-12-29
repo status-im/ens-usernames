@@ -19,7 +19,6 @@ import Terms from './terms';
 import {generateXY} from '../../utils/ecdsa';
 import {getResolver} from './utils/domain';
 import DisplayBox from './DisplayBox';
-import { YOUR_CONTACT_CODE, YOUR_WALLET_ADDRESS } from './constants';
 import {checkAndDispatchStatusContactCode} from "../../actions/accounts";
 
 const { soliditySha3, fromWei } = web3.utils;
@@ -140,27 +139,27 @@ class InnerForm extends React.Component {
           <Hidden mdUp>
 
             {!editAccount ? <Fragment>
-              <DisplayBox displayType={YOUR_WALLET_ADDRESS}
+              <DisplayBox displayType={lang.t('constants.wallet_address')}
                 text={values.address}/>
 
-              <DisplayBox displayType={YOUR_CONTACT_CODE}
+              <DisplayBox displayType={lang.t('constants.contact_code')}
                 text={statusContactCode}
                 showBlueBox={!statusContactCode}
                 onClick={() => requestStatusContactCode()}/>
             </Fragment> :
             <Fragment>
-              <Field label={YOUR_WALLET_ADDRESS}>
+              <Field label={lang.t('constants.wallet_address')}>
                 <MobileSearch
                   name="address"
                   style={{ marginTop: '10px' }}
-                  placeholder={YOUR_WALLET_ADDRESS}
+                  placeholder={lang.t('constants.wallet_address')}
                   value={values.address}
                   onChange={handleChange}
                   onClick={() => setFieldValue('address', '')}
                   required
                   wide />
               </Field>
-              <Field label={YOUR_CONTACT_CODE}>
+              <Field label={lang.t('constants.contact_code')}>
                 <MobileSearch
                   name="statusAddress"
                   style={{ marginTop: '10px' }}
