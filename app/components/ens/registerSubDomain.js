@@ -214,7 +214,7 @@ const RegisterSubDomain = withFormik({
     return errors;
   },
   async handleSubmit(values, { setSubmitting, props }) {
-    const { editAccount, preRegisteredCallback } = props;
+    const { editAccount, preRegisteredCallback, statusContactCode } = props;
     const { address, statusAddress } = values;
     const { subDomain, domainName, domainPrice, registeredCallbackFn } = props || values;
     const { methods: { register } } = UsernameRegistrar;
@@ -222,7 +222,8 @@ const RegisterSubDomain = withFormik({
     const subdomainHash = soliditySha3(subDomain);
     const domainNameHash = hash(domainName);
     const resolveToAddr = address || zeroAddress;
-    const points = statusAddress ? generateXY(statusAddress) : null;
+    const contactCode = statusContactCode || statusAddress;
+    const points = contactCode ? generateXY(contactCode) : null;
     const node = hash(subDomain.includes('eth') ? subDomain : `${subDomain}.${domainName}`);
     const { methods: { setAddr, setPubkey } } = await getResolver(node);
 
