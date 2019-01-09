@@ -32,8 +32,13 @@ const isReady = (network, environment) => {
   return formattedNetwork.includes(environment.toLowerCase());
 }
 
+const getEnvironment = env => {
+  if (env === 'testnet') return startCase('ropsten')
+  return startCase(env)
+}
+
 const Web3RenderContent = ({ network, history, match, environment }) => (
-  <Web3Render ready={isReady(network, environment)} network={startCase(environment)}>
+  <Web3Render ready={isReady(network, getEnvironment(environment))} network={getEnvironment(environment)}>
     <div>
       <NameLookup {...{history, match}}/>
       <Hidden mdDown>
