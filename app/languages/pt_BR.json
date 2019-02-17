@@ -125,16 +125,16 @@
         "title": "Termos de registro de nome",
         "funds_deposit": "Os fundos são depositados por 1 ano. Seu SNT será bloqueado, mas não gasto.",
         "funds_release": "Após 1 ano, você pode liberar o nome e recuperar seu depósito. O nome é seu até que você o libere.",
-        "names_creation": "Os nomes são criados como um subdomínio de %{stateofus} . Eles são propriedade de Status e podem estar sujeitos a novos termos.",
-        "contract": "Se os termos do contrato %{stateofus} alterados, por exemplo, o Status faz atualização de contrato, você tem o direito de recuperar seu depósito, mesmo para nomes com menos de 1 ano.",
+        "names_creation": "Os nomes são criados como um subdomínio de ${stateofus} . Eles são propriedade de Status e podem estar sujeitos a novos termos.",
+        "contract": "Se os termos do contrato ${stateofus} alterados, por exemplo, o Status faz atualização de contrato, você tem o direito de recuperar seu depósito, mesmo para nomes com menos de 1 ano.",
         "reserved_list": "lista reservadaao",
         "rule": {
             "title": "Nomes não podem:",
             "one": "conter menos de 4 caracteres;",
             "two": "conter caracteres não alfanuméricos;",
             "three": "conter letras maiúsculas;",
-            "four": "constar nesta % {reserved_list_link}",
-            "five": "imitar um endereço Ethereum (comece com %{eth_address} e contenha apenas caracteres hexadecimais nos primeiros 12 dígitos)"
+            "four": "constar nesta ${reserved_list_link}",
+            "five": "imitar um endereço Ethereum (comece com ${eth_address} e contenha apenas caracteres hexadecimais nos primeiros 12 dígitos)"
         },
         "illegal_name": "Registrar um nome ilegal através resultará na perda do seu depósito SNT e na remoção do nome.",
         "contact": "Os códigos de contato e os endereços de carteira associados ao seu nome são informações disponíveis publicamente."
