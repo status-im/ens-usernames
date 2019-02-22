@@ -173,7 +173,7 @@ class InnerForm extends React.Component {
 
             <div style={{display: 'flex', flexDirection: 'row-reverse', marginTop: '16px', marginBottom: '16px'}}>
               {!isSubmitting ?
-               <ArrowButton onClick={(e) => {
+               <ArrowButton type="button" onClick={(e) => {
                    this.onRegisterClick(this.props);
                }}>
                  <div>
