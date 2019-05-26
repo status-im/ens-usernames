@@ -48,6 +48,9 @@
     "web3-utils": "^1.0.0-beta.34"
   },
   "devDependencies": {
+    "embark": "^4.0.2",
+    "embark-reset": "^4.0.0",
+    "embarkjs-connector-web3": "^4.0.0",
     "@babel/plugin-proposal-class-properties": "^7.0.0",
     "@babel/plugin-proposal-decorators": "^7.0.0",
     "@babel/plugin-proposal-export-namespace-from": "^7.0.0",
