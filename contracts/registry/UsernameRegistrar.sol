@@ -559,7 +559,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         bytes32 pubkeyB;
         (sig, label, account, pubkeyA, pubkeyB) = abiDecodeRegister(_data);
         require(
-            sig == bytes4(0xb82fedbb), //bytes4(keccak256("register(bytes32,address,bytes32,bytes32)"))
+            sig == this.register.selector,
             "Wrong method selector"
         );
         registerUser(_from, label, account, pubkeyA, pubkeyB);
