@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity >=0.5.0 <0.6.0;
 
 import "../common/MerkleProof.sol";
 import "../common/Controlled.sol";
@@ -154,8 +154,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         } else {
             address newOwner = ensRegistry.owner(ensNode);
             //Low level call, case dropUsername not implemented or failing, proceed release.
-            //Invert (!) to supress warning, return of this call have no use.
-            !newOwner.call.gas(80000)(
+            //Return of this call have no use.
+            newOwner.call.gas(80000)(
                 abi.encodeWithSignature(
                     "dropUsername(bytes32)",
                     _label
@@ -198,7 +198,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _username Raw value of offending username.
      */
     function slashSmallUsername(
-        string _username,
+        string calldata _username,
         uint256 _reserveSecret
     )
         external
@@ -213,7 +213,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _username Raw value of offending username.
      */
     function slashAddressLikeUsername(
-        string _username,
+        string calldata _username,
         uint256 _reserveSecret
     )
         external
@@ -224,7 +224,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         require(username[1] == byte("x"), "Second character need to be x");
         for(uint i = 2; i < 7; i++){
             byte b = username[i];
-            require((b >= 48 && b <= 57) || (b >= 97 && b <= 102), "Does not look like an address");
+            require((b >= 0x30 && b <= 0x39) || (b >= 0x61 && b <= 0x66), "Does not look like an address");
         }
         slashUsername(username, _reserveSecret);
     }
@@ -235,8 +235,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _proof Merkle proof that name is listed on merkle tree.
      */
     function slashReservedUsername(
-        string _username,
-        bytes32[] _proof,
+        string calldata _username,
+        bytes32[] calldata _proof,
         uint256 _reserveSecret
     )
         external
@@ -259,7 +259,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _offendingPos Position of non alphanumeric character.
      */
     function slashInvalidUsername(
-        string _username,
+        string calldata _username,
         uint256 _offendingPos,
         uint256 _reserveSecret
     )
@@ -269,7 +269,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         require(username.length > _offendingPos, "Invalid position.");
         byte b = username[_offendingPos];
 
-        require(!((b >= 48 && b <= 57) || (b >= 97 && b <= 122)), "Not invalid character.");
+        require(!((b >= 0x30 && b <= 0x39) || (b >= 0x61 && b <= 0x7A)), "Not invalid character.");
 
         slashUsername(username, _reserveSecret);
     }
@@ -279,7 +279,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _labels Sequence to erase.
      */
     function eraseNode(
-        bytes32[] _labels
+        bytes32[] calldata _labels
     )
         external
     {
@@ -292,8 +292,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         if(len > 1) {
             eraseNodeHierarchy(len - 2, _labels, subnode);
         }
-        ensRegistry.setResolver(subnode, 0);
-        ensRegistry.setOwner(subnode, 0);
+        ensRegistry.setResolver(subnode, address(0));
+        ensRegistry.setOwner(subnode, address(0));
     }
 
     /**
@@ -312,7 +312,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         Account memory account = accounts[_label];
         delete accounts[_label];
 
-        token.approve(_newRegistry, account.balance);
+        token.approve(address(_newRegistry), account.balance);
         _newRegistry.migrateUsername(
             _label,
             account.balance,
@@ -380,9 +380,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         require(_newRegistry != this, "Cannot move to self.");
         require(ensRegistry.owner(ensNode) == address(this), "Registry not owned anymore.");
         setState(RegistrarState.Moved);
-        ensRegistry.setOwner(ensNode, _newRegistry);
+        ensRegistry.setOwner(ensNode, address(_newRegistry));
         _newRegistry.migrateRegistry(price);
-        emit RegistryMoved(_newRegistry);
+        emit RegistryMoved(address(_newRegistry));
     }
 
     /**
@@ -410,7 +410,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      **/
     function withdrawExcessBalance(
         address _token,
-        address _beneficiary
+        address payable _beneficiary
     )
         external
         onlyController
@@ -544,7 +544,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         address _from,
         uint256 _amount,
         address _token,
-        bytes _data
+        bytes memory _data
     )
         public
     {
@@ -654,7 +654,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         if (resolvePubkey || resolveAccount) {
             //set to self the ownership to setup initial resolver
             ensRegistry.setSubnodeOwner(ensNode, _label, address(this));
-            ensRegistry.setResolver(namehash, resolver); //default resolver
+            ensRegistry.setResolver(namehash, address(resolver)); //default resolver
             if (resolveAccount) {
                 resolver.setAddr(namehash, _account);
             }
@@ -674,7 +674,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _username Username being slashed.
      */
     function slashUsername(
-        bytes _username,
+        bytes memory _username,
         uint256 _reserveSecret
     )
         internal
@@ -728,7 +728,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      */
     function eraseNodeHierarchy(
         uint _idx,
-        bytes32[] _labels,
+        bytes32[] memory _labels,
         bytes32 _subnode
     )
         private
@@ -743,8 +743,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         }
 
         // Erase the resolver and owner records
-        ensRegistry.setResolver(subnode, 0);
-        ensRegistry.setOwner(subnode, 0);
+        ensRegistry.setResolver(subnode, address(0));
+        ensRegistry.setOwner(subnode, address(0));
     }
 
     /**
@@ -753,7 +753,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @return Decoded registry call.
      */
     function abiDecodeRegister(
-        bytes _data
+        bytes memory _data
     )
         private
         pure

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity >=0.5.0 <0.6.0;
 
 import "./ERC20Token.sol";
 
@@ -71,7 +71,7 @@ contract StandardToken is ERC20Token {
     {
         return supply;
     }
-    
+
     /**
      * @dev Aprove the passed address to spend the specified amount of tokens on behalf of msg.sender.
      * @param _from The address that is approving the spend
@@ -99,7 +99,7 @@ contract StandardToken is ERC20Token {
     {
         balances[_to] += _amount;
         supply += _amount;
-        emit Transfer(0x0, _to, _amount);
+        emit Transfer(address(0x0), _to, _amount);
     }
 
     function transfer(
@@ -116,7 +116,7 @@ contract StandardToken is ERC20Token {
                 supply -= _value;
             } else {
                 balances[_to] += _value;
-            }
+            }            
             emit Transfer(_from, _to, _value);
             return true;
         } else {
