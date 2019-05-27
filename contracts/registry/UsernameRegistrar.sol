@@ -156,8 +156,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
             //Low level call, case dropUsername not implemented or failing, proceed release.
             //Return of this call have no use.
             newOwner.call.gas(80000)(
-                abi.encodeWithSignature(
-                    "dropUsername(bytes32)",
+                abi.encodeWithSelector(
+                    this.dropUsername.selector,
                     _label
                 )
             );
