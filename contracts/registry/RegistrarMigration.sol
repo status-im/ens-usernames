@@ -1,10 +1,8 @@
 pragma solidity >=0.5.0 <0.6.0;
 
-import "../common/MerkleProof.sol";
 import "../common/Controlled.sol";
 import "../token/ERC20Token.sol";
 import "../ens/ENS.sol";
-import "../ens/PublicResolver.sol";
 
 /**
  * @author Ricardo Guilherme Schmidt (Status Research & Development GmbH)
