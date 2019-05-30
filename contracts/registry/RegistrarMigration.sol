@@ -10,7 +10,7 @@ import "../ens/PublicResolver.sol";
  * @author Ricardo Guilherme Schmidt (Status Research & Development GmbH)
  * @notice Registers usernames as ENS subnodes of the domain `ensNode`
  */
-contract UsernameRegistrar is Controlled {
+contract RegistrarMigration is Controlled {
 
     ENS public ensRegistry;
     bytes32 public ensNode;
@@ -30,13 +30,16 @@ contract UsernameRegistrar is Controlled {
      */
     constructor(
         ENS _ensRegistry,
-        bytes32 _ensNode
+        bytes32 _ensNode,
+        address _parentRegistry
     )
         public
     {
         require(address(_ensRegistry) != address(0), "No ENS address defined.");
+        require(address(_parentRegistry) != address(0), "No parent registry address defined.");
         ensNode = _ensNode;
         ensRegistry = _ensRegistry;
+        parentRegistry = _parentRegistry;
     }
 
 
