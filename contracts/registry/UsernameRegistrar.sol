@@ -23,6 +23,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     uint256 public constant releaseDelay = 365 days;
     mapping (bytes32 => Account) public accounts;
 
+    uint256 public lastUpdate;
     address public slashMechanism;
     
     event RegistryState(RegistrarState state);
@@ -264,6 +265,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         external
         onlyController
     {
+        lastUpdate = block.timestamp;
         slashMechanism = _slashMechanism;
     }
 
@@ -601,6 +603,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         uint256 amountToTransfer = 0;
         uint256 creationTime = accounts[label].creationTime;
         address owner = ensRegistry.owner(namehash);
+        address beneficiary = _reserver;
         if(creationTime == 0) {
             require(
                 owner != address(0) ||
@@ -610,6 +613,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         } else {
             assert(creationTime != block.timestamp);
             amountToTransfer = accounts[label].balance;
+            if(lastUpdate > creationTime) {
+                beneficiary = accounts[label].owner;
+            }
             delete accounts[label];
         }
 
@@ -619,9 +625,11 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
 
         if (amountToTransfer > 0) {
             reserveAmount -= amountToTransfer;
-            uint256 partialDeposit = amountToTransfer / 3;
-            amountToTransfer = partialDeposit * 2; // reserve 1/3 to network (controller)
-            require(token.transfer(_reserver, amountToTransfer), "Error in transfer.");
+            if(lastUpdate > creationTime) {
+                uint256 partialDeposit = amountToTransfer / 3;
+                amountToTransfer = partialDeposit * 2; // reserve 1/3 to network (controller)
+            }
+            require(token.transfer(beneficiary, amountToTransfer), "Error in transfer.");
         }
         emit UsernameOwner(namehash, address(0));
     }

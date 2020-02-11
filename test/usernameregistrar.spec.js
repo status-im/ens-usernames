@@ -909,7 +909,7 @@ contract('UsernameRegistrar', function () {
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
     
-    it('should slash a username of a not migrated subnode that became unallowed', async () => {
+    it('should return funds of slashing when changed rules', async () => {
       const registrant = accountsArr[5];
       const notRegistrant = accountsArr[6];
 
@@ -931,7 +931,7 @@ contract('UsernameRegistrar', function () {
       const initialRegistryBalance = +await TestToken.methods.balanceOf(Dummy2UsernameRegistrar.address).call();
 
       
-      await Dummy2UsernameRegistrar.methods.moveRegistry(UpdatedDummy2UsernameRegistrar.address).send();
+      await Dummy2UsernameRegistrar.methods.setSlashMechanism(SlashMechanism.address).send();
 
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
       assert.equal(await ENSRegistry.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
