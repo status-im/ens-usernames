@@ -22,12 +22,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
 
     uint256 public constant releaseDelay = 365 days;
     mapping (bytes32 => Account) public accounts;
-    mapping (bytes32 => SlashReserve) reservedSlashers;
 
-    //Slashing conditions
-    uint256 public usernameMinLength;
-    bytes32 public reservedUsernamesMerkleRoot;
-
+    address public slashMechanism;
+    
     event RegistryState(RegistrarState state);
     event RegistryPrice(uint256 price);
     event RegistryMoved(address newRegistry);
@@ -45,10 +42,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         address owner;
     }
 
-    struct SlashReserve {
-        address reserver;
-        uint256 blockNumber;
-    }
+
 
     /**
      * @notice Callable only by `parentRegistry()` to continue migration of ENSSubdomainRegistry.
@@ -75,8 +69,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         ENS _ensRegistry,
         PublicResolver _resolver,
         bytes32 _ensNode,
-        uint256 _usernameMinLength,
-        bytes32 _reservedUsernamesMerkleRoot,
+        address _slashMechanism,
         address _parentRegistry
     )
         public
@@ -89,8 +82,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         ensRegistry = _ensRegistry;
         resolver = _resolver;
         ensNode = _ensNode;
-        usernameMinLength = _usernameMinLength;
-        reservedUsernamesMerkleRoot = _reservedUsernamesMerkleRoot;
+        slashMechanism = _slashMechanism;
         parentRegistry = _parentRegistry;
         setState(RegistrarState.Inactive);
     }
@@ -103,9 +95,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * - User deposits are completely protected. The contract controller cannot access them.
      * - User's address(es) will be publicly associated with the ENS name.
      * - User must authorise the contract to transfer `price` `token.name()`  on their behalf.
-     * - Usernames registered with less then `usernameMinLength` characters can be slashed.
-     * - Usernames contained in the merkle tree of root `reservedUsernamesMerkleRoot` can be slashed.
-     * - Usernames starting with `0x` and bigger then 12 characters can be slashed.
+     * - Usernames registered can be slashed if offending the `slashMechanism` contract rules.
      * - If terms of the contract change—e.g. Status makes contract upgrades—the user has the right to release the username and get their deposit back.
      * @param _label Choosen unowned username hash.
      * @param _account Optional address to set at public resolver.
@@ -186,95 +176,6 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         emit UsernameOwner(namehash, msg.sender);
     }
 
-    /**
-     * @notice secretly reserve the slashing reward to `msg.sender`
-     * @param _secret keccak256(abi.encodePacked(namehash, creationTime, reserveSecret))
-     */
-    function reserveSlash(bytes32 _secret) external {
-        require(reservedSlashers[_secret].blockNumber == 0, "Already Reserved");
-        reservedSlashers[_secret] = SlashReserve(msg.sender, block.number);
-    }
-
-    /**
-     * @notice Slash username smaller then `usernameMinLength`.
-     * @param _username Raw value of offending username.
-     */
-    function slashSmallUsername(
-        string calldata _username,
-        uint256 _reserveSecret
-    )
-        external
-    {
-        bytes memory username = bytes(_username);
-        require(username.length < usernameMinLength, "Not a small username.");
-        slashUsername(username, _reserveSecret);
-    }
-
-    /**
-     * @notice Slash username starting with "0x" and with length greater than 12.
-     * @param _username Raw value of offending username.
-     */
-    function slashAddressLikeUsername(
-        string calldata _username,
-        uint256 _reserveSecret
-    )
-        external
-    {
-        bytes memory username = bytes(_username);
-        require(username.length > 12, "Too small to look like an address.");
-        require(username[0] == byte("0"), "First character need to be 0");
-        require(username[1] == byte("x"), "Second character need to be x");
-        for(uint i = 2; i < 7; i++){
-            byte b = username[i];
-            require((b >= 0x30 && b <= 0x39) || (b >= 0x61 && b <= 0x66), "Does not look like an address");
-        }
-        slashUsername(username, _reserveSecret);
-    }
-
-    /**
-     * @notice Slash username that is exactly a reserved name.
-     * @param _username Raw value of offending username.
-     * @param _proof Merkle proof that name is listed on merkle tree.
-     */
-    function slashReservedUsername(
-        string calldata _username,
-        bytes32[] calldata _proof,
-        uint256 _reserveSecret
-    )
-        external
-    {
-        bytes memory username = bytes(_username);
-        require(
-            MerkleProof.verifyProof(
-                _proof,
-                reservedUsernamesMerkleRoot,
-                keccak256(username)
-            ),
-            "Invalid Proof."
-        );
-        slashUsername(username, _reserveSecret);
-    }
-
-    /**
-     * @notice Slash username that contains a non alphanumeric character.
-     * @param _username Raw value of offending username.
-     * @param _offendingPos Position of non alphanumeric character.
-     */
-    function slashInvalidUsername(
-        string calldata _username,
-        uint256 _offendingPos,
-        uint256 _reserveSecret
-    )
-        external
-    {
-        bytes memory username = bytes(_username);
-        require(username.length > _offendingPos, "Invalid position.");
-        byte b = username[_offendingPos];
-
-        require(!((b >= 0x30 && b <= 0x39) || (b >= 0x61 && b <= 0x7A)), "Not invalid character.");
-
-        slashUsername(username, _reserveSecret);
-    }
 
     /**
      * @notice Clear resolver and ownership of unowned subdomians.
@@ -676,11 +577,12 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _username Username being slashed.
      */
     function slashUsername(
-        bytes memory _username,
-        uint256 _reserveSecret
-    )
-        internal
+        bytes calldata _username,
+        address _reserver
+    ) 
+        external 
     {
+        require(msg.sender == slashMechanism, "Unauthorized");
         bytes32 label = keccak256(_username);
         bytes32 namehash = keccak256(abi.encodePacked(ensNode, label));
         uint256 amountToTransfer = 0;
@@ -706,13 +608,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
             reserveAmount -= amountToTransfer;
             uint256 partialDeposit = amountToTransfer / 3;
             amountToTransfer = partialDeposit * 2; // reserve 1/3 to network (controller)
-            bytes32 secret = keccak256(abi.encodePacked(namehash, creationTime, _reserveSecret));
-            SlashReserve memory reserve = reservedSlashers[secret];
-            require(reserve.reserver != address(0), "Not reserved.");
-            require(reserve.blockNumber < block.number, "Cannot reveal in same block");
-            delete reservedSlashers[secret];
-
-            require(token.transfer(reserve.reserver, amountToTransfer), "Error in transfer.");
+            require(token.transfer(_reserver, amountToTransfer), "Error in transfer.");
         }
         emit UsernameOwner(namehash, address(0));
     }

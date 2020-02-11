@@ -11,18 +11,16 @@ contract UpdatedDummyUsernameRegistrar is DummyUsernameRegistrar {
         ENS _ensRegistry,
         PublicResolver _resolver,
         bytes32 _ensNode,
-        uint256 _usernameMinLength,
-        bytes32 _reservedUsernamesMerkleRoot,
+        address _slashMechanism,
         address _parentRegistry
     )
         public
-        DummyUsernameRegistrar(
+        UsernameRegistrar(
             _token,
             _ensRegistry,
             _resolver,
             _ensNode,
-            _usernameMinLength,
-            _reservedUsernamesMerkleRoot,
+            _slashMechanism,
             _parentRegistry
         )
     {

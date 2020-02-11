@@ -38,95 +38,99 @@ const merkleRoot = merkleTree.getHexRoot();
 let accountsArr;
 config(
   {
-    contracts: {
-      deploy: {      
-        "TestToken": { },
-        "ENSRegistry": {
-          "onDeploy": [
-            "await ENSRegistry.methods.setSubnodeOwner('0x0000000000000000000000000000000000000000000000000000000000000000', '0x4f5b812789fc606be1b3b16908db13fc7a9adf7ca72641f84d75b47069d3d7f0', web3.eth.defaultAccount).send()"
-          ]
-        },
-        "PublicResolver": {
-          "args": [
-            "$ENSRegistry"
-          ]
-        },
-        "UsernameRegistrar": {
-          "args": [
-            "$TestToken",
-            "$ENSRegistry",
-            "$PublicResolver",
-            registry.namehash,
-            "3", 
-            merkleRoot,
-            "0x0000000000000000000000000000000000000000"
-          ],
-          "onDeploy": [
-            "await ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+registry.label+"', UsernameRegistrar.address).send()",
-          ]
-        },
-        "UpdatedUsernameRegistrar": {
-          "args": [
-            "$TestToken",
-            "$ENSRegistry",
-            "$PublicResolver",
-            registry.namehash,
-            "3", 
-            merkleRoot,
-            "$UsernameRegistrar"
-          ]
-        },
-        "DummyUsernameRegistrar": {
-          "args": [
-            "$TestToken",
-            "$ENSRegistry",
-            "$PublicResolver",
-            dummyRegistry.namehash,
-            "3", 
-            merkleRoot,
-            "0x0000000000000000000000000000000000000000"
-          ],
-          "onDeploy": [
-            "await ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+dummyRegistry.label+"', DummyUsernameRegistrar.address).send()",
-          ]
-        },
-        "UpdatedDummyUsernameRegistrar": {
-          "args": [
-            "$TestToken",
-            "$ENSRegistry",
-            "$PublicResolver",
-            dummyRegistry.namehash,
-            "3", 
-            merkleRoot,
-            "$DummyUsernameRegistrar"
-          ]
-        },
-        "Dummy2UsernameRegistrar": {
-          "args": [
-            "$TestToken",
-            "$ENSRegistry",
-            "$PublicResolver",
-            dummy2Registry.namehash,
-            "3", 
-            utils.zeroBytes32,
-            "0x0000000000000000000000000000000000000000"
-          ],
-          "onDeploy": [
-            "await ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+dummy2Registry.label+"', Dummy2UsernameRegistrar.address).send()",
-            "await Dummy2UsernameRegistrar.methods.activate("+dummy2Registry.price+").send()"
-          ]
-        },
-        "UpdatedDummy2UsernameRegistrar": {
-          "args": [
-            "$TestToken",
-            "$ENSRegistry",
-            "$PublicResolver",
-            dummy2Registry.namehash,
-            "3", 
-            merkleRoot,
-            "$Dummy2UsernameRegistrar"
-          ]
-        }
+    contracts: {        
+      "TestToken": { },
+      "ENSRegistry": {
+        "onDeploy": [
+          "await ENSRegistry.methods.setSubnodeOwner('0x0000000000000000000000000000000000000000000000000000000000000000', '0x4f5b812789fc606be1b3b16908db13fc7a9adf7ca72641f84d75b47069d3d7f0', web3.eth.defaultAccount).send()"
+        ]
+      },
+      "PublicResolver": {
+        "args": [
+          "$ENSRegistry"
+        ]
+      },
+      "SlashMechanism": {
+        "args": [
+          "3", 
+          merkleRoot
+        ],
+      }
+      ,"UsernameRegistrar": {
+        "args": [
+          "$TestToken",
+          "$ENSRegistry",
+          "$PublicResolver",
+          registry.namehash,
+          "$SlashMechanism",
+          "0x0000000000000000000000000000000000000000"
+        ],
+        "onDeploy": [
+          "await ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+registry.label+"', UsernameRegistrar.address).send()",
+        ]
+      },
+      "UpdatedUsernameRegistrar": {
+        "args": [
+          "$TestToken",
+          "$ENSRegistry",
+          "$PublicResolver",
+          registry.namehash,
+          "$SlashMechanism",
+          "$UsernameRegistrar"
+        ]
+      },
+      "DummyUsernameRegistrar": {
+        "args": [
+          "$TestToken",
+          "$ENSRegistry",
+          "$PublicResolver",
+          dummyRegistry.namehash,
+          "$SlashMechanism",
+          "0x0"
+        ],
+        "onDeploy": [
+          "await ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+dummyRegistry.label+"', DummyUsernameRegistrar.address).send()",
+        ]
+      },
+      "UpdatedDummyUsernameRegistrar": {
+        "args": [
+          "$TestToken",
+          "$ENSRegistry",
+          "$PublicResolver",
+          dummyRegistry.namehash,
+          "$SlashMechanism",
+          "$DummyUsernameRegistrar"
+        ]
+      },
+      "Dummy2SlashMechanism": {
+        "args": [
+          "3", 
+          utils.zeroBytes32
+        ],
+      },
+      "Dummy2UsernameRegistrar": {
+        "args": [
+          "$TestToken",
+          "$ENSRegistry",
+          "$PublicResolver",
+          dummy2Registry.namehash,
+          "$Dummy2SlashMechanism",
+          "0x0000000000000000000000000000000000000000"
+        ],
+        "onDeploy": [
+          "await ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+dummy2Registry.label+"', Dummy2UsernameRegistrar.address).send()",
+          "await Dummy2UsernameRegistrar.methods.activate("+dummy2Registry.price+").send()"
+        ]
+      },
+      "UpdatedDummy2UsernameRegistrar": {
+        "args": [
+          "$TestToken",
+          "$ENSRegistry",
+          "$PublicResolver",
+          dummy2Registry.namehash,
+          "$SlashMechanism",
+          "$Dummy2UsernameRegistrar"
+        ]
       }
     }
   }, (_err, web3_accounts) => {
@@ -143,6 +147,8 @@ const DummyUsernameRegistrar = artifacts.require('DummyUsernameRegistrar');
 const UpdatedDummyUsernameRegistrar = artifacts.require('UpdatedDummyUsernameRegistrar');
 const Dummy2UsernameRegistrar = artifacts.require('Dummy2UsernameRegistrar');
 const UpdatedDummy2UsernameRegistrar = artifacts.require('UpdatedDummy2UsernameRegistrar');
+const SlashMechanism = artifacts.require('SlashMechanism');
+const Dummy2SlashMechanism = artifacts.require('Dummy2SlashMechanism');
 
 contract('UsernameRegistrar', function () {
 
@@ -605,9 +611,9 @@ contract('UsernameRegistrar', function () {
       assert.notEqual(+await UsernameRegistrar.methods.getCreationTime(label).call(), 0);
       const creationTime = await UsernameRegistrar.methods.getCreationTime(web3Utils.sha3(username)).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
-      await UsernameRegistrar.methods.slashInvalidUsername(username, 4, reserveSecret).send()
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
+      await SlashMechanism.methods.slashInvalidUsername(username, 4, reserveSecret).send()
       //TODO: check events
       assert.equal(+await UsernameRegistrar.methods.getCreationTime(label).call(), 0);
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress);
@@ -627,11 +633,10 @@ contract('UsernameRegistrar', function () {
       await utils.increaseTime(20000)   
       const creationTime = await UsernameRegistrar.methods.getCreationTime(web3Utils.sha3(username)).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       let failed;
       try{
-        await UsernameRegistrar.methods.slashInvalidUsername(username, 4, reserveSecret).send()
+        await SlashMechanism.methods.slashInvalidUsername(username, 4, reserveSecret).send()
         failed = false;
       } catch(e){
         failed = true;
@@ -657,11 +662,11 @@ contract('UsernameRegistrar', function () {
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const creationTime = await UsernameRegistrar.methods.getCreationTime(web3Utils.sha3(username)).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       let failed;
       try{
-        await UsernameRegistrar.methods.slashReservedUsername(username, merkleTree.getHexProof(ReservedUsernames[0]), reserveSecret).send()
+        await SlashMechanism.methods.slashReservedUsername(username, merkleTree.getHexProof(ReservedUsernames[0]), reserveSecret).send()
         failed = false;
       } catch(e){
         failed = true;
@@ -684,11 +689,11 @@ contract('UsernameRegistrar', function () {
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const creationTime = await UsernameRegistrar.methods.getCreationTime(web3Utils.sha3(username)).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       let failed;
       try{
-        await UsernameRegistrar.methods.slashReservedUsername(username, merkleTree.getHexProof(ReservedUsernames[1]), reserveSecret).send()
+        await SlashMechanism.methods.slashReservedUsername(username, merkleTree.getHexProof(ReservedUsernames[1]), reserveSecret).send()
         failed = false;
       } catch(e){
         failed = true;
@@ -711,9 +716,9 @@ contract('UsernameRegistrar', function () {
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const creationTime = await UsernameRegistrar.methods.getCreationTime(web3Utils.sha3(username)).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
-      result = await UsernameRegistrar.methods.slashReservedUsername(username, merkleTree.getHexProof(username), reserveSecret).send()  
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
+      await SlashMechanism.methods.slashReservedUsername(username, merkleTree.getHexProof(username), reserveSecret).send()  
       //TODO: check events
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
@@ -735,11 +740,11 @@ contract('UsernameRegistrar', function () {
       await utils.increaseTime(1000)
       const creationTime = await UsernameRegistrar.methods.getCreationTime(web3Utils.sha3(username)).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       let failed;
       try{
-        await UsernameRegistrar.methods.slashSmallUsername(username).send()    
+        await SlashMechanism.methods.slashSmallUsername(username).send()    
         failed = false;
       } catch(e){
         failed = true;
@@ -809,11 +814,11 @@ contract('UsernameRegistrar', function () {
       await utils.increaseTime(20000)
       const creationTime = await UsernameRegistrar.methods.getCreationTime(userlabelHash).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       let failed;
       try{
-        result = await UsernameRegistrar.methods.slashAddressLikeUsername(username, reserveSecret).send()    
+        await SlashMechanism.methods.slashAddressLikeUsername(username, reserveSecret).send()    
         failed = false;
       } catch(e){
         failed = true;
@@ -836,11 +841,11 @@ contract('UsernameRegistrar', function () {
       await utils.increaseTime(20000)
       const creationTime = await UsernameRegistrar.methods.getCreationTime(userlabelHash).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       let failed;
       try{
-        await UsernameRegistrar.methods.slashAddressLikeUsername(username, reserveSecret).send()    
+        await SlashMechanism.methods.slashAddressLikeUsername(username, reserveSecret).send()    
         failed = false;
       } catch(e){
         failed = true;
@@ -863,11 +868,11 @@ contract('UsernameRegistrar', function () {
       await utils.increaseTime(20000)
       const creationTime = await UsernameRegistrar.methods.getCreationTime(userlabelHash).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       let failed;
       try{
-        await UsernameRegistrar.methods.slashAddressLikeUsername(username, reserveSecret).send()    
+        await SlashMechanism.methods.slashAddressLikeUsername(username, reserveSecret).send()    
         failed = false;
       } catch(e){
         failed = true;
@@ -896,9 +901,9 @@ contract('UsernameRegistrar', function () {
       const initialSlasherBalance = +await TestToken.methods.balanceOf(slasher).call();
       const creationTime = await UsernameRegistrar.methods.getCreationTime(label).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send({from: slasher});
-      await UsernameRegistrar.methods.slashSmallUsername(username, reserveSecret).send({from: slasher})
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
+      await SlashMechanism.methods.slashSmallUsername(username, reserveSecret).send({from: slasher})
       //TODO: check events
       assert.equal(+await TestToken.methods.balanceOf(slasher).call(), (+initialSlasherBalance)+((+partReward)*2));    
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress);
@@ -933,9 +938,9 @@ contract('UsernameRegistrar', function () {
       assert.equal(await PublicResolver.methods.addr(usernameHash).call(), registrant, "Resolved address not set");      
       const creationTime = await UsernameRegistrar.methods.getCreationTime(label).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send({from: notRegistrant});
-      const resultRelease = await UpdatedDummy2UsernameRegistrar.methods.slashReservedUsername(
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UpdatedDummy2UsernameRegistrar.address, secret).send();
+      await SlashMechanism.methods.slashReservedUsername(
         username, 
         merkleTree.getHexProof(username),
         reserveSecret
@@ -970,9 +975,9 @@ contract('UsernameRegistrar', function () {
       const initialSlashReserverBalance = +await TestToken.methods.balanceOf(slashReserverCaller).call();
       const creationTime = await UsernameRegistrar.methods.getCreationTime(label).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send({from: slashReserverCaller});
-      await UsernameRegistrar.methods.slashSmallUsername(username, reserveSecret).send({from: slashReserverCaller})
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send({from: slashReserverCaller});
+      await SlashMechanism.methods.slashSmallUsername(username, reserveSecret).send({from: slashReserverCaller})
       //TODO: check events
       assert.equal(+await TestToken.methods.balanceOf(slashReserverCaller).call(), (+initialSlashReserverBalance)+(+partReward*2));    
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress);
