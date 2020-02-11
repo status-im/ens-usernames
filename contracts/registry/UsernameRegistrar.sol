@@ -254,6 +254,19 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         resolver = PublicResolver(_resolver);
     }
 
+    /** 
+     * @notice Updates slash mechanism.
+     * @param _slashMechanism New Slash Mechanism
+     */
+    function setSlashMechanism(
+        address _slashMechanism
+    ) 
+        external
+        onlyController
+    {
+        slashMechanism = _slashMechanism;
+    }
+
     /**
      * @notice Updates registration price.
      * @param _price New registration price.
