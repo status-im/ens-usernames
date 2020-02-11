@@ -131,7 +131,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         require(account.creationTime > 0, "Username not registered.");
         if (state == RegistrarState.Active) {
             require(msg.sender == ensRegistry.owner(namehash), "Not owner of ENS node.");
-            require(block.timestamp > account.creationTime + releaseDelay, "Release period not reached.");
+            require(block.timestamp > account.creationTime + releaseDelay || lastUpdate > account.creationTime, "Release period not reached.");
         } else {
             require(msg.sender == account.owner, "Not the former account owner.");
         }
