@@ -67,7 +67,7 @@ module.exports = {
   "livenet":{
     "contracts": {
       "ENSRegistry": {
-        "address": "0x314159265dd8dbb310642f98f50c066173c1259b"
+        "address": "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
       },
       "PublicResolver": {
         "address": "0x5FfC014343cd971B7eb70732021E26C35B744cc4"
@@ -92,7 +92,7 @@ module.exports = {
   "testnet":{
     "contracts": {
       "ENSRegistry": {
-        "address": "0x112234455c3a32fd11230c42e7bccd4a84e02010"
+        "address": "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
       },
       "PublicResolver": {
         "address": "0x29754bADB2640b98F6deF0f52D41418b0d2e0C51"
@@ -117,7 +117,7 @@ module.exports = {
   "rinkeby":{
     "contracts": {
       "ENSRegistry": {
-        "address": "0xe7410170f87102DF0055eB195163A03B7F2Bff4A"
+        "address": "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
       },
       "PublicResolver": {
         "address": "0x5d20cf83cb385e06d2f2a892f9322cd4933eacdc"
