@@ -1,62 +1,98 @@
+// This file contains only the basic configuration you need to run Embark's node
+// For additional configurations, see: https://framework.embarklabs.io/docs/blockchain_configuration.html
 module.exports = {
-  development: {
-    enabled: true,
-    networkType: "custom", // Can be: testnet, rinkeby, livenet or custom, in which case, it will use the specified networkId
-    networkId: "1337", // Network id used when networkType is custom
-    isDev: true, // Uses and ephemeral proof-of-authority network with a pre-funded developer account, mining enabled
-    genesisBlock: "config/development/genesis.json", // Genesis block to initiate on first creation of a development node
-    datadir: ".embark/development/datadir", // Data directory for the databases and keystore
-    mineWhenNeeded: true, // Uses our custom script (if isDev is false) to mine only when needed
-    nodiscover: true, // Disables the peer discovery mechanism (manual peer addition)
-    maxpeers: 0, // Maximum number of network peers (network disabled if set to 0) (default: 25)
-    rpcHost: "localhost", // HTTP-RPC server listening interface (default: "localhost")
-    rpcPort: 8545, // HTTP-RPC server listening port (default: 8545)
-    rpcCorsDomain: "auto",  // Comma separated list of domains from which to accept cross origin requests (browser enforced)
-                            // When set to "auto", Embark will automatically set the cors to the address of the webserver
-    proxy: true, // Proxy is used to present meaningful information about transactions
-    account: {
-      // "address": "", // When specified, uses that address instead of the default one for the network
-      password: "config/development/password" // Password to unlock the account
+    // default applies to all environments
+    default: {
+        enabled: true,
+        client: "geth",
+
+        // Accounts to use as node accounts
+        // The order here corresponds to the order of `web3.eth.getAccounts`, so the first one is the `defaultAccount`
+        accounts: [
+            {
+                nodeAccounts: true, // Accounts use for the node
+                numAddresses: 2, // Number of addresses/accounts (defaults to 1)
+                password: "config/development/password" // Password file for the accounts
+            }
+        ]
     },
-    targetGasLimit: 8000000, // Target gas limit sets the artificial target gas floor for the blocks to mine
-    wsRPC: true, // Enable the WS-RPC server
-    wsOrigins: "auto",  // Origins from which to accept websockets requests
-                        // When set to "auto", Embark will automatically set the cors to the address of the webserver
-    wsHost: "localhost", // WS-RPC server listening interface (default: "localhost")
-    wsPort: 8546, // WS-RPC server listening port (default: 8546)
-    simulatorMnemonic: "example exile argue silk regular smile grass bomb merge arm assist farm", // Mnemonic  used by the simulator to generate a wallet
-    simulatorBlocktime: 0 // Specify blockTime in seconds for automatic mining. Default is 0 and no auto-mining.
-  },
-  testnet: {
-    enabled: true,
-    networkType: "testnet",
-    syncMode: "light",
-    rpcHost: "localhost",
-    rpcPort: 8545,
-    rpcCorsDomain: "http://localhost:8000",
-    account: {
-      password: "config/testnet/password"
+    development: {
+        clientConfig: {
+            miningMode: 'dev'
+        },
+        accounts: [
+            {
+              nodeAccounts: true
+            },
+            {
+              mnemonic: "foster gesture flock merge beach plate dish view friend leave drink valley shield list enemy",
+              balance: "5 ether",
+              numAddresses: "10"
+            }
+          ]
+    },
+  
+    privatenet: {
+      // Accounts to use as node accounts
+      // The order here corresponds to the order of `web3.eth.getAccounts`, so the first one is the `defaultAccount`
+      // For more account configurations, see: https://framework.embarklabs.io/docs/blockchain_accounts_configuration.html
+      accounts: [
+        {
+          nodeAccounts: true, // Accounts use for the node
+          numAddresses: "1", // Number of addresses/accounts (defaults to 1)
+          password: "config/development/password" // Password file for the accounts
+        }
+      ],
+      clientConfig: {
+        datadir: ".embark/privatenet/datadir", // Data directory for the databases and keystore
+        miningMode: 'auto',
+        genesisBlock: "config/privatenet/genesis.json" // Genesis block to initiate on first creation of a development node
+      }
+    },
+  
+    privateparitynet: {
+      client: "parity",
+      genesisBlock: "config/privatenet/genesis-parity.json",
+      datadir: ".embark/privatenet/datadir",
+      miningMode: 'off'
+    },
+  
+    externalnode: {
+      endpoint: "URL_OF_THE_NODE", // Endpoint of an node to connect to. Can be on localhost or on the internet
+      accounts: [
+        {
+          mnemonic: "YOUR_MNEMONIC",
+          hdpath: "m/44'/60'/0'/0/",
+          numAddresses: "1"
+        }
+      ]
+    },
+  
+    testnet: {
+      networkType: "testnet", // Can be: testnet(ropsten), rinkeby, livenet or custom, in which case, it will use the specified networkId
+      syncMode: "light",
+      accounts: [
+        {
+          nodeAccounts: true,
+          password: "config/testnet/password"
+        }
+      ]
+    },
+  
+    livenet: {
+      endpoint: "https://mainnet.infura.io/v3/ad89ee0df87340bba88c0608c5cf2fc2",
+      networkType: "livenet",
+      syncMode: "light",
+      accounts: [
+        {
+          nodeAccounts: true,
+          password: "config/livenet/password"
+        }
+      ]
     }
-  },
-  livenet: {
-    enabled: true,
-    networkType: "livenet",
-    syncMode: "light",
-    rpcHost: "localhost",
-    rpcPort: 8545,
-    rpcCorsDomain: "http://localhost:8000",
-    account: {
-      password: "config/livenet/password"
-    }
-  },
-  privatenet: {
-    enabled: true,
-    networkType: "custom",
-    rpcHost: "localhost",
-    rpcPort: 8545,
-    rpcCorsDomain: "http://localhost:8000",
-    datadir: "yourdatadir",
-    networkId: "123",
-    bootnodes: ""
-  }
-};
+  
+    // you can name an environment with specific settings and then specify with
+    // "embark run custom_name" or "embark blockchain custom_name"
+    //custom_name: {
+    //}
+  };

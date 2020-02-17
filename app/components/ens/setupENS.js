@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React, { Fragment } from 'react';
 import { Button } from 'react-bootstrap';
-import UsernameRegistrar from 'Embark/contracts/UsernameRegistrar';
+import UsernameRegistrar from '../../../embarkArtifacts/contracts/UsernameRegistrar';
 import web3Utils from 'web3-utils'
 import { hash } from 'eth-ens-namehash'
 

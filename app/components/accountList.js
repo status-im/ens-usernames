@@ -1,4 +1,3 @@
-import web3 from 'Embark/web3'
 import React from 'react';
 import { connect } from 'react-redux';
 import { Nav, MenuItem, NavDropdown } from 'react-bootstrap';

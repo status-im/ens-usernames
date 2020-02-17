@@ -1,0 +1,11 @@
+{
+  "provider": "web3",
+  "dappConnection": [
+    "$WEB3",
+    "ws://localhost:8546",
+    "localhost:8545"
+  ],
+  "dappAutoEnable": true,
+  "warnIfMetamask": false,
+  "blockchainClient": "geth"
+}

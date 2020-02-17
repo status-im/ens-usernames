@@ -1,5 +1,5 @@
 const utils = require('../utils/testUtils.js');
-const ENSRegistry = require('Embark/contracts/ENSRegistry');
+const ENSRegistry = require('../embarkArtifacts/contracts/ENSRegistry');
 const web3Utils = require('web3-utils');
 const namehash = require('eth-ens-namehash');
 

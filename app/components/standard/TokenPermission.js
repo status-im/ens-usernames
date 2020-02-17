@@ -1,6 +1,5 @@
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'react-redux';
-import web3 from "Embark/web3"
 import Toggle from 'react-toggle';
 import { BigNumber } from './utils'
 import "react-toggle/style.css";

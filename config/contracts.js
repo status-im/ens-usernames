@@ -5,17 +5,7 @@ const merkleTree = new MerkleTree(ReservedUsernames);
 
 module.exports = {
   "default": {
-    "deployment": {
-      "host": "localhost",
-      "port": 8545,
-      "type": "rpc"
-    },
-    "dappConnection": [
-      "$WEB3",
-      "http://localhost:8545"
-    ],
-    "gas": "auto",
-    "contracts": {
+    "deploy": {
       "TestToken": {},
       "MerkleProofWrapper": {
         "deploy": false
@@ -41,7 +31,7 @@ module.exports = {
     }
   },
   "development": {
-    "contracts": {
+    "deploy": {
       "TestToken": {
         "deploy": true
       },
@@ -65,7 +55,7 @@ module.exports = {
     }
   },
   "livenet":{
-    "contracts": {
+    "deploy": {
       "ENSRegistry": {
         "address": "0x314159265dd8dbb310642f98f50c066173c1259b"
       },
@@ -90,7 +80,7 @@ module.exports = {
     }
   },
   "testnet":{
-    "contracts": {
+    "deploy": {
       "ENSRegistry": {
         "address": "0x112234455c3a32fd11230c42e7bccd4a84e02010"
       },
@@ -115,7 +105,7 @@ module.exports = {
     }
   },
   "rinkeby":{
-    "contracts": {
+    "deploy": {
       "ENSRegistry": {
         "address": "0xe7410170f87102DF0055eB195163A03B7F2Bff4A"
       },

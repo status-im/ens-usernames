@@ -23,6 +23,12 @@
     "bignumber.js": "^5.0.0",
     "classnames": "^2.2.6",
     "elliptic": "^6.4.1",
+    "embarkjs": "^5.1.1",
+    "embarkjs-ens": "^5.1.1",
+    "embarkjs-ipfs": "^5.1.1",
+    "embarkjs-swarm": "^5.1.1",
+    "embarkjs-web3": "^5.1.1",
+    "embarkjs-whisper": "^5.1.1",
     "eth-ens-namehash": "^2.0.8",
     "formik": "^0.11.11",
     "i18n-js": "^3.1.0",
@@ -45,6 +51,7 @@
     "reselect": "^3.0.1",
     "styled-components": "^3.3.2",
     "typeface-roboto": "0.0.54",
+    "web3": "^1.2.6",
     "web3-utils": "^1.0.0-beta.34"
   },
   "devDependencies": {

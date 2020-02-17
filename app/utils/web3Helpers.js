@@ -1,4 +1,3 @@
-import web3 from "Embark/web3"
 import BigNumber from 'bignumber.js';
 
 // By default BigNumber's `toString` method converts to exponential notation if the value has

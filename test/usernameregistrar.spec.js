@@ -137,15 +137,15 @@ config(
   }
 );
 
-const TestToken = require('Embark/contracts/TestToken');
-const ENSRegistry = require('Embark/contracts/ENSRegistry');
-const PublicResolver = require('Embark/contracts/PublicResolver');
-const UsernameRegistrar = require('Embark/contracts/UsernameRegistrar');
-const UpdatedUsernameRegistrar = require('Embark/contracts/UpdatedUsernameRegistrar');
-const DummyUsernameRegistrar = require('Embark/contracts/DummyUsernameRegistrar');
-const UpdatedDummyUsernameRegistrar = require('Embark/contracts/UpdatedDummyUsernameRegistrar');
-const Dummy2UsernameRegistrar = require('Embark/contracts/Dummy2UsernameRegistrar');
-const UpdatedDummy2UsernameRegistrar = require('Embark/contracts/UpdatedDummy2UsernameRegistrar');
+const TestToken = require('../embarkArtifacts/contracts/TestToken');
+const ENSRegistry = require('../embarkArtifacts/contracts/ENSRegistry');
+const PublicResolver = require('../embarkArtifacts/contracts/PublicResolver');
+const UsernameRegistrar = require('../embarkArtifacts/contracts/UsernameRegistrar');
+const UpdatedUsernameRegistrar = require('../embarkArtifacts/contracts/UpdatedUsernameRegistrar');
+const DummyUsernameRegistrar = require('../embarkArtifacts/contracts/DummyUsernameRegistrar');
+const UpdatedDummyUsernameRegistrar = require('../embarkArtifacts/contracts/UpdatedDummyUsernameRegistrar');
+const Dummy2UsernameRegistrar = require('../embarkArtifacts/contracts/Dummy2UsernameRegistrar');
+const UpdatedDummy2UsernameRegistrar = require('../embarkArtifacts/contracts/UpdatedDummy2UsernameRegistrar');
 
 contract('UsernameRegistrar', function () {
 

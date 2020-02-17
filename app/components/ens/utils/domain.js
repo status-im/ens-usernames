@@ -1,7 +1,6 @@
 import EmbarkJS from 'Embark/EmbarkJS';
-import web3 from "Embark/web3";
-import ENSRegistry from 'Embark/contracts/ENSRegistry';
-import PublicResolver from 'Embark/contracts/PublicResolver';
+import ENSRegistry from '../../../../embarkArtifacts/contracts/ENSRegistry';
+import PublicResolver from '../../../../embarkArtifacts/contracts/PublicResolver';
 
 const { methods: { owner, resolver } } = ENSRegistry;
 

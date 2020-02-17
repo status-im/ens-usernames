@@ -1,4 +1,3 @@
-import web3 from "Embark/web3"
 import EmbarkJS from 'Embark/EmbarkJS'
 import store from './configureStore'
 import { fetchAndDispatchSNTAllowance, fetchAndDispatchAccountsWithBalances } from '../actions/accounts'

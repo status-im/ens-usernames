@@ -1,7 +1,7 @@
 const { MerkleTree } = require('../utils/merkleTree.js');
 const { sha3, bufferToHex } = require('ethereumjs-util');
 
-const MerkleProofWrapper = require('Embark/contracts/MerkleProofWrapper');
+const MerkleProofWrapper = require('../embarkArtifacts/contracts/MerkleProofWrapper');
 
 var contractsConfig = {
     "MerkleProofWrapper": {

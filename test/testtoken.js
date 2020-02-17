@@ -1,5 +1,5 @@
 const Utils = require('../utils/testUtils');
-const TestToken = require('Embark/contracts/TestToken');
+const TestToken = require('../embarkArtifacts/contracts/TestToken');
 const ERC20TokenSpec = require('./abstract/erc20tokenspec');
 
 config({

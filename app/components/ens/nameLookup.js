@@ -8,8 +8,8 @@ import { hash } from 'eth-ens-namehash';
 import { isNil } from 'lodash';
 import Hidden from '@material-ui/core/Hidden';
 import Typography from '@material-ui/core/Typography';
-import UsernameRegistrar from 'Embark/contracts/UsernameRegistrar';
-import ENSRegistry from 'Embark/contracts/ENSRegistry';
+import UsernameRegistrar from '../../../embarkArtifacts/contracts/UsernameRegistrar';
+import ENSRegistry from '../../../embarkArtifacts/contracts/ENSRegistry';
 import { Button, Field, TextInput, MobileSearch, MobileButton, Card, Info, Text } from '../../ui/components'
 import { IconCheck } from '../../ui/icons'
 import { keyFromXY } from '../../utils/ecdsa';
@@ -17,7 +17,7 @@ import EditOptions from './EditOptions';
 import ReleaseDomainAlert from './ReleaseDomain';
 import theme from '../../ui/theme'
 import { withFormik } from 'formik';
-import PublicResolver from 'Embark/contracts/PublicResolver';
+import PublicResolver from '../../../embarkArtifacts/contracts/PublicResolver';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import RegisterSubDomain from '../ens/registerSubDomain';
 import StatusLogo from '../../ui/icons/components/StatusLogo'

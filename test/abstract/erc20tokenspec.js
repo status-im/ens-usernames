@@ -1,5 +1,5 @@
 
-const ERC20Receiver = require('Embark/contracts/ERC20Receiver');
+const ERC20Receiver = require('../../embarkArtifacts/contracts/ERC20Receiver');
 
 exports.config = {
   contracts : {
