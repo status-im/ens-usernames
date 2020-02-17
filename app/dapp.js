@@ -22,24 +22,19 @@ const symbols = {
   'main': 'SNT'
 }
 
-const isReady = (network, environment) => {
-  if (!network || !environment) return;
-  const formattedNetwork = network.toLowerCase();
-  if (formattedNetwork.includes('main') || formattedNetwork.includes('live')) {
-    if (environment === 'livenet') return true
-  } else if(formattedNetwork.includes('ropsten')) {
-    if (environment === 'testnet') return true
-  }
-  return formattedNetwork.includes(environment.toLowerCase());
+const isReady = (network, blockchainEnabled) => {
+  if (!network) return;
+  console.log(blockchainEnabled)
+  return blockchainEnabled;
 }
 
-const getEnvironment = env => {
-  if (env === 'testnet') return startCase('ropsten')
-  return startCase(env)
-}
+// const getEnvironment = env => {
+//   if (env === 'testnet') return startCase('ropsten')
+//   return startCase(env)
+// }
 
-const Web3RenderContent = ({ network, history, match, environment }) => (
-  <Web3Render ready={isReady(network, getEnvironment(environment))} network={getEnvironment(environment)}>
+const Web3RenderContent = ({ network, history, match, blockchainEnabled }) => (
+  <Web3Render ready={isReady(network, blockchainEnabled)} network={'livenet'}>
     <div>
       <NameLookup {...{history, match}}/>
       <Hidden mdDown>
@@ -68,15 +63,32 @@ class App extends React.Component {
 
   componentDidMount(){
     EmbarkJS.onReady((err) => {
+      if (err) {
+        // If err is not null then it means something went wrong connecting to ethereum
+        // you can use this to ask the user to enable metamask for e.g
+        return this.setState({error: err.message || err});
+      }
+      EmbarkJS.Blockchain.isAvailable().then(result => {
+        this.setState({blockchainEnabled: result});
+      });
+  
+      EmbarkJS.Messages.isAvailable().then(result => {
+        this.setState({whisperEnabled: result});
+      });
+  
+      EmbarkJS.Storage.isAvailable().then((result) => {
+        this.setState({storageEnabled: result});
+      }).catch(() => {
+        this.setState({storageEnabled: false});
+      });
       getNetworkType().then(network => {
-        const { environment } = EmbarkJS
-        this.setState({ network, environment })
+        this.setState({ network })
       });
     });
   }
 
   render() {
-    const { admin, network, environment } = this.state;
+    const { admin, network, blockchainEnabled } = this.state;
 
     return (
       <HashRouter hashType="noslash">
@@ -90,7 +102,7 @@ class App extends React.Component {
 
           <Route exact path="/" component={Welcome}/>
           <Route path="/search" render={({history, match}) => (
-            <Web3RenderContent {...{history, match, network, environment}} />
+            <Web3RenderContent {...{history, match, network, blockchainEnabled }} />
           )}/>
         </div>
       </HashRouter>
