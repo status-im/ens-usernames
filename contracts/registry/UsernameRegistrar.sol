@@ -373,7 +373,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     function moveRegistry()
         external
     {
-        require(ensRegistry.owner(ensNode == _newRegistry) != this, "Cannot move to self.");
+        require(ensRegistry.owner(ensNode) != address(this), "Cannot move to self.");
         setState(RegistrarState.Moved);
         emit RegistryMoved(_newRegistry);
     }
