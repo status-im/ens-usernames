@@ -1,22 +1,31 @@
 {
-  "name": "status-contracts",
+  "name": "ens-usernames",
   "version": "0.0.2",
   "description": "",
   "scripts": {
     "solidity-coverage": "./node_modules/.bin/solidity-coverage",
     "test": "embark test",
-    "lint": "eslint"
+    "lint": "eslint",
+    "build:circuit:compile": "npx circom circuits/withdraw.circom -o build/circuits/withdraw.json && npx snarkjs info -c build/circuits/withdraw.json",
+    "build:circuit:setup": "npx snarkjs setup --protocol groth -c build/circuits/withdraw.json --pk build/circuits/withdraw_proving_key.json --vk build/circuits/withdraw_verification_key.json",
+    "build:circuit:bin": "node node_modules/websnark/tools/buildpkey.js -i build/circuits/withdraw_proving_key.json -o build/circuits/withdraw_proving_key.bin",
+    "build:circuit:contract": "npx snarkjs generateverifier -v build/circuits/Verifier.sol --vk build/circuits/withdraw_verification_key.json",
+    "build:circuit": "mkdir -p build/circuits && npm run build:circuit:compile && npm run build:circuit:setup && npm run build:circuit:bin && npm run build:circuit:contract",
+    "build:contract": "npx truffle compile",
+    "build": "npm run build:circuit && npm run build:contract && npm run build:browserify",
+    "eslint": "npx eslint --ignore-path .gitignore .",
+    "download": "node downloadKeys.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/status-im/contracts.git"
+    "url": "git+https://github.com/status-im/ens-usernames.git"
   },
   "author": "Status Research & Development GMBH",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/status-im/contracts/issues"
+    "url": "https://github.com/status-im/ens-usernames/issues"
   },
-  "homepage": "https://github.com/status-im/contracts#readme",
+  "homepage": "https://github.com/status-im/ens-usernames#readme",
   "dependencies": {
     "@material-ui/core": "^1.2.1",
     "@material-ui/icons": "^1.1.0",
@@ -45,9 +54,11 @@
     "redux-action-creator": "^2.3.0",
     "redux-thunk": "^2.3.0",
     "reselect": "^3.0.1",
+    "snarkjs": "git+https://github.com/tornadocash/snarkjs.git#869181cfaf7526fe8972073d31655493a04326d5",
     "styled-components": "^3.3.2",
     "typeface-roboto": "0.0.54",
-    "web3-utils": "^1.0.0-beta.34"
+    "web3-utils": "^1.0.0-beta.34",
+    "websnark": "git+https://github.com/tornadocash/websnark.git#2041cfa5fa0b71cd5cca9022a4eeea4afe28c9f7"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.0.0",
