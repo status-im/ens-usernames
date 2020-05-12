@@ -42,7 +42,7 @@ contract SafeUsernameRegistrar is MerkleTreeWithHistory, ReentrancyGuard, Userna
         operator = _operator;
     }
 
-    function secureRegister(
+    function secureSetUsername(
         bytes calldata _proof,
         bytes32 _root,
         bytes32 _nullifierHash,
@@ -65,7 +65,7 @@ contract SafeUsernameRegistrar is MerkleTreeWithHistory, ReentrancyGuard, Userna
         if (_fee > 0) {
             require(token.transfer(_relayer, _fee), "Error in transfer.");
         }
-        _safeRegister(_chatKey, _data);
+        _safeSetUsername(_chatKey, _data);
         emit Spend(_chatKey, _nullifierHash, _relayer, _fee);
     }
 
@@ -140,7 +140,7 @@ contract SafeUsernameRegistrar is MerkleTreeWithHistory, ReentrancyGuard, Userna
         verifier = IVerifier(_newVerifier);
     }
 
-    function _safeRegister(address payable _owner, bytes memory _data) private {
+    function _safeSetUsername(address payable _owner, bytes memory _data) private {
         require(_data.length <= 132, "Wrong data length");
         bytes4 sig;
         bytes32 label;
@@ -154,9 +154,13 @@ contract SafeUsernameRegistrar is MerkleTreeWithHistory, ReentrancyGuard, Userna
         );
         require(state == RegistrarState.Active, "Registry not active.");
         namehash = keccak256(abi.encodePacked(ensNode, _label));
-        require(ensRegistry.owner(namehash) == address(0), "ENS node already owned.");
-        require(accounts[_label].creationTime == 0, "Username already registered.");
-        accounts[_label] = Account(price, block.timestamp, _owner);
+        address owner = ensRegistry.owner(namehash);
+        if(owner == address(0)){
+            require(accounts[_label].creationTime == 0, "Username already registered.");
+            accounts[_label] = Account(price, block.timestamp, _owner);
+        } else {
+            require(owner == _owner, "ENS node already owned.");
+        }
         bool resolvePubkey = _pubkeyA != 0 || _pubkeyB != 0;
         bool resolveAccount = _account != address(0);
         if (resolvePubkey || resolveAccount) {
@@ -176,4 +180,5 @@ contract SafeUsernameRegistrar is MerkleTreeWithHistory, ReentrancyGuard, Userna
         }
         emit UsernameOwner(namehash, _owner);
     }
+
 }
