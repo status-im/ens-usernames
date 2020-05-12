@@ -1,6 +1,6 @@
 {
   "name": "status-contracts",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "scripts": {
     "solidity-coverage": "./node_modules/.bin/solidity-coverage",
@@ -21,6 +21,8 @@
     "@material-ui/core": "^1.2.1",
     "@material-ui/icons": "^1.1.0",
     "bignumber.js": "^5.0.0",
+    "circom": "^0.0.35",
+    "circomlib": "git+https://github.com/tornadocash/circomlib.git#c372f14d324d57339c88451834bf2824e73bbdbc",
     "classnames": "^2.2.6",
     "elliptic": "^6.4.1",
     "eth-ens-namehash": "^2.0.8",
