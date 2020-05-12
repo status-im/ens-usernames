@@ -11,8 +11,8 @@
     "build:circuit:bin": "node node_modules/websnark/tools/buildpkey.js -i build/circuits/withdraw_proving_key.json -o build/circuits/withdraw_proving_key.bin",
     "build:circuit:contract": "npx snarkjs generateverifier -v build/circuits/Verifier.sol --vk build/circuits/withdraw_verification_key.json",
     "build:circuit": "mkdir -p build/circuits && npm run build:circuit:compile && npm run build:circuit:setup && npm run build:circuit:bin && npm run build:circuit:contract",
-    "build:contract": "npx truffle compile",
-    "build": "npm run build:circuit && npm run build:contract && npm run build:browserify",
+    "build:dapp": "npx embark build",
+    "build": "npm run build:circuit && npm run build:dapp",
     "eslint": "npx eslint --ignore-path .gitignore .",
     "download": "node downloadKeys.js"
   },
