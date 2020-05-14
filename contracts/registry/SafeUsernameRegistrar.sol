@@ -113,7 +113,7 @@ contract SafeUsernameRegistrar is MerkleTreeWithHistory, ReentrancyGuard, Userna
             return super.receiveApproval(_from, _amount, _token, _data);
         } else {
             bytes32 commitment;
-            (sig, commitment) = abiDecodeRegister(_data);
+            (sig, commitment) = abiDecodeDeposit(_data);
             require(
                 sig == bytes4(keccak256("deposit(bytes32)")),
                 "Wrong method selector"
@@ -181,4 +181,25 @@ contract SafeUsernameRegistrar is MerkleTreeWithHistory, ReentrancyGuard, Userna
         emit UsernameOwner(namehash, _owner);
     }
 
+
+    /**
+     * @dev Decodes abi encoded data with selector for "deposit(bytes32)".
+     * @param _data Abi encoded data.
+     * @return Decoded deposit call.
+     */
+    function abiDecodeDeposit(
+        bytes _data
+    )
+        private
+        pure
+        returns(
+            bytes4 sig,
+            bytes32 commitment
+        )
+    {
+        assembly {
+            sig := mload(add(_data, 0x20))
+            commitment := mload(add(_data, 36))
+        }
+    }
 }
