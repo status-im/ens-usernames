@@ -2,13 +2,12 @@ import React from 'react';
 import 'typeface-roboto'
 import Toggle from 'react-toggle';
 import EmbarkJS from 'Embark/EmbarkJS';
-import TestToken from 'Embark/contracts/TestToken';
+import TestToken from '../embarkArtifacts/contracts/TestToken';
 import { startCase } from 'lodash';
-import UsernameRegistrar from 'Embark/contracts/UsernameRegistrar';
+import UsernameRegistrar from '../embarkArtifacts/contracts/UsernameRegistrar';
 import NameLookup from './components/ens/nameLookup';
 import AdminMode from './components/AdminMode';
 import TokenPermissions from './components/standard/TokenPermissionConnect';
-import web3 from "Embark/web3";
 import Welcome from './components/ens/welcome';
 import Hidden from '@material-ui/core/Hidden';
 import Web3Render from './components/standard/Web3Render';
@@ -30,6 +29,8 @@ const isReady = (network, environment) => {
     if (environment === 'livenet') return true
   } else if(formattedNetwork.includes('ropsten')) {
     if (environment === 'testnet') return true
+  }else if(formattedNetwork.includes('private')) {
+    if (environment === 'private') return true
   }
   return formattedNetwork.includes(environment.toLowerCase());
 }
@@ -70,7 +71,7 @@ class App extends React.Component {
   componentDidMount(){
     EmbarkJS.onReady((err) => {
       getNetworkType().then(network => {
-        const { environment } = EmbarkJS
+        const environment = network;
         this.setState({ network, environment })
       });
     });

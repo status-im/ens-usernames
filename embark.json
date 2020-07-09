@@ -9,12 +9,17 @@
   "buildDir": "dist/",
   "config": "config/",
   "versions": {
-    "web3": "1.0.0-beta",
-    "solc": "0.5.4",
-    "ipfs-api": "17.2.4"
+    "solc": "0.5.4"
   },
   "plugins": {
-    "embarkjs-connector-web3": {}
+    "embark-ipfs": {},
+    "embark-swarm": {},
+    "embark-whisper-geth": {},
+    "embark-geth": {},
+    "embark-parity": {},
+    "embark-profiler": {},
+    "embark-graph": {},
+    "embark-basic-pipeline": {}
   },
   "options": {
     "solc": {

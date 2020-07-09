@@ -1,69 +1,46 @@
 module.exports = {
   default: {
     enabled: true,
-    syncMode: "light",
-    rpcHost: "localhost", 
-    rpcPort: 8545, 
-    rpcCorsDomain: {
-      auto: true,
-      additionalCors: []
-    },
-    wsHost: "localhost",
-    wsPort: 8546,
-    wsOrigins: { 
-      auto: true,
-      additionalCors: []
-    },    
-    wsRPC: true,
+    client: "geth" 
   },
 
   development: {
-    ethereumClientName: "geth", 
-    networkType: "custom", 
-    networkId: 1337,
-    isDev: true,
-    datadir: ".embark/development/datadir",
-    mineWhenNeeded: true, 
-    nodiscover: true, 
-    maxpeers: 0, 
-    proxy: true, 
-    targetGasLimit: 8000000, 
-    simulatorBlocktime: 0
-  },
-
-  livenet: {
-    networkType: "livenet",
-    accounts: [
-      {
-        nodeAccounts: true,
-        password: "config/livenet/.password"
-      }
-    ]
+    client: 'ganache-cli',
+    clientConfig: {
+      miningMode: 'dev'
+    }
   },
 
   testnet: {
     networkType: "testnet",
-    rpcPort: 8645, 
-    wsPort: 8646, 
+    syncMode: "light",
     accounts: [
       {
         nodeAccounts: true,
-        password: "config/testnet/.password"
+        password: "config/testnet/password"
       }
     ]
   },
-  
-  rinkeby: {
-    enabled: true,
-    rpcPort: 8745, 
-    wsPort: 8746, 
-    networkType: "rinkeby",
+
+  livenet: {
+    networkType: "livenet",
+    syncMode: "light",
     accounts: [
       {
         nodeAccounts: true,
-        password: "config/rinkeby/.password"
+        password: "config/livenet/password"
       }
-    ],
+    ]
+  },
+
+  rinkeby: {
+    networkType: "rinkeby",
+    syncMode: "light",
+    accounts: [
+      {
+        nodeAccounts: true,
+        password: "config/rinkeby/password"
+      }
+    ]
   }
- 
 };

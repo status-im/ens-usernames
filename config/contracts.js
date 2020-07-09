@@ -5,14 +5,16 @@ const merkleTree = new MerkleTree(ReservedUsernames);
 
 module.exports = {
   default: {
+    library: 'embarkjs', 
     dappConnection: [
-      "$WEB3", 
+      "$EMBARK",
+      "$WEB3",  // uses pre existing web3 object if available (e.g in Mist)
       "ws://localhost:8546",
       "http://localhost:8545"
     ],
     gas: "auto",
     strategy: "explicit",
-    contracts: {
+    deploy: {
       TestToken: {},
       MerkleProofWrapper: {
         deploy: false
@@ -38,17 +40,7 @@ module.exports = {
     }
   },
   development: {
-    dappConnection: [
-      "$WEB3", 
-      "ws://localhost:8546",
-      "http://localhost:8545"
-    ],
-    deployment: {
-      host: "localhost", 
-      port: 8546,
-      type: "ws"
-    },
-    contracts: {
+    deploy: {
       TestToken: {
         deploy: true
       },
@@ -72,7 +64,7 @@ module.exports = {
     }
   },
   livenet:{
-    contracts: {
+    deploy: {
       ENSRegistry: {
         address: "0x314159265dd8dbb310642f98f50c066173c1259b"
       },
@@ -97,17 +89,7 @@ module.exports = {
     }
   },
   testnet:{
-    dappConnection: [
-      "$WEB3", 
-      "ws://localhost:8646",
-      "http://localhost:8645"
-    ],
-    deployment: {
-      host: "localhost", 
-      port: 8646,
-      type: "ws"
-    },
-    contracts: {
+    deploy: {
       ENSRegistry: {
         address: "0x112234455c3a32fd11230c42e7bccd4a84e02010"
       },
@@ -132,17 +114,7 @@ module.exports = {
     }
   },
   rinkeby:{
-    dappConnection: [
-      "$WEB3", 
-      "ws://localhost:8746",
-      "http://localhost:8745"
-    ],
-    deployment: {
-      host: "localhost", 
-      port: 8746,
-      type: "ws"
-    },
-    contracts: {
+    deploy: {
       ENSRegistry: {
         address: "0xe7410170f87102DF0055eB195163A03B7F2Bff4A"
       },
