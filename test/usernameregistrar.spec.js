@@ -65,8 +65,7 @@ config(
             "await ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+registry.label+"', UsernameRegistrar.address).send()",
           ]
         },
-        /*"UpdatedUsernameRegistrar": {
-          "instanceOf" : "UsernameRegistrar",
+        "UpdatedUsernameRegistrar": {
           "args": [
             "$TestToken",
             "$ENSRegistry",
@@ -78,7 +77,6 @@ config(
           ]
         },
         "DummyUsernameRegistrar": {
-          "instanceOf" : "UsernameRegistrar",
           "args": [
             "$TestToken",
             "$ENSRegistry",
@@ -86,14 +84,13 @@ config(
             dummyRegistry.namehash,
             "3", 
             merkleRoot,
-            "0x0"
+            "0x0000000000000000000000000000000000000000"
           ],
           "onDeploy": [
             "await ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+dummyRegistry.label+"', DummyUsernameRegistrar.address).send()",
           ]
         },
         "UpdatedDummyUsernameRegistrar": {
-          "instanceOf" : "UsernameRegistrar",
           "args": [
             "$TestToken",
             "$ENSRegistry",
@@ -105,7 +102,6 @@ config(
           ]
         },
         "Dummy2UsernameRegistrar": {
-          "instanceOf" : "UsernameRegistrar",
           "args": [
             "$TestToken",
             "$ENSRegistry",
@@ -113,7 +109,7 @@ config(
             dummy2Registry.namehash,
             "3", 
             utils.zeroBytes32,
-            "0x0"
+            "0x0000000000000000000000000000000000000000"
           ],
           "onDeploy": [
             "await ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+dummy2Registry.label+"', Dummy2UsernameRegistrar.address).send()",
@@ -121,7 +117,6 @@ config(
           ]
         },
         "UpdatedDummy2UsernameRegistrar": {
-          "instanceOf" : "UsernameRegistrar",
           "args": [
             "$TestToken",
             "$ENSRegistry",
@@ -131,7 +126,7 @@ config(
             merkleRoot,
             "$Dummy2UsernameRegistrar"
           ]
-        }*/
+        }
       }
     }
   }, (_err, web3_accounts) => {
@@ -143,12 +138,12 @@ const TestToken = artifacts.require('TestToken');
 const ENSRegistry = artifacts.require('ENSRegistry');
 const PublicResolver = artifacts.require('PublicResolver');
 const UsernameRegistrar = artifacts.require('UsernameRegistrar');
-/*const UpdatedUsernameRegistrar = artifacts.require('UpdatedUsernameRegistrar');
+const UpdatedUsernameRegistrar = artifacts.require('UpdatedUsernameRegistrar');
 const DummyUsernameRegistrar = artifacts.require('DummyUsernameRegistrar');
 const UpdatedDummyUsernameRegistrar = artifacts.require('UpdatedDummyUsernameRegistrar');
 const Dummy2UsernameRegistrar = artifacts.require('Dummy2UsernameRegistrar');
 const UpdatedDummy2UsernameRegistrar = artifacts.require('UpdatedDummy2UsernameRegistrar');
-*/
+
 contract('UsernameRegistrar', function () {
 
   describe('activate(uint256)', function() {
@@ -528,7 +523,7 @@ contract('UsernameRegistrar', function () {
       assert.equal(+await TestToken.methods.balanceOf(newOwner).call(), (+initialRegistrantBalance)+(+initialAccountBalance), "New owner token balance didnt increase")
       assert.equal(+await TestToken.methods.balanceOf(UsernameRegistrar.address).call(), (+initialRegistryBalance)-(+initialAccountBalance), "Registry token balance didnt decrease")
     });
-    xit('should release moved username account balance by owner', async () => {
+    it('should release moved username account balance by owner', async () => {
       const registrant = accountsArr[5];
       await TestToken.methods.mint(dummyRegistry.price).send({from: registrant});
       await DummyUsernameRegistrar.methods.activate(dummyRegistry.price).send({from: accountsArr[0]});
@@ -909,7 +904,7 @@ contract('UsernameRegistrar', function () {
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
     
-    xit('should slash a username of a not migrated subnode that became unallowed', async () => {
+    it('should slash a username of a not migrated subnode that became unallowed', async () => {
       const registrant = accountsArr[5];
       const notRegistrant = accountsArr[6];
 
@@ -1053,16 +1048,16 @@ describe('eraseNode(bytes32[])', function() {
 });
 
   describe('moveRegistry(address)', function() {
-    xit('should move registry to new registry and migrate', async () => {
+    it('should move registry to new registry and migrate', async () => {
       const result = await UsernameRegistrar.methods.moveRegistry(UpdatedUsernameRegistrar.address).send();
       //TODO: check events
       assert.equal(await ENSRegistry.methods.owner(registry.namehash).call(), UpdatedUsernameRegistrar.address, "registry ownership not moved correctly")
-      assert.equal(await UpdatedUsernameRegistrar.methods.getPrice().call(), registry.price, "updated registry didnt migrated price")
+      assert.equal(+await UpdatedUsernameRegistrar.methods.getPrice().call(), registry.price, "updated registry didnt migrated price")
     });
   });
 
   describe('moveAccount(label,address)', function() {
-    xit('should move username to new registry by account owner', async () => {
+    it('should move username to new registry by account owner', async () => {
       const registrant = accountsArr[5];
       const username = 'erin';
       const usernameHash = namehash.hash(username + '.' + registry.registry);
@@ -1072,12 +1067,12 @@ describe('eraseNode(bytes32[])', function() {
       assert.notEqual(accountBalance, 0);
       const initialRegistryBalance = +await TestToken.methods.balanceOf(UsernameRegistrar.address).call();
       const initialUpdatedRegistryBalance = +await TestToken.methods.balanceOf(UpdatedUsernameRegistrar.address).call();
-      const creationTime = await UsernameRegistrar.methods.getCreationTime(label).call();
+      const creationTime = +await UsernameRegistrar.methods.getCreationTime(label).call();
       assert.notEqual(creationTime, 0);
-      assert.equal(await UpdatedUsernameRegistrar.methods.getCreationTime(label).call(), 0);
+      assert.equal(+await UpdatedUsernameRegistrar.methods.getCreationTime(label).call(), 0);
       const result = await UsernameRegistrar.methods.moveAccount(label, UpdatedUsernameRegistrar.address).send({from: registrant});
       assert.equal(+await UsernameRegistrar.methods.getCreationTime(label).call(), 0);
-      assert.equal(await UpdatedUsernameRegistrar.methods.getCreationTime(label).call(), creationTime);
+      assert.equal(+await UpdatedUsernameRegistrar.methods.getCreationTime(label).call(), creationTime);
       assert.equal(+await TestToken.methods.balanceOf(UsernameRegistrar.address).call(), (+initialRegistryBalance)-(+accountBalance))
       assert.equal(+await TestToken.methods.balanceOf(UpdatedUsernameRegistrar.address).call(), (+initialUpdatedRegistryBalance)+(+accountBalance))
     });
