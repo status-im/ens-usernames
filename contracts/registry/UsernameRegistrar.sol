@@ -453,7 +453,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
 
     /**
      * @notice Gets registration price.
-     * @return Registration price.
+     * @return registryPrice Registration price.
      **/
     function getPrice()
         external
@@ -466,7 +466,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     /**
      * @notice reads amount tokens locked in username
      * @param _label Username hash.
-     * @return Locked username balance.
+     * @return accountBalance Locked username balance.
      **/
     function getAccountBalance(bytes32 _label)
         external
@@ -480,7 +480,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @notice reads username account owner at this contract,
      * which can release or migrate in case of upgrade.
      * @param _label Username hash.
-     * @return Username account owner.
+     * @return owner Username account owner.
      **/
     function getAccountOwner(bytes32 _label)
         external
@@ -493,7 +493,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     /**
      * @notice reads when the account was registered
      * @param _label Username hash.
-     * @return Registration time.
+     * @return creationTime Registration time.
      **/
     function getCreationTime(bytes32 _label)
         external
@@ -506,7 +506,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     /**
      * @notice calculate time where username can be released
      * @param _label Username hash.
-     * @return Exact time when username can be released.
+     * @return releaseTime Exact time when username can be released.
      **/
     function getExpirationTime(bytes32 _label)
         external
@@ -522,7 +522,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     /**
      * @notice calculate reward part an account could payout on slash
      * @param _label Username hash.
-     * @return Part of reward
+     * @return partReward Part of reward
      **/
     function getSlashRewardPart(bytes32 _label)
         external

@@ -6,7 +6,7 @@ import "./ERC20Token.sol";
 
 contract StandardToken is ERC20Token {
 
-    uint256 private supply;
+    uint256 private totalTokens;
     mapping (address => uint256) balances;
     mapping (address => mapping (address => uint256)) allowed;
 
@@ -69,9 +69,9 @@ contract StandardToken is ERC20Token {
     function totalSupply()
         external
         view
-        returns(uint256 currentTotalSupply)
+        returns(uint256 supply)
     {
-        return supply;
+        return totalTokens;
     }
 
     /**
@@ -100,7 +100,7 @@ contract StandardToken is ERC20Token {
         internal
     {
         balances[_to] += _amount;
-        supply += _amount;
+        totalTokens += _amount;
         emit Transfer(address(0x0), _to, _amount);
     }
 
@@ -115,10 +115,10 @@ contract StandardToken is ERC20Token {
         if (balances[_from] >= _value && _value > 0) {
             balances[_from] -= _value;
             if(_to == address(0)) {
-                supply -= _value;
+                totalTokens -= _value;
             } else {
                 balances[_to] += _value;
-            }            
+            }
             emit Transfer(_from, _to, _value);
             return true;
         } else {
