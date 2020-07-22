@@ -157,7 +157,8 @@ contract PublicResolver {
      * Returns the SECP256k1 public key associated with an ENS node.
      * Defined in EIP 619.
      * @param node The ENS node to query
-     * @return x, y the X and Y coordinates of the curve point for the public key.
+     * @return x Pubkey x point
+     * @return y Pubkey y point
      */
     function pubkey(bytes32 node) external view returns (bytes32 x, bytes32 y) {
         return (records[node].pubkey.x, records[node].pubkey.y);
