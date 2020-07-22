@@ -9,7 +9,7 @@
   "buildDir": "dist/",
   "config": "config/",
   "versions": {
-    "solc": "0.5.4"
+    "solc": "0.5.11"
   },
   "plugins": {
     "embark-ipfs": {},
