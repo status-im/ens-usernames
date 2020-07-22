@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: CC0-1.0
+
 pragma solidity 0.5.11;
 
 import "../common/MerkleProof.sol";
