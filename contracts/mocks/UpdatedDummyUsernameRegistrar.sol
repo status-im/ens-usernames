@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity >=0.5.0 <0.7.0;
+pragma solidity 0.5.11;
 
 import "./DummyUsernameRegistrar.sol";
 
