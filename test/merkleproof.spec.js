@@ -1,7 +1,7 @@
 const { MerkleTree } = require('../utils/merkleTree.js');
 const { sha3, bufferToHex } = require('ethereumjs-util');
 
-const MerkleProofWrapper = require('Embark/contracts/MerkleProofWrapper');
+const MerkleProofWrapper = artifacts.require('MerkleProofWrapper');
 
 var contractsConfig = {
     "MerkleProofWrapper": {
@@ -9,7 +9,7 @@ var contractsConfig = {
     }
   };
 
-config({ contracts: contractsConfig });
+config({ contracts: { deploy: contractsConfig }});
 
 contract('MerkleProof', function () {
 

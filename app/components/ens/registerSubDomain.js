@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
-import web3 from "Embark/web3"
-import UsernameRegistrar from 'Embark/contracts/UsernameRegistrar';
-import TestToken from 'Embark/contracts/TestToken';
+
+import UsernameRegistrar from '../../../embarkArtifacts/contracts/UsernameRegistrar';
+import TestToken from '../../../embarkArtifacts/contracts/TestToken';
 import React, { Fragment } from 'react';
 import {connect} from 'react-redux';
 import Hidden from '@material-ui/core/Hidden';

@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
-import ENSRegistry from 'Embark/contracts/ENSRegistry';
-import UsernameRegistrar from 'Embark/contracts/UsernameRegistrar';
-import TestToken from 'Embark/contracts/TestToken';
+import ENSRegistry from '../../embarkArtifacts/contracts/ENSRegistry';
+import UsernameRegistrar from '../../embarkArtifacts/contracts/UsernameRegistrar';
+import TestToken from '../../embarkArtifacts/contracts/TestToken';
 import React, { Fragment } from 'react';
 import AddDomain from './ens/addDomain';
 import MoveDomain from './ens/moveDomain';

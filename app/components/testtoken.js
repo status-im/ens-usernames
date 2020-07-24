@@ -1,10 +1,10 @@
 import lang from 'i18n-js';
 import EmbarkJS from 'Embark/EmbarkJS';
-import TestToken from 'Embark/contracts/TestToken';
+import TestToken from '../../embarkArtifacts/contracts/TestToken';
 import React from 'react';
 import { Form, FormGroup, FormControl, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import web3 from 'web3';
+
 
 import ERC20TokenUI from './erc20token';
 import { actions as accountActions } from '../reducers/accounts';
