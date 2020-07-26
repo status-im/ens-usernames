@@ -86,7 +86,7 @@ config(
           "$PublicResolver",
           dummyRegistry.namehash,
           "$SlashMechanism",
-          "0x0"
+          "0x0000000000000000000000000000000000000000"
         ],
         "onDeploy": [
           "await ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+dummyRegistry.label+"', DummyUsernameRegistrar.address).send()",
