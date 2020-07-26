@@ -3,7 +3,7 @@
 pragma solidity 0.5.11;
 
 import "./UsernameRegistrar.sol";
-
+import "../common/MerkleProof.sol";
 
 /** 
  * @author Ricardo Guilherme Schmidt (Status Research & Development GmbH) 
@@ -37,7 +37,7 @@ contract SlashMechanism {
      */
     function reserveSlash(UsernameRegistrar _registrar, bytes32 _secret) external {
         require(reservedSlashers[_secret].blockNumber == 0, "Already Reserved");
-        reservedSlashers[_secret] = SlashReserve(msg.sender, block.number);
+        reservedSlashers[_secret] = SlashReserve(msg.sender, block.number, _registrar);
     }
 
         /**
@@ -45,14 +45,14 @@ contract SlashMechanism {
      * @param _username Raw value of offending username.
      */
     function slashSmallUsername(
-        string _username,
+        string calldata _username,
         uint256 _reserveSecret
     ) 
         external 
     {
         bytes memory username = bytes(_username);
         require(username.length < usernameMinLength, "Not a small username.");
-        slashUsername(username, _reserveSecret);
+        slashUsername(_username, _reserveSecret);
     }
 
     /**
@@ -60,7 +60,7 @@ contract SlashMechanism {
      * @param _username Raw value of offending username.
      */
     function slashAddressLikeUsername(
-        string _username,
+        string calldata _username,
         uint256 _reserveSecret
     ) 
         external 
@@ -70,10 +70,10 @@ contract SlashMechanism {
         require(username[0] == byte("0"), "First character need to be 0");
         require(username[1] == byte("x"), "Second character need to be x");
         for(uint i = 2; i < 7; i++){
-            byte b = username[i];
+            uint8 b = uint8(username[i]);
             require((b >= 48 && b <= 57) || (b >= 97 && b <= 102), "Does not look like an address");
         }
-        slashUsername(username, _reserveSecret);
+        slashUsername(_username, _reserveSecret);
     }  
 
     /**
@@ -82,8 +82,8 @@ contract SlashMechanism {
      * @param _proof Merkle proof that name is listed on merkle tree.
      */
     function slashReservedUsername(
-        string _username,
-        bytes32[] _proof,
+        string calldata _username,
+        bytes32[] calldata _proof,
         uint256 _reserveSecret
     ) 
         external 
@@ -97,7 +97,7 @@ contract SlashMechanism {
             ),
             "Invalid Proof."
         );
-        slashUsername(username, _reserveSecret);
+        slashUsername(_username, _reserveSecret);
     }
 
     /**
@@ -106,7 +106,7 @@ contract SlashMechanism {
      * @param _offendingPos Position of non alphanumeric character.
      */
     function slashInvalidUsername(
-        string _username,
+        string calldata _username,
         uint256 _offendingPos,
         uint256 _reserveSecret
     ) 
@@ -114,14 +114,14 @@ contract SlashMechanism {
     { 
         bytes memory username = bytes(_username);
         require(username.length > _offendingPos, "Invalid position.");
-        byte b = username[_offendingPos];
+        uint8 b = uint8(username[_offendingPos]);
         
         require(!((b >= 48 && b <= 57) || (b >= 97 && b <= 122)), "Not invalid character.");
     
-        slashUsername(username, _reserveSecret);
+        slashUsername(_username, _reserveSecret);
     }
 
-    function slashUsername(string _username, uint256 _reserveSecret) internal{
+    function slashUsername(string memory _username, uint256 _reserveSecret) internal{
         bytes32 secret = keccak256(abi.encodePacked(_username, _reserveSecret));
         SlashReserve memory reserve = reservedSlashers[secret];
         require(reserve.reserver != address(0), "Not reserved.");
