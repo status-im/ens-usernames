@@ -82,6 +82,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         resolver = _resolver;
         ensNode = _ensNode;
         slashMechanism = _slashMechanism;
+        lastUpdate = block.timestamp;
         parentRegistry = _parentRegistry;
         setState(RegistrarState.Inactive);
     }
@@ -623,7 +624,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
 
         if (amountToTransfer > 0) {
             reserveAmount -= amountToTransfer;
-            if(lastUpdate > creationTime) {
+            if(lastUpdate < creationTime) {
                 uint256 partialDeposit = amountToTransfer / 3;
                 amountToTransfer = partialDeposit * 2; // reserve 1/3 to network (controller)
             }
