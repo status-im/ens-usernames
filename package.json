@@ -57,6 +57,7 @@
     "embark-profiler": "^6.0.0",
     "embark-swarm": "^6.0.0",
     "embark-whisper-geth": "^6.0.0",
+    "@trailofbits/embark-contract-info": "^1.1.0",
     "embarkjs": "^6.0.0",
     "embarkjs-ens": "^6.0.0",
     "embarkjs-ipfs": "^6.0.0",
@@ -73,7 +74,6 @@
     "@babel/plugin-proposal-throw-expressions": "^7.0.0",
     "@babel/plugin-syntax-dynamic-import": "^7.0.0",
     "@babel/plugin-syntax-import-meta": "^7.0.0",
-
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-import": "^2.12.0",
