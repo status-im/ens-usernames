@@ -9,7 +9,7 @@ contract Dummy2SlashMechanism is SlashMechanism {
 
     constructor(
         uint256 _usernameMinLength,
-        bytes32 _reservedUsernamesMerkleRoot,
+        bytes32 _reservedUsernamesMerkleRoot
     )
         public 
         SlashMechanism(
