@@ -15,7 +15,7 @@ contract UpdatedDummy2UsernameRegistrar is Dummy2UsernameRegistrar {
         address _parentRegistry
     )
         public
-        UsernameRegistrar(
+        Dummy2UsernameRegistrar(
             _token,
             _ensRegistry,
             _resolver,
