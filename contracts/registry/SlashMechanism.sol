@@ -32,8 +32,8 @@ contract SlashMechanism {
 
     /**
      * @notice secretly reserve the slashing reward to `msg.sender`
-     * @param _secret keccak256(abi.encodePacked(label, reserveSecret)) 
      * @param _registrar address of the registrar with the offending name
+     * @param _secret keccak256(abi.encodePacked(label, reserveSecret)), label being the username label and reserveSecret a random number.
      */
     function reserveSlash(UsernameRegistrar _registrar, bytes32 _secret) external {
         require(reservedSlashers[_secret].blockNumber == 0, "Already Reserved");
@@ -43,6 +43,7 @@ contract SlashMechanism {
     /**
      * @notice Slash username smaller then `usernameMinLength`.
      * @param _username Raw value of offending username.
+     * @param _reserveSecret number used in reserve secret generation.
      */
     function slashSmallUsername(
         string calldata _username,
@@ -58,6 +59,7 @@ contract SlashMechanism {
     /**
      * @notice Slash username starting with "0x" and with length greater than 12.
      * @param _username Raw value of offending username.
+     * @param _reserveSecret number used in reserve secret generation.
      */
     function slashAddressLikeUsername(
         string calldata _username,
@@ -80,6 +82,7 @@ contract SlashMechanism {
      * @notice Slash username that is exactly a reserved name.
      * @param _username Raw value of offending username.
      * @param _proof Merkle proof that name is listed on merkle tree.
+     * @param _reserveSecret number used in reserve secret generation.
      */
     function slashReservedUsername(
         string calldata _username,
@@ -104,6 +107,7 @@ contract SlashMechanism {
      * @notice Slash username that contains a non alphanumeric character.
      * @param _username Raw value of offending username.
      * @param _offendingPos Position of non alphanumeric character.
+     * @param _reserveSecret number used in reserve secret generation.
      */
     function slashInvalidUsername(
         string calldata _username,
@@ -121,6 +125,11 @@ contract SlashMechanism {
         slashUsername(_username, _reserveSecret);
     }
 
+    /**
+     * @dev Checks for reservation and requests username slashing in the selected registrar.
+     * @param _username Raw value of offending username.
+     * @param _reserveSecret number used in reserve secret generation.
+     */
     function slashUsername(string memory _username, uint256 _reserveSecret) internal{
         bytes32 secret = keccak256(abi.encodePacked(_username, _reserveSecret));
         SlashReserve memory reserve = reservedSlashers[secret];
