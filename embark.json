@@ -19,7 +19,10 @@
     "embark-parity": {},
     "embark-profiler": {},
     "embark-graph": {},
-    "embark-basic-pipeline": {}
+    "embark-basic-pipeline": {},
+    "@trailofbits/embark-contract-info": {
+      "flags": ""
+    }
   },
   "options": {
     "solc": {
