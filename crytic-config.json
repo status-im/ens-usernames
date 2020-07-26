@@ -1,0 +1,11 @@
+{
+    "custom_unit_test": {
+        "enabled": true, 
+        "commands": [
+            {
+                "command": ["npm", "test"], 
+                "expected": "{RETURN_CODE} == 0"
+            }
+        ]
+    }
+}
