@@ -32,7 +32,7 @@ contract SlashMechanism {
 
     /**
      * @notice secretly reserve the slashing reward to `msg.sender`
-     * @param _secret keccak256(abi.encodePacked(namehash, creationTime, reserveSecret)) 
+     * @param _secret keccak256(abi.encodePacked(label, reserveSecret)) 
      * @param _registrar address of the registrar with the offending name
      */
     function reserveSlash(UsernameRegistrar _registrar, bytes32 _secret) external {
