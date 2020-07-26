@@ -40,7 +40,7 @@ contract SlashMechanism {
         reservedSlashers[_secret] = SlashReserve(msg.sender, block.number, _registrar);
     }
 
-        /**
+    /**
      * @notice Slash username smaller then `usernameMinLength`.
      * @param _username Raw value of offending username.
      */
