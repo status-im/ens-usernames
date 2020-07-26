@@ -736,6 +736,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});
       await utils.increaseTime(1000)
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const reserveSecret = 1337;
       const secret = web3Utils.soliditySha3(username, reserveSecret);
       await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
@@ -807,6 +808,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});
       await utils.increaseTime(20000)
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const reserveSecret = 1337;
       const secret = web3Utils.soliditySha3({value: username, type: "string"}, reserveSecret);
       await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
@@ -833,6 +835,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});
       await utils.increaseTime(20000)
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const reserveSecret = 1337;
       const secret = web3Utils.soliditySha3({value: username, type: "string"}, reserveSecret);
       await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
@@ -859,6 +862,7 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});
       await utils.increaseTime(20000)
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const reserveSecret = 1337;
       const secret = web3Utils.soliditySha3({value: username, type: "string"}, reserveSecret);
       await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
