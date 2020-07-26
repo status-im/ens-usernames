@@ -60,8 +60,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _ensRegistry Ethereum Name Service root contract address.
      * @param _resolver Public Resolver for resolving usernames.
      * @param _ensNode ENS node (domain) being used for usernames subnodes (subdomain)
-     * @param _usernameMinLength Minimum length of usernames
-     * @param _reservedUsernamesMerkleRoot Merkle root of reserved usernames
+     * @param _slashMechanism Slashing mechanism address
      * @param _parentRegistry Address of old registry (if any) for optional account migration.
      */
     constructor(
@@ -591,13 +590,13 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _username Username being slashed.
      */
     function slashUsername(
-        bytes calldata _username,
+        string calldata _username,
         address _reserver
     ) 
         external 
     {
         require(msg.sender == slashMechanism, "Unauthorized");
-        bytes32 label = keccak256(_username);
+        bytes32 label = keccak256(bytes(_username));
         bytes32 namehash = keccak256(abi.encodePacked(ensNode, label));
         uint256 amountToTransfer = 0;
         uint256 creationTime = accounts[label].creationTime;
