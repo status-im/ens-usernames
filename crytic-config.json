@@ -1,0 +1,5 @@
+{
+    "slither": {
+        "target": "./contracts"
+    }
+}
