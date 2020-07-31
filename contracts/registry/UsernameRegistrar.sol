@@ -626,8 +626,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         if (amountToTransfer > 0) {
             reserveAmount -= amountToTransfer;
             if(lastUpdate < creationTime) {
-                uint256 partialDeposit = amountToTransfer / 3;
-                amountToTransfer = partialDeposit * 2; // reserve 1/3 to network (controller)
+                amountToTransfer = (amountToTransfer * 2) / 3; // reserve 1/3 to network (controller)
             }
             require(token.transfer(beneficiary, amountToTransfer), "Error in transfer.");
         }
