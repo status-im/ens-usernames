@@ -17,7 +17,7 @@ contract SlashMechanism {
         UsernameRegistrar registrar;
     }
 
-    mapping (bytes32 => SlashReserve) reservedSlashers;
+    mapping (bytes32 => SlashReserve) public reservedSlashers;
     //Slashing conditions
     uint256 public usernameMinLength;
     bytes32 public reservedUsernamesMerkleRoot;
