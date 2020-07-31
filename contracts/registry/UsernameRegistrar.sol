@@ -265,6 +265,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         onlyController
     {
         lastUpdate = block.timestamp;
+        require(_slashMechanism != address(0), "Zero address for _slashMechanism");
         slashMechanism = _slashMechanism;
     }
 
