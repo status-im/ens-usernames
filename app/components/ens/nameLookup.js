@@ -84,7 +84,7 @@ const MobileAddressDisplay = ({ domainName, address, statusAccount, expirationTi
         <b>{formatName(domainName)}</b>
         <div style={{ fontWeight: 300, fontSize: '15px', marginTop: '10px' }}>
           {isOwner
-           ? (edit ? lang.t('actions.edit_contact_code') : (transfer ? lang.t('actions.transfer_name') : (isRealOwner ? lang.t('account.you_own_it') : lang.t('account.you_almost_own_it'))))
+           ? (edit ? lang.t('action.edit_contact_code') : (transfer ? lang.t('action.transfer_name') : (isRealOwner ? lang.t('account.you_own_it') : lang.t('account.you_almost_own_it'))))
            : lang.t('account.unavailable')}
         </div>
       </Typography>
