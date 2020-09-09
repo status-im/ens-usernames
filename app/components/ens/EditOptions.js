@@ -11,6 +11,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import PersonIcon from '@material-ui/icons/Person';
 import EditIcon from '@material-ui/icons/Edit';
+import SyncIcon from '@material-ui/icons/Sync';
+import SendIcon from '@material-ui/icons/Send';
 import DeleteOutline from '@material-ui/icons/Delete';
 import Typography from '@material-ui/core/Typography';
 import blue from '@material-ui/core/colors/blue';
@@ -39,16 +41,28 @@ class SimpleDialog extends React.Component {
   };
 
   render() {
-    const { classes, onClose, selectedValue, canBeReleased, ...other } = this.props;
+    const { classes, onClose, selectedValue, canBeClaimed, canBeReleased, ...other } = this.props;
 
     return (
       <Dialog classes={{paper: classes.paper,}} onClose={this.handleClose} fullWidth paperFullWidth style={{alignItems: 'flex-end'}} aria-labelledby="simple-dialog-title" {...other}>
         <List>
-          <ListItem button onClick={() => this.handleListItemClick('edit')} key="edit">
+        <ListItem button onClick={() => this.handleListItemClick('edit')} key="edit">
             <ListItemIcon>
                 <EditIcon />
             </ListItemIcon>
             <ListItemText primary={lang.t('action.edit_contact_code')} />
+          </ListItem>
+          {canBeClaimed && <ListItem button onClick={() => this.handleListItemClick('claim')} key="claim">
+            <ListItemIcon>
+                <SyncIcon />
+            </ListItemIcon>
+            <ListItemText primary={lang.t('action.claim_ownership')} />
+          </ListItem>}
+          <ListItem button onClick={() => this.handleListItemClick('transfer')} key="transfer">
+            <ListItemIcon>
+                <SendIcon />
+            </ListItemIcon>
+            <ListItemText primary={lang.t('action.transfer_name')} />
           </ListItem>
           {canBeReleased && <ListItem button onClick={() => this.handleListItemClick('release')}>
             <ListItemIcon>

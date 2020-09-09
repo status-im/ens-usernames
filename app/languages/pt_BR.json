@@ -7,16 +7,33 @@
         "read_your_token_balance": "Leia o saldo do seu token da conta",
         "to": "Para",
         "transfer_approve_token_balance": "Transferir \/ Aprovar saldo do token",
-        "your_test_token_balance": "Seu saldo de token do teste é"
+        "your_test_token_balance": "Seu saldo de token do teste é",
+        "you_own_it": "Você possui esse nome ENS",
+        "you_almost_own_it": "Esse nome ENS é quase totalmente seu",
+        "unavailable": "não disponível",
+        "connected": "O código de contato conecta o nome ENS à uma conta Status",
+        "transfer": "Insira o endereço de carteira do desinatário",
+        "edit": "Clique 'Opções' para aleterar esse nome ENS",
+        "setup": "Configurado para os endereços abaixo",
+        "no_address": "Não há endereço associado à esse nome ENS",
+        "add_contact_code": "Adicione seu codigo de contato para usar",
+        "your_name_in_status": "seu nome ENS no bate-papo Status.",
+        "not_owned": "Este domínio não é controlado pelo registro"
     },
     "action": {
         "approve": "Aprovar",
         "cancel": "Cancelar",
         "edit_contact_code": "Editar código de contato",
+        "click_to_copy": "Clique para Copiar",
+        "edit": "Editar",
+        "options": "Opções",
         "grant_access": "Garantir acesso",
         "mint_test_token": "Gerar Token de Teste",
         "mint": "Gerar Token",
         "register": "Registre-se",
+        "claim_ownership": "Reivindicar Posse",
+        "transfer_name": "Transferir nome",
+        "transfer": "Transferir",
         "release_name": "Nome de lançamento",
         "send_snt": "Enviar SNT",
         "setup_ens": "ADICIONAR NÓS INICIAIS DE ENS",
@@ -36,14 +53,33 @@
         }
     },
     "constants": {
+        "account_owner": "Proprietário",
+        "account_controller": "Controlador",
+        "chatkey_resolved": "Código de contato",
+        "wallet_resolved": "Endereço de carteira",
         "contact_code": "Seu código de contato",
-        "wallet_address": "Seu endereço de carteira"
+        "wallet_address": "Seu endereço de carteira",
+        "transfer_address": "Endereço de carteira do destinatário",
+        "snt_to_register": "SNT para registrar",
+        "main_page": "Página Principal"
     },
     "copy": {
         "release": {
             "title": {
                 "sub": "Feito!",
                 "body": "O nome de usuário liberado estará disponível para outros usuários"
+            }
+        },
+        "claim": {
+            "title": {
+                "sub": "Feito!",
+                "body": "O nome de usuário está garantido para sua conta"
+            }
+        },
+        "transfer": {
+            "title": {
+                "sub": "Feito!",
+                "body": "O nome de usuário será transferido. O destinatário ainda precisa reinvidicar a posse."
             }
         },
         "registered": {
@@ -77,7 +113,13 @@
         "release": {
             "alert": {
                 "text": "Seu depósito SNT será devolvido e o nome estará disponível para outros usuários.",
-                "title": "Liberar domínio?"
+                "title": "Liberar nome?"
+            }
+        },
+        "claim": {
+            "alert": {
+                "text": "A conta será transferida para sua posse.",
+                "title": "Reinvinidicar posse?"
             }
         },
         "status_address": {
@@ -87,7 +129,11 @@
     },
     "error": {
         "connect": "Por favor, conecte-se a rede Ethereum %{network} para continuar.",
-        "valid_address": "Por favor insira um endereço válido"
+        "valid_address": "Por favor insira um endereço válido",
+        "name_composition1":"Nomes são feitos com",
+        "name_composition2":"letras e numeros apenas",
+        "name_reserved1":"Este nome não é permitido pelos termos e condições. Tente outro.",
+        "name_reserved2":"Este nome é reservado por questões de segurança. Tente outro."
     },
     "navbar": {
         "brand": "Status.im Demo"

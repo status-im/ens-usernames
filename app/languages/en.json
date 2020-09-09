@@ -7,16 +7,33 @@
     "read_your_token_balance": "Read your account token balance",
     "to": "To",
     "transfer_approve_token_balance": "Transfer/Approve token balance",
-    "your_test_token_balance": "Your test token balance is"
+    "your_test_token_balance": "Your test token balance is",
+    "you_own_it": "You own this ENS name",
+    "you_almost_own_it": "This ENS name is almost fully yours",
+    "unavailable": "unavailable",
+    "connected": "The contact code connects the domain with a unique Status account",
+    "transfer": "Enter the destination of the new owner of this domain below",
+    "edit": "Click 'Options' to add a valid address and contact code",
+    "setup": "Configured to the addresses below",
+    "no_address": "No address is associated with this ENS name",
+    "add_contact_code": "Add your contact code to use",
+    "your_name_in_status": "your name in Status chat.",
+    "not_owned": "This domain is not owned by the registry"
   },
   "action" : {
     "approve": "Approve",
     "cancel": "Cancel",
     "edit_contact_code": "Edit Contact Code",
+    "click_to_copy": "Click to Copy",
+    "edit": "Edit",
+    "options": "Options",
     "grant_access": "Grant access",
     "mint_test_token": "Mint Test Token",
     "mint": "Mint",
     "register": "Register",
+    "claim_ownership": "Claim Ownership",
+    "transfer_name": "Transfer Name",
+    "transfer": "Transfer",
     "release_name": "Release Name",
     "send_snt": "Send SNT",
     "setup_ens": "ADD INITIAL NODES TO ENS",
@@ -25,7 +42,10 @@
     "transfer": "Transfer",
     "update": "Update",
     "use_my_primary_address": "Use My Primary Address",
-    "yes": "Yes"
+    "yes": "Yes",
+    "enter_name": "Enter Domain or Status Name",
+    "lookup": "Lookup Address",
+    "search_name": "Search for available name"
   },
   "admin": {
     "tab": {
@@ -36,8 +56,15 @@
     }
   },
   "constants" : {
+    "account_owner": "Owner",
+    "account_controller": "Controller",
+    "chatkey_resolved": "Chat key",
+    "wallet_resolved": "Wallet address",
     "contact_code": "Your contact code",
-    "wallet_address": "Your wallet address"
+    "wallet_address": "Your wallet address",
+    "transfer_address": "Destination wallet address",
+    "snt_to_register": "SNT to register",
+    "main_page": "Main Page"
   },
   "copy": {
     "release": {
@@ -45,6 +72,18 @@
         "sub": "Done!",
         "body": "The released username will be available to other users"
       }
+    },
+    "claim": {
+      "title": {
+        "sub": "Done!",
+        "body": "The name will be guaranteed to your account"
+      }
+    },
+    "transfer": {
+        "title": {
+            "sub": "Done!",
+            "body": "The name will be transferred. The destination wallet still needs to claim it."
+        }
     },
     "registered": {
       "title": {
@@ -77,7 +116,13 @@
     "release": {
       "alert": {
         "text": "Your SNT deposit will be returned and name will be available to other users.",
-        "title": "Release domain?"
+        "title": "Release name?"
+      }
+    },
+    "claim": {
+      "alert": {
+        "text": "The account ownership will be claimed.",
+        "title": "Claim account?"
       }
     },
     "status_address": {
@@ -87,7 +132,11 @@
   },
   "error": {
     "connect": "Please connect to Ethereum %{network} to continue.",
-    "valid_address": "Please enter a valid address"
+    "valid_address": "Please enter a valid address",
+    "name_composition1":"Names are made with",
+    "name_composition2":"letters and numbers only",
+    "name_reserved1":"This name is not allowed by the terms & conditions. Please try another.",
+    "name_reserved2":"This name is reserved for security purposes. Please try another."
   },
   "navbar":{
      "brand": "Status.im Demo"
