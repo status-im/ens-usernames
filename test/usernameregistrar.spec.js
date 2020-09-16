@@ -38,8 +38,8 @@ const merkleRoot = merkleTree.getHexRoot();
 let accountsArr;
 config(
   {
-    contracts: {
-      deploy: {      
+    contracts: {        
+      deploy: {    
         "TestToken": { },
         "ENSRegistry": {
           "onDeploy": [
@@ -51,14 +51,19 @@ config(
             "$ENSRegistry"
           ]
         },
-        "UsernameRegistrar": {
+        "SlashMechanism": {
+          "args": [
+            "3", 
+            merkleRoot
+          ],
+        }
+        ,"UsernameRegistrar": {
           "args": [
             "$TestToken",
             "$ENSRegistry",
             "$PublicResolver",
             registry.namehash,
-            "3", 
-            merkleRoot,
+            "$SlashMechanism",
             "0x0000000000000000000000000000000000000000"
           ],
           "onDeploy": [
@@ -71,8 +76,7 @@ config(
             "$ENSRegistry",
             "$PublicResolver",
             registry.namehash,
-            "3", 
-            merkleRoot,
+            "$SlashMechanism",
             "$UsernameRegistrar"
           ]
         },
@@ -82,8 +86,7 @@ config(
             "$ENSRegistry",
             "$PublicResolver",
             dummyRegistry.namehash,
-            "3", 
-            merkleRoot,
+            "$SlashMechanism",
             "0x0000000000000000000000000000000000000000"
           ],
           "onDeploy": [
@@ -96,10 +99,15 @@ config(
             "$ENSRegistry",
             "$PublicResolver",
             dummyRegistry.namehash,
-            "3", 
-            merkleRoot,
+            "$SlashMechanism",
             "$DummyUsernameRegistrar"
           ]
+        },
+        "Dummy2SlashMechanism": {
+          "args": [
+            "3", 
+            utils.zeroBytes32
+          ],
         },
         "Dummy2UsernameRegistrar": {
           "args": [
@@ -107,8 +115,7 @@ config(
             "$ENSRegistry",
             "$PublicResolver",
             dummy2Registry.namehash,
-            "3", 
-            utils.zeroBytes32,
+            "$Dummy2SlashMechanism",
             "0x0000000000000000000000000000000000000000"
           ],
           "onDeploy": [
@@ -122,8 +129,7 @@ config(
             "$ENSRegistry",
             "$PublicResolver",
             dummy2Registry.namehash,
-            "3", 
-            merkleRoot,
+            "$SlashMechanism",
             "$Dummy2UsernameRegistrar"
           ]
         }
@@ -143,6 +149,8 @@ const DummyUsernameRegistrar = artifacts.require('DummyUsernameRegistrar');
 const UpdatedDummyUsernameRegistrar = artifacts.require('UpdatedDummyUsernameRegistrar');
 const Dummy2UsernameRegistrar = artifacts.require('Dummy2UsernameRegistrar');
 const UpdatedDummy2UsernameRegistrar = artifacts.require('UpdatedDummy2UsernameRegistrar');
+const SlashMechanism = artifacts.require('SlashMechanism');
+const Dummy2SlashMechanism = artifacts.require('Dummy2SlashMechanism');
 
 contract('UsernameRegistrar', function () {
 
@@ -603,11 +611,10 @@ contract('UsernameRegistrar', function () {
       await utils.increaseTime(20000)
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       assert.notEqual(+await UsernameRegistrar.methods.getCreationTime(label).call(), 0);
-      const creationTime = await UsernameRegistrar.methods.getCreationTime(web3Utils.sha3(username)).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
-      await UsernameRegistrar.methods.slashInvalidUsername(username, 4, reserveSecret).send()
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
+      await SlashMechanism.methods.slashInvalidUsername(username, 4, reserveSecret).send()
       //TODO: check events
       assert.equal(+await UsernameRegistrar.methods.getCreationTime(label).call(), 0);
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress);
@@ -625,13 +632,12 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant}); 
       await utils.increaseTime(20000)   
-      const creationTime = await UsernameRegistrar.methods.getCreationTime(web3Utils.sha3(username)).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       let failed;
       try{
-        await UsernameRegistrar.methods.slashInvalidUsername(username, 4, reserveSecret).send()
+        await SlashMechanism.methods.slashInvalidUsername(username, 4, reserveSecret).send()
         failed = false;
       } catch(e){
         failed = true;
@@ -655,13 +661,12 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});
       await utils.increaseTime(20000)
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
-      const creationTime = await UsernameRegistrar.methods.getCreationTime(web3Utils.sha3(username)).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       let failed;
       try{
-        await UsernameRegistrar.methods.slashReservedUsername(username, merkleTree.getHexProof(ReservedUsernames[0]), reserveSecret).send()
+        await SlashMechanism.methods.slashReservedUsername(username, merkleTree.getHexProof(ReservedUsernames[0]), reserveSecret).send()
         failed = false;
       } catch(e){
         failed = true;
@@ -682,13 +687,12 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});
       await utils.increaseTime(20000)
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
-      const creationTime = await UsernameRegistrar.methods.getCreationTime(web3Utils.sha3(username)).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       let failed;
       try{
-        await UsernameRegistrar.methods.slashReservedUsername(username, merkleTree.getHexProof(ReservedUsernames[1]), reserveSecret).send()
+        await SlashMechanism.methods.slashReservedUsername(username, merkleTree.getHexProof(ReservedUsernames[1]), reserveSecret).send()
         failed = false;
       } catch(e){
         failed = true;
@@ -709,11 +713,10 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});
       await utils.increaseTime(20000)
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
-      const creationTime = await UsernameRegistrar.methods.getCreationTime(web3Utils.sha3(username)).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
-      result = await UsernameRegistrar.methods.slashReservedUsername(username, merkleTree.getHexProof(username), reserveSecret).send()  
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
+      await SlashMechanism.methods.slashReservedUsername(username, merkleTree.getHexProof(username), reserveSecret).send()  
       //TODO: check events
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
@@ -733,13 +736,13 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});
       await utils.increaseTime(1000)
-      const creationTime = await UsernameRegistrar.methods.getCreationTime(web3Utils.sha3(username)).call();
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       let failed;
       try{
-        await UsernameRegistrar.methods.slashSmallUsername(username).send()    
+        await SlashMechanism.methods.slashSmallUsername(username).send()    
         failed = false;
       } catch(e){
         failed = true;
@@ -761,11 +764,10 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});  
       await utils.increaseTime(20000)
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
-      const creationTime = await UsernameRegistrar.methods.getCreationTime(web3Utils.sha3(username)).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
-      result = await UsernameRegistrar.methods.slashSmallUsername(username, reserveSecret).send()    
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
+      result = await SlashMechanism.methods.slashSmallUsername(username, reserveSecret).send()    
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
   });
@@ -786,11 +788,10 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});
       await utils.increaseTime(1000)
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
-      const creationTime = await UsernameRegistrar.methods.getCreationTime(userlabelHash).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
-      result = await UsernameRegistrar.methods.slashAddressLikeUsername(username, reserveSecret).send()    
+      const secret = web3Utils.soliditySha3({value: username, type: "string"}, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
+      result = await SlashMechanism.methods.slashAddressLikeUsername(username, reserveSecret).send()    
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
     it('should not slash username that starts with 0x but is smaller then 12', async () => {
@@ -807,13 +808,13 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});
       await utils.increaseTime(20000)
-      const creationTime = await UsernameRegistrar.methods.getCreationTime(userlabelHash).call();
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
+      const secret = web3Utils.soliditySha3({value: username, type: "string"}, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       let failed;
       try{
-        result = await UsernameRegistrar.methods.slashAddressLikeUsername(username, reserveSecret).send()    
+        await SlashMechanism.methods.slashAddressLikeUsername(username, reserveSecret).send()    
         failed = false;
       } catch(e){
         failed = true;
@@ -834,13 +835,13 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});
       await utils.increaseTime(20000)
-      const creationTime = await UsernameRegistrar.methods.getCreationTime(userlabelHash).call();
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
+      const secret = web3Utils.soliditySha3({value: username, type: "string"}, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       let failed;
       try{
-        await UsernameRegistrar.methods.slashAddressLikeUsername(username, reserveSecret).send()    
+        await SlashMechanism.methods.slashAddressLikeUsername(username, reserveSecret).send()    
         failed = false;
       } catch(e){
         failed = true;
@@ -861,13 +862,13 @@ contract('UsernameRegistrar', function () {
         utils.zeroBytes32
       ).send({from: registrant});
       await utils.increaseTime(20000)
-      const creationTime = await UsernameRegistrar.methods.getCreationTime(userlabelHash).call();
+      assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send();
+      const secret = web3Utils.soliditySha3({value: username, type: "string"}, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       let failed;
       try{
-        await UsernameRegistrar.methods.slashAddressLikeUsername(username, reserveSecret).send()    
+        await SlashMechanism.methods.slashAddressLikeUsername(username, reserveSecret).send()    
         failed = false;
       } catch(e){
         failed = true;
@@ -894,17 +895,16 @@ contract('UsernameRegistrar', function () {
       const partReward = await UsernameRegistrar.methods.getSlashRewardPart(label).call();
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const initialSlasherBalance = +await TestToken.methods.balanceOf(slasher).call();
-      const creationTime = await UsernameRegistrar.methods.getCreationTime(label).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send({from: slasher});
-      await UsernameRegistrar.methods.slashSmallUsername(username, reserveSecret).send({from: slasher})
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send({from: slasher});
+      await SlashMechanism.methods.slashSmallUsername(username, reserveSecret).send({from: slasher})
       //TODO: check events
       assert.equal(+await TestToken.methods.balanceOf(slasher).call(), (+initialSlasherBalance)+((+partReward)*2));    
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress);
     });
     
-    it('should slash a username of a not migrated subnode that became unallowed', async () => {
+    it('should return funds of slashing when changed rules', async () => {
       const registrant = accountsArr[5];
       const notRegistrant = accountsArr[6];
 
@@ -926,16 +926,15 @@ contract('UsernameRegistrar', function () {
       const initialRegistryBalance = +await TestToken.methods.balanceOf(Dummy2UsernameRegistrar.address).call();
 
       
-      await Dummy2UsernameRegistrar.methods.moveRegistry(UpdatedDummy2UsernameRegistrar.address).send();
+      await Dummy2UsernameRegistrar.methods.setSlashMechanism(SlashMechanism.address).send();
 
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
       assert.equal(await ENSRegistry.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
       assert.equal(await PublicResolver.methods.addr(usernameHash).call(), registrant, "Resolved address not set");      
-      const creationTime = await UsernameRegistrar.methods.getCreationTime(label).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send({from: notRegistrant});
-      const resultRelease = await UpdatedDummy2UsernameRegistrar.methods.slashReservedUsername(
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(Dummy2UsernameRegistrar.address, secret).send({from: notRegistrant});
+      await SlashMechanism.methods.slashReservedUsername(
         username, 
         merkleTree.getHexProof(username),
         reserveSecret
@@ -968,11 +967,10 @@ contract('UsernameRegistrar', function () {
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const partReward = await UsernameRegistrar.methods.getSlashRewardPart(label).call();
       const initialSlashReserverBalance = +await TestToken.methods.balanceOf(slashReserverCaller).call();
-      const creationTime = await UsernameRegistrar.methods.getCreationTime(label).call();
       const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(usernameHash, creationTime, reserveSecret);
-      await UsernameRegistrar.methods.reserveSlash(secret).send({from: slashReserverCaller});
-      await UsernameRegistrar.methods.slashSmallUsername(username, reserveSecret).send({from: slashReserverCaller})
+      const secret = web3Utils.soliditySha3(username, reserveSecret);
+      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send({from: slashReserverCaller});
+      await SlashMechanism.methods.slashSmallUsername(username, reserveSecret).send({from: slashReserverCaller})
       //TODO: check events
       assert.equal(+await TestToken.methods.balanceOf(slashReserverCaller).call(), (+initialSlashReserverBalance)+(+partReward*2));    
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), utils.zeroAddress);
