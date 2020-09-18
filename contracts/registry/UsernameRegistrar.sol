@@ -296,7 +296,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     {
         require(_newRegistry != this, "Cannot move to self.");
         require(ensRegistry.owner(ensNode) == address(this), "Registry not owned anymore.");
-        ensRegistry.setOwner(ensNode, _newRegistry);
+        ensRegistry.setOwner(ensNode, address(_newRegistry));
         _newRegistry.migrateRegistry(price);
         emit RegistryMoved(address(_newRegistry));
     }
