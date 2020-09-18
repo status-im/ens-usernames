@@ -1,5 +1,7 @@
-pragma solidity ^0.4.24;
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+pragma solidity 0.5.11;
 
 contract ApproveAndCallFallBack {
-    function receiveApproval(address from, uint256 _amount, address _token, bytes _data) public;
+    function receiveApproval(address from, uint256 _amount, address _token, bytes memory _data) public;
 }

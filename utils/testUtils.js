@@ -212,38 +212,28 @@ function isException(error) {
     return strError.includes('invalid opcode') || strError.includes('invalid JUMP') || strError.includes('revert');
 }
 
-exports.increaseTime = async (amount) => {
-    return new Promise(function(resolve, reject) {
-      web3.currentProvider.sendAsync(
-        {
+exports.increaseTime = async (addSeconds) => {
+    const id = Date.now();
+  
+    return new Promise((resolve, reject) => {
+      web3.currentProvider.send({
+        jsonrpc: '2.0',
+        method: 'evm_increaseTime',
+        params: [addSeconds],
+        id,
+      }, (err1) => {
+        if (err1) return reject(err1);
+  
+        web3.currentProvider.send({
           jsonrpc: '2.0',
-          method: 'evm_increaseTime',
-          params: [+amount],
-          id: new Date().getSeconds()
-        },
-        async (error) => {
-          if (error) {
-            console.log(error);
-            return reject(err);
-          }
-          await web3.currentProvider.sendAsync(
-            {
-              jsonrpc: '2.0',
-              method: 'evm_mine',
-              params: [],
-              id: new Date().getSeconds()
-            }, (error) => {
-              if (error) {
-                console.log(error);
-                return reject(err);
-              }
-              resolve();
-            }
-          )
-        }
-      )
+          method: 'evm_mine',
+          id: id + 1,
+        }, (err2, res) => (err2 ? reject(err2) : resolve(res)));
+      });
     });
-}
+  }
+  
+  
 
 exports.generateXY = pub => {
   const stripped = pub.slice(2);

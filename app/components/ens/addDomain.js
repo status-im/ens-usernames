@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
-import UsernameRegistrar from 'Embark/contracts/UsernameRegistrar';
-import web3 from 'web3';
-import ENSRegistry from 'Embark/contracts/ENSRegistry';
+import UsernameRegistrar from '../../../embarkArtifacts/contracts/UsernameRegistrar';
+
+import ENSRegistry from '../../../embarkArtifacts/contracts/ENSRegistry';
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import FieldGroup from '../standard/FieldGroup';

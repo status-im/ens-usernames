@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import EmbarkJS from 'Embark/EmbarkJS';
-import ERC20Token from 'Embark/contracts/ERC20Token';
+import ERC20Token from '../../embarkArtifacts/contracts/ERC20Token';
 import React from 'react';
 import { connect } from 'react-redux';
 import { Form, FormGroup, FormControl, HelpBlock, Button } from 'react-bootstrap';

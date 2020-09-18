@@ -1,12 +1,14 @@
-pragma solidity ^0.4.24;
+// SPDX-License-Identifier: CC0-1.0
 
-import { MerkleProof } from "../common/MerkleProof.sol";
+pragma solidity 0.5.11;
+
+import "../common/MerkleProof.sol";
 
 
 contract MerkleProofWrapper {
 
     function verifyProof(
-        bytes32[] _proof,
+        bytes32[] memory _proof,
         bytes32 _root,
         bytes32 _leaf
     )

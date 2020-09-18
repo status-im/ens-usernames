@@ -1,4 +1,6 @@
-pragma solidity ^0.4.24;
+// SPDX-License-Identifier: MIT
+
+pragma solidity 0.5.11;
 
 /**
  * Math operations with safety checks
