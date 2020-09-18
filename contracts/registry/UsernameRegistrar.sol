@@ -291,10 +291,11 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     function moveRegistry()
         external
     {
-        require(state == RegistrarState.Active, "Cannot update state of an non active registrar.")
-        require(ensRegistry.owner(ensNode) != address(this), "Cannot move to self.");
+        require(state == RegistrarState.Active, "Cannot update state of an non active registrar.");
+        address newRegistry = ensRegistry.owner(ensNode);
+        require(newRegistry != address(this), "Cannot move to self.");
         setState(RegistrarState.Moved);
-        emit RegistryMoved(_newRegistry);
+        emit RegistryMoved(newRegistry);
     }
 
     /**
