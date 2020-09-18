@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
-import UsernameRegistrar from 'Embark/contracts/UsernameRegistrar';
-import web3 from 'web3';
+import UsernameRegistrar from '../../../embarkArtifacts/contracts/UsernameRegistrar';
+
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import FieldGroup from '../standard/FieldGroup';

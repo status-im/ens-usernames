@@ -1,11 +1,11 @@
 const utils = require('../utils/testUtils.js');
-const ENSRegistry = require('Embark/contracts/ENSRegistry');
+const ENSRegistry = artifacts.require('ENSRegistry');
 const web3Utils = require('web3-utils');
 const namehash = require('eth-ens-namehash');
 
 config({
     contracts: {
-        "ENSRegistry": { },
+        deploy: {"ENSRegistry": { }}
     }
 });
 
@@ -57,10 +57,10 @@ contract('ENS', function () {
 
     it('should allow setting the TTL', async () => {
         let result = await ENSRegistry.methods.setTTL(utils.zeroBytes32, 3600).send({from: accountsArr[1]});
-        assert.equal(await ENSRegistry.methods.ttl(utils.zeroBytes32).call(), 3600);
+        assert.equal(+await ENSRegistry.methods.ttl(utils.zeroBytes32).call(), 3600);
         let args = result.events.NewTTL.returnValues;
         assert.equal(args.node, utils.zeroBytes32);
-        assert.equal(args.ttl, 3600);
+        assert.equal(+args.ttl, 3600);
     });
 
     it('should prevent setting the TTL by non-owners', async () => {

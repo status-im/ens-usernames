@@ -1,6 +1,6 @@
-import ERC20Token from 'Embark/contracts/ERC20Token'
-import UsernameRegistrar from 'Embark/contracts/UsernameRegistrar'
-import TestToken from 'Embark/contracts/TestToken'
+import ERC20Token from '../../embarkArtifacts/contracts/ERC20Token'
+import UsernameRegistrar from '../../embarkArtifacts/contracts/UsernameRegistrar'
+import TestToken from '../../embarkArtifacts/contracts/TestToken'
 
 import { getDefaultAccount } from '../utils/web3Helpers'
 import { actions as accountActions } from '../reducers/accounts'

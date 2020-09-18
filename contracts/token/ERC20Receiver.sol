@@ -1,4 +1,6 @@
-pragma solidity ^0.4.24;
+// SPDX-License-Identifier: CC0-1.0
+
+pragma solidity 0.5.11;
 
 import "./ERC20Token.sol";
 
@@ -43,7 +45,7 @@ contract ERC20Receiver {
     ) 
         external
     {
-        require(_token.allowance(msg.sender, address(this)) >= _amount);
+        require(_token.allowance(msg.sender, address(this)) >= _amount, "Bad argument");
         _depositToken(msg.sender, _token, _amount);
     }
 
@@ -65,7 +67,7 @@ contract ERC20Receiver {
     )
         private 
     {
-        require(_amount > 0);
+        require(_amount > 0, "Bad argument");
         if (_token.transferFrom(_from, address(this), _amount)) {
             tokenBalances[address(_token)][_from] += _amount;
             emit TokenDeposited(address(_token), _from, _amount);
@@ -79,10 +81,10 @@ contract ERC20Receiver {
     )
         private
     {
-        require(_amount > 0);
-        require(tokenBalances[address(_token)][_from] >= _amount);
+        require(_amount > 0, "Bad argument");
+        require(tokenBalances[address(_token)][_from] >= _amount, "Insufficient funds");
         tokenBalances[address(_token)][_from] -= _amount;
-        require(_token.transfer(_from, _amount));
+        require(_token.transfer(_from, _amount), "Transfer fail");
         emit TokenWithdrawn(address(_token), _from, _amount);
     }
 
