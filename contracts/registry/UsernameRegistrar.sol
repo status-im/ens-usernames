@@ -639,7 +639,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         view
         returns(RegistrarState state)
     {
-        if(!initialized){
+        if(!activated){
             return RegistrarState.Inactive;
         } else {
             return ensRegistry.owner(ensNode) == address(this) ? RegistrarState.Active : RegistrarState.Moved;
