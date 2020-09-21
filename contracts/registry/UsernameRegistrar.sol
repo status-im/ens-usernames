@@ -292,13 +292,12 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         UsernameRegistrar _newRegistry
     )
         external
-        onlyController
     {
-        require(_newRegistry != this, "Cannot move to self.");
-        require(ensRegistry.owner(ensNode) == address(this), "Registry not owned anymore.");
-        ensRegistry.setOwner(ensNode, address(_newRegistry));
+        require(address(_newRegistry) != address(this), "Cannot move to self.");
+        address newRegistry = ensRegistry.owner(ensNode);
+        require(address(_newRegistry) == newRegistry, "Wrong parameter");
         _newRegistry.migrateRegistry(price);
-        emit RegistryMoved(address(_newRegistry));
+        emit RegistryMoved(newRegistry);
     }
 
     /**
