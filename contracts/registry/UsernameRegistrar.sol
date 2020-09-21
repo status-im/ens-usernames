@@ -288,12 +288,15 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @notice Transfer ownership of ensNode to `_newRegistry`.
      * Usernames registered are not affected, but they would be able to instantly release.
      */
-    function moveRegistry()
+    function moveRegistry(UsernameRegistrar _newRegistry)
         external
     {
         require(state == RegistrarState.Active, "Cannot update state of an non active registrar.");
+        require(address(_newRegistry) != address(this), "Cannot move to self.");
+        require(state == RegistrarState.Active, "Wrong state");
         address newRegistry = ensRegistry.owner(ensNode);
-        require(newRegistry != address(this), "Cannot move to self.");
+        require(address(_newRegistry) == newRegistry, "Wrong parameter");
+        _newRegistry.migrateRegistry(price);
         setState(RegistrarState.Moved);
         emit RegistryMoved(newRegistry);
     }
