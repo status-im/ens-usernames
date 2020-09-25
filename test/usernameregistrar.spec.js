@@ -5,6 +5,7 @@ const web3Utils = require('web3-utils');
 const namehash = require('eth-ens-namehash');
 const { MerkleTree } = require('../utils/merkleTree.js');
 const { ReservedUsernames } = require('../config/ens-usernames/reservedNames')
+const ControlledSpec = require('./abstract/controlled');
 const ethregistrarDuration = 1000*60*60*24*365*2;
 const eth = {
   name: 'eth',
@@ -170,6 +171,8 @@ const Dummy2SlashMechanism = artifacts.require('Dummy2SlashMechanism');
 const BaseRegistrarImplementation = artifacts.require('BaseRegistrarImplementation');
 
 contract('UsernameRegistrar', function () {
+  
+  ControlledSpec.Test(UsernameRegistrar);
 
   describe('activate(uint256)', function() {
     it('should activate registry', async () => {
