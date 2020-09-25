@@ -566,7 +566,7 @@ contract('UsernameRegistrar', function () {
       let initialAccountBalance = +await DummyUsernameRegistrar.methods.getAccountBalance(label).call();
       const initialRegistrantBalance = +await TestToken.methods.balanceOf(registrant).call();
       const initialRegistryBalance = +await TestToken.methods.balanceOf(DummyUsernameRegistrar.address).call();
-      await BaseRegistrarImplementation.methods.reclaim(dummyRegistry.label, UpdatedDummyUsernameRegistrar.address).send({gas: 6000000});
+      await BaseRegistrarImplementation.methods.reclaim(dummyRegistry.label, UpdatedDummyUsernameRegistrar.address).send();
       await DummyUsernameRegistrar.methods.moveRegistry(UpdatedDummyUsernameRegistrar.address).send();
 
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
