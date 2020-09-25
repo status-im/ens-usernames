@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
-pragma solidity 0.5.11;
+pragma solidity ^0.6.0;
 
 import "./ENS.sol";
 
@@ -39,7 +39,7 @@ contract ENSRegistry is ENS {
      * @param _resolver The address of the _resolver.
      * @param _ttl The TTL in seconds.
      */
-    function setRecord(bytes32 _node, address _owner, address _resolver, uint64 _ttl) external {
+    function setRecord(bytes32 _node, address _owner, address _resolver, uint64 _ttl) external override {
         setOwner(_node, _owner);
         _setResolverAndTTL(_node, _resolver, _ttl);
     }
@@ -52,7 +52,7 @@ contract ENSRegistry is ENS {
      * @param _resolver The address of the _resolver.
      * @param _ttl The TTL in seconds.
      */
-    function setSubnodeRecord(bytes32 _node, bytes32 _label, address _owner, address _resolver, uint64 _ttl) external {
+    function setSubnodeRecord(bytes32 _node, bytes32 _label, address _owner, address _resolver, uint64 _ttl) external override {
         bytes32 subnode = setSubnodeOwner(_node, _label, _owner);
         _setResolverAndTTL(subnode, _resolver, _ttl);
     }
@@ -62,7 +62,7 @@ contract ENSRegistry is ENS {
      * @param _node The _node to transfer ownership of.
      * @param _owner The address of the new _owner.
      */
-    function setOwner(bytes32 _node, address _owner) public authorised(_node) {
+    function setOwner(bytes32 _node, address _owner) public override authorised(_node) {
         _setOwner(_node, _owner);
         emit Transfer(_node, _owner);
     }
@@ -73,7 +73,7 @@ contract ENSRegistry is ENS {
      * @param _label The hash of the _label specifying the subnode.
      * @param _owner The address of the new _owner.
      */
-    function setSubnodeOwner(bytes32 _node, bytes32 _label, address _owner) public authorised(_node) returns(bytes32) {
+    function setSubnodeOwner(bytes32 _node, bytes32 _label, address _owner) public override authorised(_node) returns(bytes32) {
         bytes32 subnode = keccak256(abi.encodePacked(_node, _label));
         _setOwner(subnode, _owner);
         emit NewOwner(_node, _label, _owner);
@@ -85,7 +85,7 @@ contract ENSRegistry is ENS {
      * @param _node The _node to update.
      * @param _resolver The address of the _resolver.
      */
-    function setResolver(bytes32 _node, address _resolver) public authorised(_node) {
+    function setResolver(bytes32 _node, address _resolver) public override authorised(_node) {
         emit NewResolver(_node, _resolver);
         records[_node].resolver = _resolver;
     }
@@ -95,7 +95,7 @@ contract ENSRegistry is ENS {
      * @param _node The _node to update.
      * @param _ttl The TTL in seconds.
      */
-    function setTTL(bytes32 _node, uint64 _ttl) public authorised(_node) {
+    function setTTL(bytes32 _node, uint64 _ttl) public override authorised(_node) {
         emit NewTTL(_node, _ttl);
         records[_node].ttl = _ttl;
     }
@@ -106,7 +106,7 @@ contract ENSRegistry is ENS {
      * @param _operator Address to add to the set of authorized operators.
      * @param _approved True if the _operator is _approved, false to revoke approval.
      */
-    function setApprovalForAll(address _operator, bool _approved) external {
+    function setApprovalForAll(address _operator, bool _approved) external override {
         operators[msg.sender][_operator] = _approved;
         emit ApprovalForAll(msg.sender, _operator, _approved);
     }
@@ -116,7 +116,7 @@ contract ENSRegistry is ENS {
      * @param _node The specified _node.
      * @return address of the _owner.
      */
-    function owner(bytes32 _node) public view returns (address) {
+    function owner(bytes32 _node) public view override returns (address) {
         address addr = records[_node].owner;
         if (addr == address(this)) {
             return address(0x0);
@@ -130,7 +130,7 @@ contract ENSRegistry is ENS {
      * @param _node The specified _node.
      * @return address of the _resolver.
      */
-    function resolver(bytes32 _node) public view returns (address) {
+    function resolver(bytes32 _node) public view override returns (address) {
         return records[_node].resolver;
     }
 
@@ -139,7 +139,7 @@ contract ENSRegistry is ENS {
      * @param _node The specified _node.
      * @return _ttl of the _node.
      */
-    function ttl(bytes32 _node) public view returns (uint64) {
+    function ttl(bytes32 _node) public view override returns (uint64) {
         return records[_node].ttl;
     }
 
@@ -148,7 +148,7 @@ contract ENSRegistry is ENS {
      * @param _node The specified _node.
      * @return Bool if record exists
      */
-    function recordExists(bytes32 _node) public view returns (bool) {
+    function recordExists(bytes32 _node) public view override returns (bool) {
         return records[_node].owner != address(0x0);
     }
 
@@ -158,7 +158,7 @@ contract ENSRegistry is ENS {
      * @param _operator The address that acts on behalf of the _owner.
      * @return True if `_operator` is an _approved _operator for `_owner`, false otherwise.
      */
-    function isApprovedForAll(address _owner, address _operator) external view returns (bool) {
+    function isApprovedForAll(address _owner, address _operator) external view override returns (bool) {
         return operators[_owner][_operator];
     }
 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.5.11;
+pragma solidity 0.6.2;
 
 import "../common/Controlled.sol";
 import "../token/ERC20Token.sol";
@@ -144,14 +144,11 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
             ensRegistry.setOwner(namehash, address(0));
         } else {
             address newOwner = ensRegistry.owner(ensNode);
-            //Low level call, case dropUsername not implemented or failing, proceed release.
-            //Return of this call have no use.
-            newOwner.call.gas(80000)(
-                abi.encodeWithSelector(
-                    this.dropUsername.selector,
-                    _label
-                )
-            );
+            try UsernameRegistrar(newOwner).dropUsername(_label) {
+
+            } catch (bytes memory) {
+            
+            }
         }
         emit UsernameOwner(namehash, address(0));
     }
@@ -463,6 +460,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         bytes memory _data
     )
         public
+        override
     {
         require(_amount == price, "Wrong value");
         require(_token == address(token), "Wrong token");
@@ -676,7 +674,11 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     /**
      * @dev Decodes abi encoded data with selector for "register(bytes32,address,bytes32,bytes32)".
      * @param _data Abi encoded data.
-     * @return Decoded registry call.
+     * @return sig Decoded first 4 bytes.
+     * @return label Decoded label.
+     * @return account Decoded account.
+     * @return pubkeyA Decoded pubkeyA.
+     * @return pubkeyB Decoded pubkeyB.
      */
     function abiDecodeRegister(
         bytes memory _data

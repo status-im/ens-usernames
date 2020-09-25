@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.5.11;
+pragma solidity 0.6.2;
 
 contract Controlled {
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
