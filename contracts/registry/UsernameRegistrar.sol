@@ -33,7 +33,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     enum RegistrarState { Inactive, Active, Moved }
     bytes32 public ensNode;
     uint256 public price;
-    RegistrarState public state;
+    RegistrarState state;
     uint256 public reserveAmount;
 
     struct Account {
@@ -295,7 +295,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         require(state == RegistrarState.Active, "Wrong state");
         address newRegistry = ensRegistry.owner(ensNode);
         require(address(_newRegistry) == newRegistry, "Wrong parameter");
-        _newRegistry.migrateRegistry(price);
+        if(_newRegistry.getState() == RegistrarState.Inactive){
+            _newRegistry.migrateRegistry(price);
+        }
         setState(RegistrarState.Moved);
         emit RegistryMoved(newRegistry);
     }
@@ -374,6 +376,18 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         returns(uint256 registryPrice)
     {
         return price;
+    }
+
+    /**
+     * @notice Gets state of registrar.
+     * @return currentState
+     **/
+    function getState()
+        external
+        view
+        returns(RegistrarState currentState)
+    {
+        return state;
     }
 
     /**

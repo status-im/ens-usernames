@@ -178,7 +178,7 @@ contract('UsernameRegistrar', function () {
       const initialPrice = 100
       const resultSetRegistryPrice = await UsernameRegistrar.methods.activate(initialPrice).send({from: accountsArr[0]});
       assert.equal(+resultSetRegistryPrice.events.RegistryPrice.returnValues.price, initialPrice, "event RegistryPrice wrong price");
-      assert.equal(+await UsernameRegistrar.methods.state().call(), 1, "Wrong registry state")
+      assert.equal(+await UsernameRegistrar.methods.getState().call(), 1, "Wrong registry state")
       assert.equal(+await UsernameRegistrar.methods.price().call(), initialPrice, "Wrong registry price")
     });
   });
@@ -188,7 +188,7 @@ contract('UsernameRegistrar', function () {
       const newPrice = registry.price;
       const resultUpdateRegistryPrice = await UsernameRegistrar.methods.updateRegistryPrice(newPrice).send({from: accountsArr[0]});
       assert.equal(+resultUpdateRegistryPrice.events.RegistryPrice.returnValues.price, registry.price, "event RegistryPrice wrong price");
-      assert.equal(+await UsernameRegistrar.methods.state().call(), 1, "Wrong registry state")
+      assert.equal(+await UsernameRegistrar.methods.getState().call(), 1, "Wrong registry state")
       assert.equal(+await UsernameRegistrar.methods.price().call(), newPrice, "Wrong registry price")
     });
   });
