@@ -8,6 +8,8 @@ __pycache__/
 chains.json
 config/production/password
 config/livenet/password
+embarkArtifacts/
+embark_demo/
 
 # egg-related
 viper.egg-info/
@@ -36,7 +38,6 @@ coverage.json
 # node
 node_modules/
 npm-debug.log
-package-lock.json
 
 # other
 .vs/

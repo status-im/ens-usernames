@@ -1,4 +1,6 @@
-pragma solidity ^0.4.24;
+// SPDX-License-Identifier: CC0-1.0
+
+pragma solidity 0.5.11;
 
 import "./StandardToken.sol";
 import "./ApproveAndCallFallBack.sol";
@@ -18,12 +20,13 @@ contract TestToken is StandardToken {
         mint(msg.sender, _amount);
     }
 
-    function approveAndCall(address _spender, uint256 _value, bytes _extraData) 
-        external 
+
+    function approveAndCall(address _spender, uint256 _value, bytes calldata _extraData)
+        external
         returns (bool success)
     {
         approve(msg.sender, _spender, _value);
-        ApproveAndCallFallBack(_spender).receiveApproval(msg.sender, _value, this, _extraData);
+        ApproveAndCallFallBack(_spender).receiveApproval(msg.sender, _value, address(this), _extraData);
         return true;
     }
 
