@@ -1062,17 +1062,8 @@ describe('eraseNode(bytes32[])', function() {
 
 
 });
-  describe('getState()', function() {
-    xit('should update getState to State.Moved when ens moved externally', async () => {
-      //TODO
-    });
 
-    xit('should update getState to State.Moved when ens moved internally', async () => {
-      //TODO
-    });
-  });
-
-  describe('moveRegistry(address)', function() {
+describe('moveRegistry(address)', function() {
     it('should move registry to new registry and migrate', async () => {
       await BaseRegistrarImplementation.methods.reclaim(registry.label, UpdatedUsernameRegistrar.address).send();
       const result = await UsernameRegistrar.methods.moveRegistry(UpdatedUsernameRegistrar.address).send();
@@ -1083,14 +1074,6 @@ describe('eraseNode(bytes32[])', function() {
   });
 
   describe('moveAccount(label,address)', function() {
-
-    xit('should fail when getState is not Moved', async () => {
-      //TODO
-    });
-
-    xit('should move username to new registry by account owner when registry moved externally', async () => {
-      //TODO
-    });
 
     it('should move username to new registry by account owner when registry moved internally', async () => {
       const registrant = accountsArr[5];
