@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.5.11;
+pragma solidity 0.6.2;
 
 import "./ERC20Token.sol";
 
@@ -17,6 +17,7 @@ contract StandardToken is ERC20Token {
         uint256 _value
     )
         external
+        override
         returns (bool success)
     {
         return transfer(msg.sender, _to, _value);
@@ -27,6 +28,7 @@ contract StandardToken is ERC20Token {
         uint256 _value
     )
         external
+        override
         returns (bool success)
     {
         return approve(msg.sender, _to, _value);
@@ -38,6 +40,7 @@ contract StandardToken is ERC20Token {
         uint256 _value
     )
         external
+        override
         returns (bool success)
     {
         if (balances[_from] >= _value &&
@@ -52,6 +55,7 @@ contract StandardToken is ERC20Token {
 
     function allowance(address _owner, address _spender)
         external
+        override
         view
         returns (uint256 remaining)
     {
@@ -60,6 +64,7 @@ contract StandardToken is ERC20Token {
 
     function balanceOf(address _owner)
         external
+        override
         view
         returns (uint256 balance)
     {
@@ -68,6 +73,7 @@ contract StandardToken is ERC20Token {
 
     function totalSupply()
         external
+        override
         view
         returns(uint256 supply)
     {

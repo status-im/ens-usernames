@@ -1,10 +1,10 @@
-pragma solidity >=0.4.24;
+pragma solidity ^0.6.0;
 
 import "./ENS.sol";
-import "../openzeppelin-solidity/token/ERC721/ERC721.sol";
-import "../openzeppelin-solidity/ownership/Ownable.sol";
+import "../token/ERC721.sol";
+import "../openzeppelin-solidity/access/Ownable.sol";
 
-contract BaseRegistrar is IERC721, Ownable {
+abstract contract BaseRegistrar is Ownable, IERC721 {
     uint constant public GRACE_PERIOD = 90 days;
 
     event ControllerAdded(address indexed controller);
@@ -23,29 +23,29 @@ contract BaseRegistrar is IERC721, Ownable {
     mapping(address=>bool) public controllers;
 
     // Authorises a controller, who can register and renew domains.
-    function addController(address controller) external;
+    function addController(address controller) external virtual;
 
     // Revoke controller permission for an address.
-    function removeController(address controller) external;
+    function removeController(address controller) external virtual;
 
     // Set the resolver for the TLD this registrar manages.
-    function setResolver(address resolver) external;
+    function setResolver(address resolver) external virtual;
 
     // Returns the expiration timestamp of the specified label hash.
-    function nameExpires(uint256 id) external view returns(uint);
+    function nameExpires(uint256 id) external virtual view returns(uint);
 
     // Returns true iff the specified name is available for registration.
-    function available(uint256 id) public view returns(bool);
+    function available(uint256 id) public virtual view returns(bool);
 
     /**
      * @dev Register a name.
      */
-    function register(uint256 id, address owner, uint duration) external returns(uint);
+    function register(uint256 id, address owner, uint duration) external virtual returns(uint);
 
-    function renew(uint256 id, uint duration) external returns(uint);
+    function renew(uint256 id, uint duration) external virtual returns(uint);
 
     /**
      * @dev Reclaim ownership of a name in ENS, if you own it in the registrar.
      */
-    function reclaim(uint256 id, address owner) external;
+    function reclaim(uint256 id, address owner) external virtual;
 }

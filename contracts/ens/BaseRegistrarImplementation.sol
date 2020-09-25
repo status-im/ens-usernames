@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.0;
 
 import "./BaseRegistrar.sol";
 
@@ -6,23 +6,12 @@ contract BaseRegistrarImplementation is BaseRegistrar, ERC721 {
     // A map of expiry times
     mapping(uint256=>uint) expiries;
 
-    bytes4 constant private INTERFACE_META_ID = bytes4(keccak256("supportsInterface(bytes4)"));
-    bytes4 constant private ERC721_ID = bytes4(
-        keccak256("balanceOf(address)") ^
-        keccak256("ownerOf(uint256)") ^
-        keccak256("approve(address,uint256)") ^
-        keccak256("getApproved(uint256)") ^
-        keccak256("setApprovalForAll(address,bool)") ^
-        keccak256("isApprovedForAll(address,address)") ^
-        keccak256("transferFrom(address,address,uint256)") ^
-        keccak256("safeTransferFrom(address,address,uint256)") ^
-        keccak256("safeTransferFrom(address,address,uint256,bytes)")
-    );
     bytes4 constant private RECLAIM_ID = bytes4(keccak256("reclaim(uint256,address)"));
 
-    constructor(ENS _ens, bytes32 _baseNode) public {
+    constructor(ENS _ens, bytes32 _baseNode) public ERC721("Ethereum Name Service", "ENS") {
         ens = _ens;
         baseNode = _baseNode;
+        _registerInterface(RECLAIM_ID);
     }
 
     modifier live {
@@ -41,35 +30,35 @@ contract BaseRegistrarImplementation is BaseRegistrar, ERC721 {
      * @param tokenId uint256 ID of the token to query the owner of
      * @return address currently marked as the owner of the given token ID
      */
-    function ownerOf(uint256 tokenId) public view returns (address) {
+    function ownerOf(uint256 tokenId) public view override(IERC721, ERC721) returns (address) {
         require(expiries[tokenId] > now, "expired");
         return super.ownerOf(tokenId);
     }
 
     // Authorises a controller, who can register and renew domains.
-    function addController(address controller) external onlyOwner {
+    function addController(address controller) external override onlyOwner {
         controllers[controller] = true;
         emit ControllerAdded(controller);
     }
 
     // Revoke controller permission for an address.
-    function removeController(address controller) external onlyOwner {
+    function removeController(address controller) external override onlyOwner {
         controllers[controller] = false;
         emit ControllerRemoved(controller);
     }
 
     // Set the resolver for the TLD this registrar manages.
-    function setResolver(address resolver) external onlyOwner {
+    function setResolver(address resolver) external override onlyOwner {
         ens.setResolver(baseNode, resolver);
     }
 
     // Returns the expiration timestamp of the specified id.
-    function nameExpires(uint256 id) external view returns(uint) {
+    function nameExpires(uint256 id) external view override returns(uint) {
         return expiries[id];
     }
 
     // Returns true iff the specified name is available for registration.
-    function available(uint256 id) public view returns(bool) {
+    function available(uint256 id) public view override returns(bool) {
         // Not available if it's registered here or in its grace period.
         return expiries[id] + GRACE_PERIOD < now;
     }
@@ -80,7 +69,7 @@ contract BaseRegistrarImplementation is BaseRegistrar, ERC721 {
      * @param owner The address that should own the registration.
      * @param duration Duration in seconds for the registration.
      */
-    function register(uint256 id, address owner, uint duration) external returns(uint) {
+    function register(uint256 id, address owner, uint duration) external override returns(uint) {
       return _register(id, owner, duration, true);
     }
 
@@ -113,7 +102,7 @@ contract BaseRegistrarImplementation is BaseRegistrar, ERC721 {
         return now + duration;
     }
 
-    function renew(uint256 id, uint duration) external live onlyController returns(uint) {
+    function renew(uint256 id, uint duration) external override live onlyController returns(uint) {
         require(expiries[id] + GRACE_PERIOD >= now); // Name must be registered here or in grace period
         require(expiries[id] + duration + GRACE_PERIOD > duration + GRACE_PERIOD); // Prevent future overflow
 
@@ -125,14 +114,9 @@ contract BaseRegistrarImplementation is BaseRegistrar, ERC721 {
     /**
      * @dev Reclaim ownership of a name in ENS, if you own it in the registrar.
      */
-    function reclaim(uint256 id, address owner) external live {
+    function reclaim(uint256 id, address owner) external override live {
         require(_isApprovedOrOwner(msg.sender, id), "not approved or not owner");
         ens.setSubnodeOwner(baseNode, bytes32(id), owner);
     }
 
-    function supportsInterface(bytes4 interfaceID) external view returns (bool) {
-        return interfaceID == INTERFACE_META_ID ||
-               interfaceID == ERC721_ID ||
-               interfaceID == RECLAIM_ID;
-    }
 }
