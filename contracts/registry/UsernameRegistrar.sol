@@ -285,7 +285,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
-     * @notice Transfer ownership of ensNode to `_newRegistry`.
+     * @notice Update registry that it has moved to `_newRegistry` 
      * Usernames registered are not affected, but they would be able to instantly release.
      */
     function moveRegistry(UsernameRegistrar _newRegistry)
