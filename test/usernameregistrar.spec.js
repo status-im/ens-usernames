@@ -5,7 +5,12 @@ const web3Utils = require('web3-utils');
 const namehash = require('eth-ens-namehash');
 const { MerkleTree } = require('../utils/merkleTree.js');
 const { ReservedUsernames } = require('../config/ens-usernames/reservedNames')
-
+const ethregistrarDuration = 1000*60*60*24*365*2;
+const eth = {
+  name: 'eth',
+  label: web3Utils.sha3('eth'),
+  namehash: namehash.hash('eth')
+}
 const registry = {
   name: 'stateofus',
   registry:  'stateofus.eth',
@@ -42,13 +47,21 @@ config(
       deploy: {    
         "TestToken": { },
         "ENSRegistry": {
-          "onDeploy": [
-            "await ENSRegistry.methods.setSubnodeOwner('0x0000000000000000000000000000000000000000000000000000000000000000', '0x4f5b812789fc606be1b3b16908db13fc7a9adf7ca72641f84d75b47069d3d7f0', web3.eth.defaultAccount).send()"
-          ]
         },
         "PublicResolver": {
           "args": [
             "$ENSRegistry"
+          ]
+        },
+        "BaseRegistrarImplementation": {
+          "args": [
+            "$ENSRegistry", 
+            eth.namehash
+          ],
+          "onDeploy": [
+            "await ENSRegistry.methods.setSubnodeOwner('0x0000000000000000000000000000000000000000000000000000000000000000','"+eth.label+"', BaseRegistrarImplementation.address).send()",
+            "await BaseRegistrarImplementation.methods.addController(web3.eth.defaultAccount).send()",
+            "await BaseRegistrarImplementation.methods.setResolver(PublicResolver.address).send()",
           ]
         },
         "SlashMechanism": {
@@ -67,7 +80,8 @@ config(
             "0x0000000000000000000000000000000000000000"
           ],
           "onDeploy": [
-            "await ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+registry.label+"', UsernameRegistrar.address).send()",
+            "await BaseRegistrarImplementation.methods.register('"+registry.label+"', web3.eth.defaultAccount,"+ethregistrarDuration+").send()",
+            "await ENSRegistry.methods.setOwner('"+registry.namehash+"',UsernameRegistrar.address).send()"
           ]
         },
         "UpdatedUsernameRegistrar": {
@@ -90,7 +104,8 @@ config(
             "0x0000000000000000000000000000000000000000"
           ],
           "onDeploy": [
-            "await ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+dummyRegistry.label+"', DummyUsernameRegistrar.address).send()",
+            "await BaseRegistrarImplementation.methods.register('"+dummyRegistry.label+"', web3.eth.defaultAccount,"+ethregistrarDuration+").send()",
+            "await ENSRegistry.methods.setOwner('"+dummyRegistry.namehash+"', DummyUsernameRegistrar.address).send()"
           ]
         },
         "UpdatedDummyUsernameRegistrar": {
@@ -119,7 +134,8 @@ config(
             "0x0000000000000000000000000000000000000000"
           ],
           "onDeploy": [
-            "await ENSRegistry.methods.setSubnodeOwner('0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae', '"+dummy2Registry.label+"', Dummy2UsernameRegistrar.address).send()",
+            "await BaseRegistrarImplementation.methods.register('"+dummy2Registry.label+"', web3.eth.defaultAccount,"+ethregistrarDuration+").send()",
+            "await ENSRegistry.methods.setOwner('"+dummy2Registry.namehash+"',Dummy2UsernameRegistrar.address).send()",
             "await Dummy2UsernameRegistrar.methods.activate("+dummy2Registry.price+").send()"
           ]
         },
@@ -151,6 +167,7 @@ const Dummy2UsernameRegistrar = artifacts.require('Dummy2UsernameRegistrar');
 const UpdatedDummy2UsernameRegistrar = artifacts.require('UpdatedDummy2UsernameRegistrar');
 const SlashMechanism = artifacts.require('SlashMechanism');
 const Dummy2SlashMechanism = artifacts.require('Dummy2SlashMechanism');
+const BaseRegistrarImplementation = artifacts.require('BaseRegistrarImplementation');
 
 contract('UsernameRegistrar', function () {
 
@@ -161,7 +178,7 @@ contract('UsernameRegistrar', function () {
       const initialPrice = 100
       const resultSetRegistryPrice = await UsernameRegistrar.methods.activate(initialPrice).send({from: accountsArr[0]});
       assert.equal(+resultSetRegistryPrice.events.RegistryPrice.returnValues.price, initialPrice, "event RegistryPrice wrong price");
-      assert.equal(+await UsernameRegistrar.methods.state().call(), 1, "Wrong registry state")
+      assert.equal(+await UsernameRegistrar.methods.getState().call(), 1, "Wrong registry state")
       assert.equal(+await UsernameRegistrar.methods.price().call(), initialPrice, "Wrong registry price")
     });
   });
@@ -171,7 +188,7 @@ contract('UsernameRegistrar', function () {
       const newPrice = registry.price;
       const resultUpdateRegistryPrice = await UsernameRegistrar.methods.updateRegistryPrice(newPrice).send({from: accountsArr[0]});
       assert.equal(+resultUpdateRegistryPrice.events.RegistryPrice.returnValues.price, registry.price, "event RegistryPrice wrong price");
-      assert.equal(+await UsernameRegistrar.methods.state().call(), 1, "Wrong registry state")
+      assert.equal(+await UsernameRegistrar.methods.getState().call(), 1, "Wrong registry state")
       assert.equal(+await UsernameRegistrar.methods.price().call(), newPrice, "Wrong registry price")
     });
   });
@@ -549,6 +566,7 @@ contract('UsernameRegistrar', function () {
       let initialAccountBalance = +await DummyUsernameRegistrar.methods.getAccountBalance(label).call();
       const initialRegistrantBalance = +await TestToken.methods.balanceOf(registrant).call();
       const initialRegistryBalance = +await TestToken.methods.balanceOf(DummyUsernameRegistrar.address).call();
+      await BaseRegistrarImplementation.methods.reclaim(dummyRegistry.label, UpdatedDummyUsernameRegistrar.address).send();
       await DummyUsernameRegistrar.methods.moveRegistry(UpdatedDummyUsernameRegistrar.address).send();
 
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
@@ -1045,8 +1063,9 @@ describe('eraseNode(bytes32[])', function() {
 
 });
 
-  describe('moveRegistry(address)', function() {
+describe('moveRegistry(address)', function() {
     it('should move registry to new registry and migrate', async () => {
+      await BaseRegistrarImplementation.methods.reclaim(registry.label, UpdatedUsernameRegistrar.address).send();
       const result = await UsernameRegistrar.methods.moveRegistry(UpdatedUsernameRegistrar.address).send();
       //TODO: check events
       assert.equal(await ENSRegistry.methods.owner(registry.namehash).call(), UpdatedUsernameRegistrar.address, "registry ownership not moved correctly")
@@ -1055,7 +1074,8 @@ describe('eraseNode(bytes32[])', function() {
   });
 
   describe('moveAccount(label,address)', function() {
-    it('should move username to new registry by account owner', async () => {
+
+    it('should move username to new registry by account owner when registry moved internally', async () => {
       const registrant = accountsArr[5];
       const username = 'erin';
       const usernameHash = namehash.hash(username + '.' + registry.registry);

@@ -25,7 +25,6 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     uint256 public lastUpdate;
     address public slashMechanism;
     
-    event RegistryState(RegistrarState state);
     event RegistryPrice(uint256 price);
     event RegistryMoved(address newRegistry);
     event UsernameOwner(bytes32 indexed nameHash, address owner);
@@ -33,7 +32,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     enum RegistrarState { Inactive, Active, Moved }
     bytes32 public ensNode;
     uint256 public price;
-    RegistrarState public state;
+    bool public activated;
     uint256 public reserveAmount;
 
     struct Account {
@@ -84,7 +83,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         slashMechanism = _slashMechanism;
         lastUpdate = block.timestamp;
         parentRegistry = _parentRegistry;
-        setState(RegistrarState.Inactive);
+        activated = false;
     }
 
     /**
@@ -128,7 +127,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         bytes32 namehash = keccak256(abi.encodePacked(ensNode, _label));
         Account memory account = accounts[_label];
         require(account.creationTime > 0, "Username not registered.");
-        if (state == RegistrarState.Active) {
+        if (getState() == RegistrarState.Active) {
             require(msg.sender == ensRegistry.owner(namehash), "Not owner of ENS node.");
             require(block.timestamp > account.creationTime + releaseDelay || lastUpdate > account.creationTime, "Release period not reached.");
         } else {
@@ -139,7 +138,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
             reserveAmount -= account.balance;
             require(token.transfer(msg.sender, account.balance), "Transfer failed");
         }
-        if (state == RegistrarState.Active) {
+        if (getState() == RegistrarState.Active) {
             ensRegistry.setSubnodeOwner(ensNode, _label, address(this));
             ensRegistry.setResolver(namehash, address(0));
             ensRegistry.setOwner(namehash, address(0));
@@ -209,7 +208,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     )
         external
     {
-        require(state == RegistrarState.Moved, "Wrong contract state");
+        require(getState() == RegistrarState.Moved, "Wrong contract state");
         require(msg.sender == accounts[_label].owner, "Callable only by account owner.");
         require(ensRegistry.owner(ensNode) == address(_newRegistry), "Wrong update");
         Account memory account = accounts[_label];
@@ -234,10 +233,10 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         external
         onlyController
     {
-        require(state == RegistrarState.Inactive, "Registry state is not Inactive");
+        require(getState() == RegistrarState.Inactive, "Registry state is not Inactive");
         require(ensRegistry.owner(ensNode) == address(this), "Registry does not own registry");
         price = _price;
-        setState(RegistrarState.Active);
+        activated = true;
         emit RegistryPrice(_price);
     }
 
@@ -279,15 +278,15 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         external
         onlyController
     {
-        require(state == RegistrarState.Active, "Registry not owned");
+        require(getState() == RegistrarState.Active, "Registry not owned");
         price = _price;
         emit RegistryPrice(_price);
     }
 
     /**
-     * @notice Transfer ownership of ensNode to `_newRegistry`.
-     * Usernames registered are not affected, but they would be able to instantly release.
-     * @param _newRegistry New UsernameRegistrar for hodling `ensNode` node.
+     * @notice Migrate price to `_newRegistry`.
+     * ENS node must be moved by reclaiming it into `_newRegistry`.
+     * @param _newRegistry New UsernameRegistrar hodling `ensNode` node.
      */
     function moveRegistry(
         UsernameRegistrar _newRegistry
@@ -295,12 +294,11 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         external
         onlyController
     {
-        require(_newRegistry != this, "Cannot move to self.");
-        require(ensRegistry.owner(ensNode) == address(this), "Registry not owned anymore.");
-        setState(RegistrarState.Moved);
-        ensRegistry.setOwner(ensNode, address(_newRegistry));
+        require(address(_newRegistry) != address(this), "Cannot move to self.");
+        address newRegistry = ensRegistry.owner(ensNode);
+        require(address(_newRegistry) == newRegistry, "Wrong parameter");
         _newRegistry.migrateRegistry(price);
-        emit RegistryMoved(address(_newRegistry));
+        emit RegistryMoved(newRegistry);
     }
 
     /**
@@ -524,10 +522,10 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         external
         onlyParentRegistry
     {
-        require(state == RegistrarState.Inactive, "Not Inactive");
+        require(getState() == RegistrarState.Inactive, "Not Inactive");
         require(ensRegistry.owner(ensNode) == address(this), "ENS registry owner not transfered.");
         price = _price;
-        setState(RegistrarState.Active);
+        activated = true;
         emit RegistryPrice(_price);
     }
 
@@ -549,7 +547,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         internal
         returns(bytes32 namehash)
     {
-        require(state == RegistrarState.Active, "Registry not active.");
+        require(getState() == RegistrarState.Active, "Registry not active.");
         namehash = keccak256(abi.encodePacked(ensNode, _label));
         require(ensRegistry.owner(namehash) == address(0), "ENS node already owned.");
         require(accounts[_label].creationTime == 0, "Username already registered.");
@@ -633,9 +631,19 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         emit UsernameOwner(namehash, address(0));
     }
 
-    function setState(RegistrarState _state) private {
-        state = _state;
-        emit RegistryState(_state);
+    /**
+     * @notice Reads state of registrar.
+     */
+    function getState()
+        public
+        view
+        returns(RegistrarState state)
+    {
+        if(!activated){
+            return RegistrarState.Inactive;
+        } else {
+            return ensRegistry.owner(ensNode) == address(this) ? RegistrarState.Active : RegistrarState.Moved;
+        }
     }
 
     /**
