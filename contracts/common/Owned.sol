@@ -26,6 +26,7 @@ contract Owned {
     /// @param _newOwner The address of the new owner. 0x0 can be used to create
     ///  an unowned neutral vault, however that cannot be undone
     function changeOwner(address payable _newOwner) public onlyOwner {
+        require(_newOwner != address(0), "Invalid address");
         newOwner = _newOwner;
     }
 
