@@ -66,10 +66,10 @@ module.exports = {
   livenet:{
     deploy: {
       ENSRegistry: {
-        address: "0x314159265dd8dbb310642f98f50c066173c1259b"
+        address: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
       },
       PublicResolver: {
-        address: "0x5FfC014343cd971B7eb70732021E26C35B744cc4"
+        address: "0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41"
       },
       TestToken: {
         address: "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
@@ -91,7 +91,7 @@ module.exports = {
   testnet:{
     deploy: {
       ENSRegistry: {
-        address: "0x112234455c3a32fd11230c42e7bccd4a84e02010"
+        address: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
       },
       PublicResolver: {
         address: "0x29754bADB2640b98F6deF0f52D41418b0d2e0C51"
@@ -109,14 +109,14 @@ module.exports = {
         address: "0x58E01078d14142E0370526dFdAE44E4f508c844B"
       },
       UsernameRegistrar: {
-        address: "0x11d9F481effd20D76cEE832559bd9Aca25405841"
+        address: "0xdAAE165BEB8C06E0B7613168138Ebba774afF071"
       }
     }
   },
   rinkeby:{
     deploy: {
       ENSRegistry: {
-        address: "0xe7410170f87102DF0055eB195163A03B7F2Bff4A"
+        address: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
       },
       PublicResolver: {
         address: "0x5d20cf83cb385e06d2f2a892f9322cd4933eacdc"
