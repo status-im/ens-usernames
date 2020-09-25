@@ -284,14 +284,15 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     }
 
     /**
-     * @notice Transfer ownership of ensNode to `_newRegistry`.
-     * Usernames registered are not affected, but they would be able to instantly release.
-     * @param _newRegistry New UsernameRegistrar for hodling `ensNode` node.
+     * @notice Migrate price to `_newRegistry`.
+     * ENS node must be moved by reclaiming it into `_newRegistry`.
+     * @param _newRegistry New UsernameRegistrar hodling `ensNode` node.
      */
     function moveRegistry(
         UsernameRegistrar _newRegistry
     )
         external
+        onlyController
     {
         require(address(_newRegistry) != address(this), "Cannot move to self.");
         address newRegistry = ensRegistry.owner(ensNode);
