@@ -3,6 +3,7 @@
 pragma solidity 0.5.11;
 
 contract Controlled {
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     /// @notice The address of the controller is the only address that can call
     ///  a function with this modifier
     modifier onlyController {
@@ -19,6 +20,8 @@ contract Controlled {
     /// @notice Changes the controller of the contract
     /// @param _newController The new controller of the contract
     function changeController(address payable _newController) public onlyController {
-        controller = _newController;
+        require(_newController != address(0), "Invalid address");
+        emit OwnershipTransferred(controller, _newController);
+        controller = _newController;        
     }
 }
