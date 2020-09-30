@@ -3,6 +3,7 @@
 pragma solidity 0.6.2;
 
 import "../common/Controlled.sol";
+import "../openzeppelin-solidity/token/ERC721/ERC721.sol";
 import "../token/ERC20Token.sol";
 import "../token/ApproveAndCallFallBack.sol";
 import "../ens/ENS.sol";
@@ -12,7 +13,7 @@ import "../ens/PublicResolver.sol";
  * @author Ricardo Guilherme Schmidt (Status Research & Development GmbH)
  * @notice Registers usernames as ENS subnodes of the domain `ensNode`
  */
-contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
+contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
 
     ERC20Token public token;
     ENS public ensRegistry;
@@ -38,7 +39,6 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     struct Account {
         uint256 balance;
         uint256 creationTime;
-        address owner;
     }
 
 
@@ -71,6 +71,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         address _parentRegistry
     )
         public
+        ERC721("SNS","Status Name Service")
     {
         require(address(_token) != address(0), "No ERC20Token address defined.");
         require(address(_ensRegistry) != address(0), "No ENS address defined.");
@@ -124,27 +125,26 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     )
         external
     {
+        require(_isApprovedOrOwner(msg.sender, uint256(_label)), "not approved or not owner");
         bytes32 namehash = keccak256(abi.encodePacked(ensNode, _label));
         Account memory account = accounts[_label];
-        require(account.creationTime > 0, "Username not registered.");
+        address owner = ownerOf(uint256(_label));
         if (getState() == RegistrarState.Active) {
-            require(msg.sender == ensRegistry.owner(namehash), "Not owner of ENS node.");
             require(block.timestamp > account.creationTime + releaseDelay || lastUpdate > account.creationTime, "Release period not reached.");
-        } else {
-            require(msg.sender == account.owner, "Not the former account owner.");
         }
+        _burn(uint256(_label));
         delete accounts[_label];
         if (account.balance > 0) {
             reserveAmount -= account.balance;
-            require(token.transfer(msg.sender, account.balance), "Transfer failed");
+            require(token.transfer(owner, account.balance), "Transfer failed");
         }
         if (getState() == RegistrarState.Active) {
             ensRegistry.setSubnodeOwner(ensNode, _label, address(this));
             ensRegistry.setResolver(namehash, address(0));
             ensRegistry.setOwner(namehash, address(0));
         } else {
-            address newOwner = ensRegistry.owner(ensNode);
-            try UsernameRegistrar(newOwner).dropUsername(_label) {
+            address newRegistry = ensRegistry.owner(ensNode);
+            try UsernameRegistrar(newRegistry).dropUsername(_label) {
 
             } catch (bytes memory) {
             
@@ -152,24 +152,14 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         }
         emit UsernameOwner(namehash, address(0));
     }
-
-    /**
-     * @notice update account owner, should be called by new ens node owner
-     * to update this contract registry, otherwise former owner can release
-     * if domain is moved to a new registry.
-     * @param _label Username hash.
-     **/
-    function updateAccountOwner(
-        bytes32 _label
-    )
-        external
-    {
-        bytes32 namehash = keccak256(abi.encodePacked(ensNode, _label));
-        require(msg.sender == ensRegistry.owner(namehash), "Caller not owner of ENS node.");
-        require(accounts[_label].creationTime > 0, "Username not registered.");
-        require(ensRegistry.owner(ensNode) == address(this), "Registry not owner of registry.");
-        accounts[_label].owner = msg.sender;
-        emit UsernameOwner(namehash, msg.sender);
+    
+    /*
+     * @dev Reclaim ownership of a name in ENS, if you own it in the registrar.
+     */
+    function reclaim(uint256 _label, address _owner) external {
+        require(getState() == RegistrarState.Active, "Registry not owned");
+        require(_isApprovedOrOwner(msg.sender, uint256(_label)), "Not approved nor owner");
+        ensRegistry.setSubnodeOwner(ensNode, bytes32(_label), _owner);
     }
 
 
@@ -186,7 +176,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         require(len != 0, "Nothing to erase");
         bytes32 label = _labels[len - 1];
         bytes32 subnode = keccak256(abi.encodePacked(ensNode, label));
-        require(ensRegistry.owner(subnode) == address(0), "First slash/release top level subdomain");
+        require(!_exists(uint256(label)), "First slash/release top level subdomain");
         ensRegistry.setSubnodeOwner(ensNode, label, address(this));
         if(len > 1) {
             eraseNodeHierarchy(len - 2, _labels, subnode);
@@ -205,9 +195,11 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     )
         external
     {
+        require(_isApprovedOrOwner(msg.sender, uint256(_label)), "Not approved nor owner");
         require(getState() == RegistrarState.Moved, "Wrong contract state");
-        require(msg.sender == accounts[_label].owner, "Callable only by account owner.");
+        address owner = ownerOf(uint256(_label));
         require(ensRegistry.owner(ensNode) == address(_newRegistry), "Wrong update");
+        _burn(uint256(_label));
         Account memory account = accounts[_label];
         delete accounts[_label];
 
@@ -216,8 +208,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
             _label,
             account.balance,
             account.creationTime,
-            account.owner
+            owner
         );
+        
     }
 
     /**
@@ -398,7 +391,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         view
         returns(address owner)
     {
-        owner = accounts[_label].owner;
+        owner = ownerOf(uint256(_label));
     }
 
     /**
@@ -506,7 +499,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
             );
             reserveAmount += _tokenBalance;
         }
-        accounts[_label] = Account(_tokenBalance, _creationTime, _accountOwner);
+        _mint(_accountOwner,uint256(_label));
+        accounts[_label] = Account(_tokenBalance, _creationTime);
     }
 
     /**
@@ -547,9 +541,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     {
         require(getState() == RegistrarState.Active, "Registry not active.");
         namehash = keccak256(abi.encodePacked(ensNode, _label));
-        require(ensRegistry.owner(namehash) == address(0), "ENS node already owned.");
         require(accounts[_label].creationTime == 0, "Username already registered.");
-        accounts[_label] = Account(price, block.timestamp, _owner);
         if(price > 0) {
             require(token.allowance(_owner, address(this)) >= price, "Unallowed to spend.");
             require(
@@ -562,7 +554,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
             );
             reserveAmount += price;
         }
-
+        _mint(_owner, uint256(_label));
+        accounts[_label] = Account(price, block.timestamp);
         bool resolvePubkey = _pubkeyA != 0 || _pubkeyB != 0;
         bool resolveAccount = _account != address(0);
         if (resolvePubkey || resolveAccount) {
@@ -598,7 +591,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         bytes32 namehash = keccak256(abi.encodePacked(ensNode, label));
         uint256 amountToTransfer = 0;
         uint256 creationTime = accounts[label].creationTime;
-        address owner = ensRegistry.owner(namehash);
+        address owner = ownerOf(uint256(label));
         address beneficiary = _reserver;
         if(creationTime == 0) {
             require(
@@ -610,8 +603,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
             assert(creationTime != block.timestamp);
             amountToTransfer = accounts[label].balance;
             if(lastUpdate > creationTime) {
-                beneficiary = accounts[label].owner;
+                beneficiary = owner;
             }
+            _burn(uint256(label));
             delete accounts[label];
         }
 
