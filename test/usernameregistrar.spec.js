@@ -222,15 +222,25 @@ contract('UsernameRegistrar', function () {
         constants.ZERO_BYTES32,
         constants.ZERO_BYTES32
       ).send({from: registrant});
-      expectEvent.inTransaction(resultRegister.transactionHash, TestToken, 'Transfer', {
+      /*expectEvent.inTransaction(resultRegister.transactionHash, TestToken, 'Transfer', {
         from: registrant,
         to: UsernameRegistrar.address,
         value: registry.price
-      })
+      }) // Waiting bugfix on https://github.com/OpenZeppelin/openzeppelin-test-helpers/issues/132 */
+      assert.equal(resultRegister.events['0'].address, TestToken.address, "Wrong Event emitter");
+      assert.equal(resultRegister.events['0'].raw.topics[0], web3Utils.sha3("Transfer(address,address,uint256)"), "Wrong Event signature");
+      assert.equal(utils.eventAddress(resultRegister.events['0'].raw.topics[1]), registrant, "Wrong Transfer from");
+      assert.equal(utils.eventAddress(resultRegister.events['0'].raw.topics[2]), UsernameRegistrar.address, "Wrong transfer to");
+      assert.equal(new BN(resultRegister.events['0'].raw.data.substr(2),16).toString(), registry.price, "Wrong transfer value");
       expectEvent.inTransaction(resultRegister.transactionHash, ENSRegistry, 'NewOwner', {
         node: registry.namehash,
         label: label,
         owner: registrant
+      })
+      expectEvent(resultRegister, 'Transfer', {
+        from: constants.ZERO_ADDRESS,
+        to: registrant,
+        tokenId: new BN(label.substr(2),16).toString()
       })
       expectEvent(resultRegister, 'UsernameOwner', {
         owner: registrant,
@@ -256,11 +266,16 @@ contract('UsernameRegistrar', function () {
         constants.ZERO_BYTES32,
         constants.ZERO_BYTES32
       ).send({from: registrant});
-      expectEvent.inTransaction(resultRegister.transactionHash, TestToken, 'Transfer', {
+      /*expectEvent.inTransaction(resultRegister.transactionHash, TestToken, 'Transfer', {
         from: registrant,
         to: UsernameRegistrar.address,
         value: registry.price
-      })
+      }) // Waiting bugfix on https://github.com/OpenZeppelin/openzeppelin-test-helpers/issues/132 */
+      assert.equal(resultRegister.events['0'].address, TestToken.address, "Wrong Event emitter");
+      assert.equal(resultRegister.events['0'].raw.topics[0], web3Utils.sha3("Transfer(address,address,uint256)"), "Wrong Event signature");
+      assert.equal(utils.eventAddress(resultRegister.events['0'].raw.topics[1]), registrant, "Wrong Transfer from");
+      assert.equal(utils.eventAddress(resultRegister.events['0'].raw.topics[2]), UsernameRegistrar.address, "Wrong transfer to");
+      assert.equal(new BN(resultRegister.events['0'].raw.data.substr(2),16).toString(), registry.price, "Wrong transfer value");
       expectEvent.inTransaction(resultRegister.transactionHash, ENSRegistry, 'NewOwner', {
         node: registry.namehash,
         label: label,
@@ -278,11 +293,15 @@ contract('UsernameRegistrar', function () {
         node: usernameHash,
         owner: registrant
       })
+      expectEvent(resultRegister, 'Transfer', {
+        from: constants.ZERO_ADDRESS,
+        to: registrant,
+        tokenId: new BN(label.substr(2),16).toString()
+      })
       expectEvent(resultRegister, 'UsernameOwner', {
         owner: registrant,
         nameHash: usernameHash
       })
- 
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
       assert.equal(await ENSRegistry.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
       assert.equal(await UsernameRegistrar.methods.getAccountBalance(label).call(), registry.price, "Wrong account balance");
@@ -307,11 +326,16 @@ contract('UsernameRegistrar', function () {
         points.x,
         points.y
       ).send({from: registrant});
-      expectEvent.inTransaction(resultRegister.transactionHash, TestToken, 'Transfer', {
+      /*expectEvent.inTransaction(resultRegister.transactionHash, TestToken, 'Transfer', {
         from: registrant,
         to: UsernameRegistrar.address,
         value: registry.price
-      })
+      }) // Waiting bugfix on https://github.com/OpenZeppelin/openzeppelin-test-helpers/issues/132 */
+      assert.equal(resultRegister.events['0'].address, TestToken.address, "Wrong Event emitter");
+      assert.equal(resultRegister.events['0'].raw.topics[0], web3Utils.sha3("Transfer(address,address,uint256)"), "Wrong Event signature");
+      assert.equal(utils.eventAddress(resultRegister.events['0'].raw.topics[1]), registrant, "Wrong Transfer from");
+      assert.equal(utils.eventAddress(resultRegister.events['0'].raw.topics[2]), UsernameRegistrar.address, "Wrong transfer to");
+      assert.equal(new BN(resultRegister.events['0'].raw.data.substr(2),16).toString(), registry.price, "Wrong transfer value");
       expectEvent.inTransaction(resultRegister.transactionHash, ENSRegistry, 'NewOwner', {
         node: registry.namehash,
         label: label,
@@ -329,6 +353,11 @@ contract('UsernameRegistrar', function () {
       expectEvent.inTransaction(resultRegister.transactionHash, ENSRegistry, 'Transfer', {
         node: usernameHash,
         owner: registrant
+      })
+      expectEvent(resultRegister, 'Transfer', {
+        from: constants.ZERO_ADDRESS,
+        to: registrant,
+        tokenId: new BN(label.substr(2),16).toString()
       })
       expectEvent(resultRegister, 'UsernameOwner', {
         owner: registrant,
@@ -358,11 +387,16 @@ contract('UsernameRegistrar', function () {
         points.x,
         points.y
       ).send({from: registrant}); 
-      expectEvent.inTransaction(resultRegister.transactionHash, TestToken, 'Transfer', {
+      /*expectEvent.inTransaction(resultRegister.transactionHash, TestToken, 'Transfer', {
         from: registrant,
         to: UsernameRegistrar.address,
         value: registry.price
-      })
+      }) // Waiting bugfix on https://github.com/OpenZeppelin/openzeppelin-test-helpers/issues/132 */
+      assert.equal(resultRegister.events['0'].address, TestToken.address, "Wrong Event emitter");
+      assert.equal(resultRegister.events['0'].raw.topics[0], web3Utils.sha3("Transfer(address,address,uint256)"), "Wrong Event signature");
+      assert.equal(utils.eventAddress(resultRegister.events['0'].raw.topics[1]), registrant, "Wrong Transfer from");
+      assert.equal(utils.eventAddress(resultRegister.events['0'].raw.topics[2]), UsernameRegistrar.address, "Wrong transfer to");
+      assert.equal(new BN(resultRegister.events['0'].raw.data.substr(2),16).toString(), registry.price, "Wrong transfer value");
       expectEvent.inTransaction(resultRegister.transactionHash, ENSRegistry, 'NewOwner', {
         node: registry.namehash,
         label: label,
@@ -384,6 +418,11 @@ contract('UsernameRegistrar', function () {
       expectEvent.inTransaction(resultRegister.transactionHash, ENSRegistry, 'Transfer', {
         node: usernameHash,
         owner: registrant
+      })
+      expectEvent(resultRegister, 'Transfer', {
+        from: constants.ZERO_ADDRESS,
+        to: registrant,
+        tokenId: new BN(label.substr(2),16).toString()
       })
       expectEvent(resultRegister, 'UsernameOwner', {
         owner: registrant,
@@ -563,7 +602,7 @@ contract('UsernameRegistrar', function () {
         constants.ZERO_BYTES32,
         constants.ZERO_BYTES32
       ).send({from: registrant});
-      await ENSRegistry.methods.setOwner(usernameHash, newOwner).send({from: registrant});
+      await UsernameRegistrar.methods.transferFrom(registrant, newOwner, label).send({from: registrant});
       let expirationTime = await UsernameRegistrar.methods.getExpirationTime(label).call();
       await time.increaseTo(expirationTime+1)
       let initialAccountBalance = await UsernameRegistrar.methods.getAccountBalance(label).call();
@@ -615,8 +654,8 @@ contract('UsernameRegistrar', function () {
     });
   });
   
-  describe('updateAccountOwner(bytes32)', function() {
-    it('should update username account owner', async () => {
+  describe('reclaim(bytes32)', function() {
+    it('should reclaim username', async () => {
       let username = 'heidi';
       let label = web3Utils.sha3(username);
       let registrant = accountsArr[8];
@@ -631,9 +670,10 @@ contract('UsernameRegistrar', function () {
         constants.ZERO_BYTES32,
         constants.ZERO_BYTES32
       ).send({from: registrant});
-      await ENSRegistry.methods.setOwner(usernameHash, newOwner).send({from: registrant});
-      let resultUpdateOwner = await UsernameRegistrar.methods.updateAccountOwner(
-        label
+      await UsernameRegistrar.methods.transferFrom(registrant, newOwner, label).send({from: registrant});
+      let resultUpdateOwner = await UsernameRegistrar.methods.reclaim(
+        label,
+        newOwner
       ).send({from: newOwner});
       //TODO: check events
       assert.equal(await UsernameRegistrar.methods.getAccountOwner(label).call(), newOwner, "Backup owner not updated");
