@@ -688,7 +688,7 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
         )
     {
         assembly {
-            sig := mload(add(_data, add(0x20, 0)))
+            sig := mload(add(_data, 32))
             label := mload(add(_data, 36))
             account := mload(add(_data, 68))
             pubkeyA := mload(add(_data, 100))
