@@ -1,4 +1,7 @@
 const Utils = require('../utils/testUtils');
+const {        
+  constants     
+} = require('@openzeppelin/test-helpers');
 const TestToken = artifacts.require('TestToken');
 const ERC20TokenSpec = require('./abstract/erc20tokenspec');
 
@@ -38,7 +41,7 @@ contract("TestToken", function() {
   
   it("should burn account supply", async function() {
     let initialBalance = await TestToken.methods.balanceOf(accounts[0]).call();
-    await TestToken.methods.transfer(Utils.zeroAddress, initialBalance).send({from: accounts[0]});
+    await TestToken.methods.transfer(constants.ZERO_ADDRESS, initialBalance).send({from: accounts[0]});
     assert.equal(+await TestToken.methods.totalSupply().call(), 0);
     assert.equal(+await TestToken.methods.balanceOf(accounts[0]).call(), 0);
   })
