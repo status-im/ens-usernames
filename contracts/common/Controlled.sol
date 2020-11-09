@@ -13,15 +13,19 @@ contract Controlled {
 
     address payable public controller;
 
-    constructor() internal {
-        controller = msg.sender;
+    constructor(address payable _controller) internal {
+        setController(_controller);
     }
 
     /// @notice Changes the controller of the contract
     /// @param _newController The new controller of the contract
     function changeController(address payable _newController) public onlyController {
-        require(_newController != address(0), "Invalid address");
+        setController(_newController);
+    }
+
+    function setController(address payable _newController) private {
+        require(_newController != address(0), "Invalid controller address");
         emit OwnershipTransferred(controller, _newController);
-        controller = _newController;        
+        controller = _newController;
     }
 }

@@ -3,7 +3,7 @@
 pragma solidity 0.6.2;
 
 import "../common/Controlled.sol";
-import "../openzeppelin-solidity/token/ERC721/ERC721.sol";
+import "./UsernameToken.sol";
 import "../token/ERC20Token.sol";
 import "../token/ApproveAndCallFallBack.sol";
 import "../ens/ENS.sol";
@@ -13,7 +13,7 @@ import "../ens/PublicResolver.sol";
  * @author Ricardo Guilherme Schmidt (Status Research & Development GmbH)
  * @notice Registers usernames as ENS subnodes of the domain `ensNode`
  */
-contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
+contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
 
     ERC20Token public token;
     ENS public ensRegistry;
@@ -21,8 +21,8 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
     address public parentRegistry;
 
     uint256 public constant releaseDelay = 365 days;
-    mapping (bytes32 => Account) public accounts;
 
+    UsernameToken public accounts;
     uint256 public lastUpdate;
     address public slashMechanism;
     
@@ -36,11 +36,7 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
     bool public activated;
     uint256 public reserveAmount;
 
-    struct Account {
-        uint256 balance;
-        uint256 creationTime;
-    }
-
+    mapping (bytes32 => bool) public migrated;
 
 
     /**
@@ -56,13 +52,14 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
      * The only parameter from this list that can be changed later is `_resolver`.
      * Other updates require a new contract and migration of domain.
      * @param _token ERC20 token with optional `approveAndCall(address,uint256,bytes)` for locking fee.
-     * @param _ensRegistry Ethereum Name Service root contract address.
+     * @param _ensRegistry Ethereum Name Service root contract address. 
      * @param _resolver Public Resolver for resolving usernames.
      * @param _ensNode ENS node (domain) being used for usernames subnodes (subdomain)
      * @param _slashMechanism Slashing mechanism address
      * @param _parentRegistry Address of old registry (if any) for optional account migration.
      */
     constructor(
+        UsernameToken _accounts,
         ERC20Token _token,
         ENS _ensRegistry,
         PublicResolver _resolver,
@@ -71,12 +68,13 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
         address _parentRegistry
     )
         public
-        ERC721("SNS","Status Name Service")
+        Controlled(msg.sender)
     {
         require(address(_token) != address(0), "No ERC20Token address defined.");
         require(address(_ensRegistry) != address(0), "No ENS address defined.");
         require(address(_resolver) != address(0), "No Resolver address defined.");
         require(_ensNode != bytes32(0), "No ENS node defined.");
+        accounts = _accounts;
         token = _token;
         ensRegistry = _ensRegistry;
         resolver = _resolver;
@@ -125,29 +123,30 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
     )
         external
     {
-        require(_isApprovedOrOwner(msg.sender, uint256(_label)), "not approved or not owner");
+        require(accounts.isApprovedOrOwner(msg.sender, _label), "not approved or not owner");
         bytes32 namehash = keccak256(abi.encodePacked(ensNode, _label));
-        Account memory account = accounts[_label];
-        address owner = ownerOf(uint256(_label));
+        (uint256 balance, uint256 creationTime) = accounts.accounts(_label);
+        address owner = accounts.ownerOf(uint256(_label));
         if (getState() == RegistrarState.Active) {
-            require(block.timestamp > account.creationTime + releaseDelay || lastUpdate > account.creationTime, "Release period not reached.");
+            require(block.timestamp > creationTime + releaseDelay || lastUpdate > creationTime, "Release period not reached.");
         }
-        _burn(uint256(_label));
-        delete accounts[_label];
-        if (account.balance > 0) {
-            reserveAmount -= account.balance;
-            require(token.transfer(owner, account.balance), "Transfer failed");
+        if (balance > 0) {
+            reserveAmount -= balance;
+            require(token.transfer(owner, balance), "Transfer failed");
         }
         if (getState() == RegistrarState.Active) {
+            accounts.deleteUser(_label);
             ensRegistry.setSubnodeOwner(ensNode, _label, address(this));
             ensRegistry.setResolver(namehash, address(0));
             ensRegistry.setOwner(namehash, address(0));
         } else {
+            require(!migrated[_label], "Already migrated");
+            migrated[_label] = true;
             address newRegistry = ensRegistry.owner(ensNode);
             try UsernameRegistrar(newRegistry).dropUsername(_label) {
 
             } catch (bytes memory) {
-            
+                
             }
         }
         emit UsernameOwner(namehash, address(0));
@@ -156,9 +155,9 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
     /*
      * @dev Reclaim ownership of a name in ENS, if you own it in the registrar.
      */
-    function reclaim(uint256 _label, address _owner) external {
+    function reclaim(bytes32 _label, address _owner) external {
         require(getState() == RegistrarState.Active, "Registry not owned");
-        require(_isApprovedOrOwner(msg.sender, uint256(_label)), "Not approved nor owner");
+        require(accounts.isApprovedOrOwner(msg.sender, _label), "Not approved nor owner");
         ensRegistry.setSubnodeOwner(ensNode, bytes32(_label), _owner);
     }
 
@@ -176,7 +175,7 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
         require(len != 0, "Nothing to erase");
         bytes32 label = _labels[len - 1];
         bytes32 subnode = keccak256(abi.encodePacked(ensNode, label));
-        require(!_exists(uint256(label)), "First slash/release top level subdomain");
+        require(!accounts.exists(label), "First slash/release top level subdomain");
         ensRegistry.setSubnodeOwner(ensNode, label, address(this));
         if(len > 1) {
             eraseNodeHierarchy(len - 2, _labels, subnode);
@@ -195,19 +194,19 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
     )
         external
     {
-        require(_isApprovedOrOwner(msg.sender, uint256(_label)), "Not approved nor owner");
+        require(!migrated[_label], "Already migrated");
+        migrated[_label] = true;
+        require(accounts.isApprovedOrOwner(msg.sender, _label), "Not approved nor owner");
         require(getState() == RegistrarState.Moved, "Wrong contract state");
-        address owner = ownerOf(uint256(_label));
+        address owner = accounts.ownerOf(uint256(_label));
+        (uint256 balance, uint256 creationTime) = accounts.accounts(_label);
         require(ensRegistry.owner(ensNode) == address(_newRegistry), "Wrong update");
-        _burn(uint256(_label));
-        Account memory account = accounts[_label];
-        delete accounts[_label];
-
-        token.approve(address(_newRegistry), account.balance);
+        
+        token.approve(address(_newRegistry), balance);
         _newRegistry.migrateUsername(
             _label,
-            account.balance,
-            account.creationTime,
+            balance,
+            creationTime,
             owner
         );
         
@@ -224,6 +223,7 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
         onlyController
     {
         require(getState() == RegistrarState.Inactive, "Registry state is not Inactive");
+        require(accounts.controller() == address(this), "UsernameToken is not controlled");
         require(ensRegistry.owner(ensNode) == address(this), "Registry does not own registry");
         price = _price;
         activated = true;
@@ -287,6 +287,7 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
         require(address(_newRegistry) != address(this), "Cannot move to self.");
         address newRegistry = ensRegistry.owner(ensNode);
         require(address(_newRegistry) == newRegistry, "Wrong parameter");
+        accounts.changeController(payable(address(_newRegistry)));
         _newRegistry.migrateRegistry(price);
         emit RegistryMoved(newRegistry);
     }
@@ -302,9 +303,10 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
         external
         onlyParentRegistry
     {
-        require(accounts[_label].creationTime == 0, "Already migrated");
-        bytes32 namehash = keccak256(abi.encodePacked(ensNode, _label));
-        ensRegistry.setSubnodeOwner(ensNode, _label, address(this));
+        (, uint256 creationTime) = accounts.accounts(_label);
+        require(creationTime != 0, "Already dropped");
+        accounts.deleteUser(_label);
+        bytes32 namehash = ensRegistry.setSubnodeOwner(ensNode, _label, address(this));
         ensRegistry.setResolver(namehash, address(0));
         ensRegistry.setOwner(namehash, address(0));
     }
@@ -377,7 +379,7 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
         view
         returns(uint256 accountBalance)
     {
-        accountBalance = accounts[_label].balance;
+        (accountBalance, ) = accounts.accounts(_label);
     }
 
     /**
@@ -391,7 +393,7 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
         view
         returns(address owner)
     {
-        owner = ownerOf(uint256(_label));
+        owner = accounts.ownerOf(uint256(_label));
     }
 
     /**
@@ -404,7 +406,7 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
         view
         returns(uint256 creationTime)
     {
-        creationTime = accounts[_label].creationTime;
+        (, creationTime) = accounts.accounts(_label);
     }
 
     /**
@@ -417,7 +419,8 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
         view
         returns(uint256 releaseTime)
     {
-        uint256 creationTime = accounts[_label].creationTime;
+        
+        (, uint256 creationTime) = accounts.accounts(_label);
         if (creationTime > 0){
             releaseTime = creationTime + releaseDelay;
         }
@@ -433,7 +436,7 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
         view
         returns(uint256 partReward)
     {
-        uint256 balance = accounts[_label].balance;
+        (uint256 balance, ) = accounts.accounts(_label);
         if (balance > 0) {
             partReward = balance / 3;
         }
@@ -499,8 +502,7 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
             );
             reserveAmount += _tokenBalance;
         }
-        _mint(_accountOwner,uint256(_label));
-        accounts[_label] = Account(_tokenBalance, _creationTime);
+        accounts.importUser(_accountOwner, _label, _tokenBalance, _creationTime);
     }
 
     /**
@@ -539,9 +541,8 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
         internal
         returns(bytes32 namehash)
     {
-        require(getState() == RegistrarState.Active, "Registry not active.");
-        namehash = keccak256(abi.encodePacked(ensNode, _label));
-        require(accounts[_label].creationTime == 0, "Username already registered.");
+        require(getState() == RegistrarState.Active, "Registry not active.");      
+        require(!accounts.exists(_label), "Username already registered.");
         if(price > 0) {
             require(token.allowance(_owner, address(this)) >= price, "Unallowed to spend.");
             require(
@@ -554,13 +555,12 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
             );
             reserveAmount += price;
         }
-        _mint(_owner, uint256(_label));
-        accounts[_label] = Account(price, block.timestamp);
+        accounts.createUser(_owner, _label, price);
         bool resolvePubkey = _pubkeyA != 0 || _pubkeyB != 0;
         bool resolveAccount = _account != address(0);
         if (resolvePubkey || resolveAccount) {
             //set to self the ownership to setup initial resolver
-            ensRegistry.setSubnodeOwner(ensNode, _label, address(this));
+            namehash = ensRegistry.setSubnodeOwner(ensNode, _label, address(this));
             ensRegistry.setResolver(namehash, address(resolver)); //default resolver
             if (resolveAccount) {
                 resolver.setAddr(namehash, _account);
@@ -571,7 +571,7 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
             ensRegistry.setOwner(namehash, _owner);
         } else {
             //transfer ownership of subdone directly to registrant
-            ensRegistry.setSubnodeOwner(ensNode, _label, _owner);
+            namehash = ensRegistry.setSubnodeOwner(ensNode, _label, _owner);
         }
         emit UsernameOwner(namehash, _owner);
     }
@@ -589,9 +589,8 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
         require(msg.sender == slashMechanism, "Unauthorized");
         bytes32 label = keccak256(bytes(_username));
         bytes32 namehash = keccak256(abi.encodePacked(ensNode, label));
-        uint256 amountToTransfer = 0;
-        uint256 creationTime = accounts[label].creationTime;
-        address owner = ownerOf(uint256(label));
+        (uint256 amountToTransfer, uint256 creationTime) = accounts.accounts(label);
+        address owner = accounts.ownerOf(uint256(label));
         address beneficiary = _reserver;
         if(creationTime == 0) {
             require(
@@ -601,12 +600,10 @@ contract UsernameRegistrar is Controlled, ERC721, ApproveAndCallFallBack {
             );
         } else {
             assert(creationTime != block.timestamp);
-            amountToTransfer = accounts[label].balance;
             if(lastUpdate > creationTime) {
                 beneficiary = owner;
             }
-            _burn(uint256(label));
-            delete accounts[label];
+            accounts.deleteUser(label);
         }
 
         ensRegistry.setSubnodeOwner(ensNode, label, address(this));
