@@ -67,7 +67,7 @@ config(
             eth.namehash
           ],
           "onDeploy": [
-            "await ENSRegistry.methods.setSubnodeOwner('0x0000000000000000000000000000000000000000000000000000000000000000','"+eth.label+"', BaseRegistrarImplementation.address).send()",
+            "await ENSRegistry.methods.setSubnodeOwner('"+constants.ZERO_BYTES32+"','"+eth.label+"', BaseRegistrarImplementation.address).send()",
             "await BaseRegistrarImplementation.methods.addController(web3.eth.defaultAccount).send()",
             "await BaseRegistrarImplementation.methods.setResolver(PublicResolver.address).send()",
           ]
@@ -77,23 +77,31 @@ config(
             "3", 
             merkleRoot
           ],
-        }
-        ,"UsernameRegistrar": {
+        },
+        "UsernameToken": {
           "args": [
+            "$accounts[0]"
+          ],
+        },
+        "UsernameRegistrar": {
+          "args": [
+            "$UsernameToken",
             "$TestToken",
             "$ENSRegistry",
             "$PublicResolver",
             registry.namehash,
             "$SlashMechanism",
-            "0x0000000000000000000000000000000000000000"
+            constants.ZERO_ADDRESS
           ],
           "onDeploy": [
             "await BaseRegistrarImplementation.methods.register('"+registry.label+"', web3.eth.defaultAccount,"+ethregistrarDuration+").send()",
-            "await ENSRegistry.methods.setOwner('"+registry.namehash+"',UsernameRegistrar.address).send()"
+            "await ENSRegistry.methods.setOwner('"+registry.namehash+"',UsernameRegistrar.address).send()",
+            "await UsernameToken.methods.changeController(UsernameRegistrar.address).send()"
           ]
         },
         "UpdatedUsernameRegistrar": {
           "args": [
+            "$UsernameToken",
             "$TestToken",
             "$ENSRegistry",
             "$PublicResolver",
@@ -102,22 +110,30 @@ config(
             "$UsernameRegistrar"
           ]
         },
+        "DummyUsernameToken": {
+          "args": [
+            "$accounts[0]"
+          ],
+        },
         "DummyUsernameRegistrar": {
           "args": [
+            "$DummyUsernameToken",
             "$TestToken",
             "$ENSRegistry",
             "$PublicResolver",
             dummyRegistry.namehash,
             "$SlashMechanism",
-            "0x0000000000000000000000000000000000000000"
+            constants.ZERO_ADDRESS
           ],
           "onDeploy": [
             "await BaseRegistrarImplementation.methods.register('"+dummyRegistry.label+"', web3.eth.defaultAccount,"+ethregistrarDuration+").send()",
-            "await ENSRegistry.methods.setOwner('"+dummyRegistry.namehash+"', DummyUsernameRegistrar.address).send()"
+            "await ENSRegistry.methods.setOwner('"+dummyRegistry.namehash+"', DummyUsernameRegistrar.address).send()",
+            "await DummyUsernameToken.methods.changeController(DummyUsernameRegistrar.address).send()"
           ]
         },
         "UpdatedDummyUsernameRegistrar": {
           "args": [
+            "$DummyUsernameToken",
             "$TestToken",
             "$ENSRegistry",
             "$PublicResolver",
@@ -132,23 +148,31 @@ config(
             constants.ZERO_BYTES32
           ],
         },
+        "Dummy2UsernameToken": {
+          "args": [
+            "$accounts[0]"
+          ],
+        },
         "Dummy2UsernameRegistrar": {
           "args": [
+            "$Dummy2UsernameToken",
             "$TestToken",
             "$ENSRegistry",
             "$PublicResolver",
             dummy2Registry.namehash,
             "$Dummy2SlashMechanism",
-            "0x0000000000000000000000000000000000000000"
+            constants.ZERO_ADDRESS
           ],
           "onDeploy": [
             "await BaseRegistrarImplementation.methods.register('"+dummy2Registry.label+"', web3.eth.defaultAccount,"+ethregistrarDuration+").send()",
             "await ENSRegistry.methods.setOwner('"+dummy2Registry.namehash+"',Dummy2UsernameRegistrar.address).send()",
+            "await Dummy2UsernameToken.methods.changeController(Dummy2UsernameRegistrar.address).send()",
             "await Dummy2UsernameRegistrar.methods.activate("+dummy2Registry.price+").send()"
           ]
         },
         "UpdatedDummy2UsernameRegistrar": {
           "args": [
+            "$Dummy2UsernameToken",
             "$TestToken",
             "$ENSRegistry",
             "$PublicResolver",
@@ -165,6 +189,9 @@ config(
 );
 
 const TestToken = artifacts.require('TestToken');
+const UsernameToken = artifacts.require('UsernameToken');
+const DummyUsernameToken = artifacts.require('DummyUsernameToken');
+const Dummy2UsernameToken = artifacts.require('Dummy2UsernameToken');
 const ENSRegistry = artifacts.require('ENSRegistry');
 const PublicResolver = artifacts.require('PublicResolver');
 const UsernameRegistrar = artifacts.require('UsernameRegistrar');
@@ -237,7 +264,7 @@ contract('UsernameRegistrar', function () {
         label: label,
         owner: registrant
       })
-      expectEvent(resultRegister, 'Transfer', {
+      expectEvent.inTransaction(resultRegister.transactionHash, UsernameToken, 'Transfer', {
         from: constants.ZERO_ADDRESS,
         to: registrant,
         tokenId: new BN(label.substr(2),16).toString()
@@ -293,7 +320,7 @@ contract('UsernameRegistrar', function () {
         node: usernameHash,
         owner: registrant
       })
-      expectEvent(resultRegister, 'Transfer', {
+      expectEvent.inTransaction(resultRegister.transactionHash, UsernameToken, 'Transfer', {
         from: constants.ZERO_ADDRESS,
         to: registrant,
         tokenId: new BN(label.substr(2),16).toString()
@@ -354,7 +381,7 @@ contract('UsernameRegistrar', function () {
         node: usernameHash,
         owner: registrant
       })
-      expectEvent(resultRegister, 'Transfer', {
+      expectEvent.inTransaction(resultRegister.transactionHash, UsernameToken, 'Transfer', {
         from: constants.ZERO_ADDRESS,
         to: registrant,
         tokenId: new BN(label.substr(2),16).toString()
@@ -419,7 +446,7 @@ contract('UsernameRegistrar', function () {
         node: usernameHash,
         owner: registrant
       })
-      expectEvent(resultRegister, 'Transfer', {
+      expectEvent.inTransaction(resultRegister.transactionHash, UsernameToken, 'Transfer', {
         from: constants.ZERO_ADDRESS,
         to: registrant,
         tokenId: new BN(label.substr(2),16).toString()
@@ -602,7 +629,7 @@ contract('UsernameRegistrar', function () {
         constants.ZERO_BYTES32,
         constants.ZERO_BYTES32
       ).send({from: registrant});
-      await UsernameRegistrar.methods.transferFrom(registrant, newOwner, label).send({from: registrant});
+      await UsernameToken.methods.transferFrom(registrant, newOwner, label).send({from: registrant});
       let expirationTime = await UsernameRegistrar.methods.getExpirationTime(label).call();
       await time.increaseTo(expirationTime+1)
       let initialAccountBalance = await UsernameRegistrar.methods.getAccountBalance(label).call();
@@ -617,6 +644,7 @@ contract('UsernameRegistrar', function () {
       assert.equal(+await TestToken.methods.balanceOf(UsernameRegistrar.address).call(), (+initialRegistryBalance)-(+initialAccountBalance), "Registry token balance didnt decrease")
     });
     it('should release moved username account balance by owner', async () => {
+      let tst = 0;
       const registrant = accountsArr[5];
       await TestToken.methods.mint(dummyRegistry.price).send({from: registrant});
       await DummyUsernameRegistrar.methods.activate(dummyRegistry.price).send({from: accountsArr[0]});
@@ -639,8 +667,7 @@ contract('UsernameRegistrar', function () {
 
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
       assert.equal(await ENSRegistry.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
-      assert.equal(await PublicResolver.methods.addr(usernameHash).call(), registrant, "Resolved address not set");      
-      
+      assert.equal(await PublicResolver.methods.addr(usernameHash).call(), registrant, "Resolved address not set");
       const resultRelease = await DummyUsernameRegistrar.methods.release(
         label
       ).send({from: registrant});
@@ -670,7 +697,7 @@ contract('UsernameRegistrar', function () {
         constants.ZERO_BYTES32,
         constants.ZERO_BYTES32
       ).send({from: registrant});
-      await UsernameRegistrar.methods.transferFrom(registrant, newOwner, label).send({from: registrant});
+      await UsernameToken.methods.transferFrom(registrant, newOwner, label).send({from: registrant});
       let resultUpdateOwner = await UsernameRegistrar.methods.reclaim(
         label,
         newOwner
@@ -1128,10 +1155,7 @@ describe('moveRegistry(address)', function() {
       const initialUpdatedRegistryBalance = +await TestToken.methods.balanceOf(UpdatedUsernameRegistrar.address).call();
       const creationTime = +await UsernameRegistrar.methods.getCreationTime(label).call();
       assert.notEqual(creationTime, 0);
-      assert.equal(+await UpdatedUsernameRegistrar.methods.getCreationTime(label).call(), 0);
       const result = await UsernameRegistrar.methods.moveAccount(label, UpdatedUsernameRegistrar.address).send({from: registrant});
-      assert.equal(+await UsernameRegistrar.methods.getCreationTime(label).call(), 0);
-      assert.equal(+await UpdatedUsernameRegistrar.methods.getCreationTime(label).call(), creationTime);
       assert.equal(+await TestToken.methods.balanceOf(UsernameRegistrar.address).call(), (+initialRegistryBalance)-(+accountBalance))
       assert.equal(+await TestToken.methods.balanceOf(UpdatedUsernameRegistrar.address).call(), (+initialUpdatedRegistryBalance)+(+accountBalance))
     });

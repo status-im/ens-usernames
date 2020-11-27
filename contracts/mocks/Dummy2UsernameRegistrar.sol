@@ -7,6 +7,7 @@ import "../registry/UsernameRegistrar.sol";
 contract Dummy2UsernameRegistrar is UsernameRegistrar {
 
     constructor(
+        UsernameToken _accounts,
         ERC20Token _token,
         ENS _ensRegistry,
         PublicResolver _resolver,
@@ -16,6 +17,7 @@ contract Dummy2UsernameRegistrar is UsernameRegistrar {
     )
         public
         UsernameRegistrar(
+            _accounts,
             _token,
             _ensRegistry,
             _resolver,
@@ -24,7 +26,7 @@ contract Dummy2UsernameRegistrar is UsernameRegistrar {
             _parentRegistry
         )
     {
-        
+
     }
 
 }

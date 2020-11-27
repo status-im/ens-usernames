@@ -7,6 +7,7 @@ import "./Dummy2UsernameRegistrar.sol";
 contract UpdatedDummy2UsernameRegistrar is Dummy2UsernameRegistrar {
 
     constructor(
+        UsernameToken _accounts,
         ERC20Token _token,
         ENS _ensRegistry,
         PublicResolver _resolver,
@@ -16,6 +17,7 @@ contract UpdatedDummy2UsernameRegistrar is Dummy2UsernameRegistrar {
     )
         public
         Dummy2UsernameRegistrar(
+            _accounts,
             _token,
             _ensRegistry,
             _resolver,
@@ -24,7 +26,7 @@ contract UpdatedDummy2UsernameRegistrar is Dummy2UsernameRegistrar {
             _parentRegistry
         )
     {
-        
+
     }
 
 }
