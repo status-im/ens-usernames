@@ -726,10 +726,7 @@ contract('UsernameRegistrar', function () {
       time.duration.s
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       assert.notEqual(+await UsernameRegistrar.methods.getCreationTime(label).call(), 0);
-      const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(username, reserveSecret);
-      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
-      await SlashMechanism.methods.slashInvalidUsername(username, 4, reserveSecret).send()
+      await SlashMechanism.methods.slashInvalidUsername(username, 4, UsernameRegistrar.address).send()
       //TODO: check events
       assert.equal(+await UsernameRegistrar.methods.getCreationTime(label).call(), 0);
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), constants.ZERO_ADDRESS);
@@ -747,11 +744,8 @@ contract('UsernameRegistrar', function () {
         constants.ZERO_BYTES32
       ).send({from: registrant}); 
       await time.increase(time.duration.seconds(20))   
-      const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(username, reserveSecret);
-      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       await expectRevert(
-        SlashMechanism.methods.slashInvalidUsername(username, 4, reserveSecret).send(),
+        SlashMechanism.methods.slashInvalidUsername(username, 4, UsernameRegistrar.address).send(),
         "Not invalid character."
       );
     });
@@ -772,11 +766,8 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});
       await time.increase(time.duration.seconds(20))
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
-      const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(username, reserveSecret);
-      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       await expectRevert(
-        SlashMechanism.methods.slashReservedUsername(username, merkleTree.getHexProof(ReservedUsernames[0]), reserveSecret).send(),
+        SlashMechanism.methods.slashReservedUsername(username, merkleTree.getHexProof(ReservedUsernames[0]), UsernameRegistrar.address).send(),
         "Invalid Proof."
       );
     });
@@ -794,11 +785,8 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});
       await time.increase(time.duration.seconds(20))
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
-      const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(username, reserveSecret);
-      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       await expectRevert(
-        SlashMechanism.methods.slashReservedUsername(username, merkleTree.getHexProof(ReservedUsernames[1]), reserveSecret).send(),
+        SlashMechanism.methods.slashReservedUsername(username, merkleTree.getHexProof(ReservedUsernames[1]), UsernameRegistrar.address).send(),
         "Invalid Proof."
       );
     });
@@ -816,10 +804,7 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});
       await time.increase(time.duration.seconds(20))
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
-      const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(username, reserveSecret);
-      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
-      await SlashMechanism.methods.slashReservedUsername(username, merkleTree.getHexProof(username), reserveSecret).send()  
+      await SlashMechanism.methods.slashReservedUsername(username, merkleTree.getHexProof(username), UsernameRegistrar.address).send()  
       //TODO: check events
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), constants.ZERO_ADDRESS);
     });
@@ -840,11 +825,8 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});
       //await time.increase(1000)
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
-      const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(username, reserveSecret);
-      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       await expectRevert(
-        SlashMechanism.methods.slashSmallUsername(username, reserveSecret).send(),
+        SlashMechanism.methods.slashSmallUsername(username, UsernameRegistrar.address).send(),
         "Not a small username."
       );
     })
@@ -862,10 +844,7 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});  
       await time.increase(time.duration.seconds(20))
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
-      const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(username, reserveSecret);
-      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
-      result = await SlashMechanism.methods.slashSmallUsername(username, reserveSecret).send()    
+      result = await SlashMechanism.methods.slashSmallUsername(username, UsernameRegistrar.address).send()    
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), constants.ZERO_ADDRESS);
     });
   });
@@ -886,10 +865,7 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});
       await time.increase(time.duration.seconds(20))
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
-      const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3({value: username, type: "string"}, reserveSecret);
-      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
-      result = await SlashMechanism.methods.slashAddressLikeUsername(username, reserveSecret).send()    
+      result = await SlashMechanism.methods.slashAddressLikeUsername(username, UsernameRegistrar.address).send()    
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), constants.ZERO_ADDRESS);
     });
     it('should not slash username that starts with 0x but is smaller then 12', async () => {
@@ -907,11 +883,8 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});
       await time.increase(time.duration.seconds(20))
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
-      const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3({value: username, type: "string"}, reserveSecret);
-      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       await expectRevert(
-        SlashMechanism.methods.slashAddressLikeUsername(username, reserveSecret).send(),
+        SlashMechanism.methods.slashAddressLikeUsername(username, UsernameRegistrar.address).send(),
         "Too small to look like an address."
       );
     });
@@ -930,11 +903,8 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});
       await time.increase(time.duration.seconds(20))
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
-      const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3({value: username, type: "string"}, reserveSecret);
-      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       await expectRevert(
-        SlashMechanism.methods.slashAddressLikeUsername(username, reserveSecret).send(),
+        SlashMechanism.methods.slashAddressLikeUsername(username, UsernameRegistrar.address).send(),
         "Second character need to be x"
       );     
     });
@@ -953,11 +923,8 @@ contract('UsernameRegistrar', function () {
       ).send({from: registrant});
       await time.increase(time.duration.seconds(20))
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
-      const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3({value: username, type: "string"}, reserveSecret);
-      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send();
       await expectRevert(
-        SlashMechanism.methods.slashAddressLikeUsername(username, reserveSecret).send(),
+        SlashMechanism.methods.slashAddressLikeUsername(username, UsernameRegistrar.address).send(),
         "Does not look like an address"
       );
     });
@@ -981,10 +948,7 @@ contract('UsernameRegistrar', function () {
       const partReward = await UsernameRegistrar.methods.getSlashRewardPart(label).call();
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const initialSlasherBalance = +await TestToken.methods.balanceOf(slasher).call();
-      const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(username, reserveSecret);
-      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send({from: slasher});
-      await SlashMechanism.methods.slashSmallUsername(username, reserveSecret).send({from: slasher})
+      await SlashMechanism.methods.slashSmallUsername(username, UsernameRegistrar.address).send({from: slasher})
       //TODO: check events
       assert.equal(+await TestToken.methods.balanceOf(slasher).call(), (+initialSlasherBalance)+((+partReward)*2));    
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), constants.ZERO_ADDRESS);
@@ -1017,13 +981,10 @@ contract('UsernameRegistrar', function () {
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant, "ENSRegistry owner mismatch");
       assert.equal(await ENSRegistry.methods.resolver(usernameHash).call(), PublicResolver.address, "Resolver wrongly defined");
       assert.equal(await PublicResolver.methods.addr(usernameHash).call(), registrant, "Resolved address not set");      
-      const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(username, reserveSecret);
-      await SlashMechanism.methods.reserveSlash(Dummy2UsernameRegistrar.address, secret).send({from: notRegistrant});
       await SlashMechanism.methods.slashReservedUsername(
         username, 
         merkleTree.getHexProof(username),
-        reserveSecret
+        Dummy2UsernameRegistrar.address
       ).send({from: notRegistrant });
       //TODO: verify events
       
@@ -1053,10 +1014,7 @@ contract('UsernameRegistrar', function () {
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), registrant);
       const partReward = await UsernameRegistrar.methods.getSlashRewardPart(label).call();
       const initialSlashReserverBalance = +await TestToken.methods.balanceOf(slashReserverCaller).call();
-      const reserveSecret = 1337;
-      const secret = web3Utils.soliditySha3(username, reserveSecret);
-      await SlashMechanism.methods.reserveSlash(UsernameRegistrar.address, secret).send({from: slashReserverCaller});
-      await SlashMechanism.methods.slashSmallUsername(username, reserveSecret).send({from: slashReserverCaller})
+      await SlashMechanism.methods.slashSmallUsername(username, UsernameRegistrar.address).send({from: slashReserverCaller})
       //TODO: check events
       assert.equal(+await TestToken.methods.balanceOf(slashReserverCaller).call(), (+initialSlashReserverBalance)+(+partReward*2));    
       assert.equal(await ENSRegistry.methods.owner(usernameHash).call(), constants.ZERO_ADDRESS);

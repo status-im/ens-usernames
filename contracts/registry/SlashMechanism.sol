@@ -6,19 +6,13 @@ import "./UsernameRegistrar.sol";
 import "../common/MerkleProof.sol";
 
 /** 
- * @author Ricardo Guilherme Schmidt (Status Research & Development GmbH) 
- * @notice Defines static rules for slashing usernames
+ * @author Ricardo Guilherme Schmidt (Status Research & Development GmbH)
+ * @notice Defines static rules for slashing usernames.
  */
 contract SlashMechanism {
 
-    struct SlashReserve {
-        address reserver;
-        uint256 blockNumber;
-        UsernameRegistrar registrar;
-    }
-
-    mapping (bytes32 => SlashReserve) public reservedSlashers;
     //Slashing conditions
+    
     uint256 public usernameMinLength;
     bytes32 public reservedUsernamesMerkleRoot;
 
@@ -31,41 +25,31 @@ contract SlashMechanism {
     }
 
     /**
-     * @notice secretly reserve the slashing reward to `msg.sender`
-     * @param _registrar address of the registrar with the offending name
-     * @param _secret keccak256(abi.encodePacked(label, reserveSecret)), label being the username label and reserveSecret a random number.
-     */
-    function reserveSlash(UsernameRegistrar _registrar, bytes32 _secret) external {
-        require(reservedSlashers[_secret].blockNumber == 0, "Already Reserved");
-        reservedSlashers[_secret] = SlashReserve(msg.sender, block.number, _registrar);
-    }
-
-    /**
      * @notice Slash username smaller then `usernameMinLength`.
      * @param _username Raw value of offending username.
-     * @param _reserveSecret number used in reserve secret generation.
+     * @param _registrar address of the registrar with the offending name.
      */
     function slashSmallUsername(
         string calldata _username,
-        uint256 _reserveSecret
-    ) 
-        external 
+        UsernameRegistrar _registrar
+    )
+        external
     {
         bytes memory username = bytes(_username);
         require(username.length < usernameMinLength, "Not a small username.");
-        slashUsername(_username, _reserveSecret);
+        _registrar.slashUsername(_username, msg.sender);
     }
 
     /**
      * @notice Slash username starting with "0x" and with length greater than 12.
      * @param _username Raw value of offending username.
-     * @param _reserveSecret number used in reserve secret generation.
+     * @param _registrar address of the registrar with the offending name.
      */
     function slashAddressLikeUsername(
         string calldata _username,
-        uint256 _reserveSecret
-    ) 
-        external 
+        UsernameRegistrar _registrar
+    )
+        external
     {
         bytes memory username = bytes(_username);
         require(username.length > 12, "Too small to look like an address.");
@@ -75,22 +59,22 @@ contract SlashMechanism {
             uint8 b = uint8(username[i]);
             require((b >= 48 && b <= 57) || (b >= 97 && b <= 102), "Does not look like an address");
         }
-        slashUsername(_username, _reserveSecret);
-    }  
+        _registrar.slashUsername(_username, msg.sender);
+    }
 
     /**
      * @notice Slash username that is exactly a reserved name.
      * @param _username Raw value of offending username.
      * @param _proof Merkle proof that name is listed on merkle tree.
-     * @param _reserveSecret number used in reserve secret generation.
+     * @param _registrar address of the registrar with the offending name.
      */
     function slashReservedUsername(
         string calldata _username,
         bytes32[] calldata _proof,
-        uint256 _reserveSecret
-    ) 
-        external 
-    {   
+        UsernameRegistrar _registrar
+    )
+        external
+    {
         bytes memory username = bytes(_username);
         require(
             MerkleProof.verifyProof(
@@ -100,42 +84,27 @@ contract SlashMechanism {
             ),
             "Invalid Proof."
         );
-        slashUsername(_username, _reserveSecret);
+        _registrar.slashUsername(_username, msg.sender);
     }
 
     /**
      * @notice Slash username that contains a non alphanumeric character.
      * @param _username Raw value of offending username.
      * @param _offendingPos Position of non alphanumeric character.
-     * @param _reserveSecret number used in reserve secret generation.
+     * @param _registrar address of the registrar with the offending name.
      */
     function slashInvalidUsername(
         string calldata _username,
         uint256 _offendingPos,
-        uint256 _reserveSecret
-    ) 
+        UsernameRegistrar _registrar
+    )
         external
-    { 
+    {
         bytes memory username = bytes(_username);
         require(username.length > _offendingPos, "Invalid position.");
         uint8 b = uint8(username[_offendingPos]);
-        
         require(!((b >= 48 && b <= 57) || (b >= 97 && b <= 122)), "Not invalid character.");
-    
-        slashUsername(_username, _reserveSecret);
+        _registrar.slashUsername(_username, msg.sender);
     }
 
-    /**
-     * @dev Checks for reservation and requests username slashing in the selected registrar.
-     * @param _username Raw value of offending username.
-     * @param _reserveSecret number used in reserve secret generation.
-     */
-    function slashUsername(string memory _username, uint256 _reserveSecret) internal{
-        bytes32 secret = keccak256(abi.encodePacked(_username, _reserveSecret));
-        SlashReserve memory reserve = reservedSlashers[secret];
-        require(reserve.reserver != address(0), "Not reserved.");
-        require(reserve.blockNumber < block.number, "Cannot reveal in same block");
-        delete reservedSlashers[secret];
-        reserve.registrar.slashUsername(_username, reserve.reserver);
-    }
-} 
+}
