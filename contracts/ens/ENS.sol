@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
-pragma solidity ^0.6.0;
-
+pragma solidity >=0.8.4;
 
 interface ENS {
 
@@ -20,16 +19,16 @@ interface ENS {
     // Logged when an operator is added or removed.
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 
-    function setRecord(bytes32 _node, address _owner, address _resolver, uint64 _ttl) external;
-    function setSubnodeRecord(bytes32 _node, bytes32 _label, address _owner, address _resolver, uint64 _ttl) external;
-    function setSubnodeOwner(bytes32 _node, bytes32 _label, address _owner) external returns(bytes32);
-    function setResolver(bytes32 _node, address _resolver) external;
-    function setOwner(bytes32 _node, address _owner) external;
-    function setTTL(bytes32 _node, uint64 _ttl) external;
-    function setApprovalForAll(address _operator, bool _approved) external;
-    function owner(bytes32 _node) external view returns (address);
-    function resolver(bytes32 _node) external view returns (address);
-    function ttl(bytes32 _node) external view returns (uint64);
-    function recordExists(bytes32 _node) external view returns (bool);
-    function isApprovedForAll(address _owner, address _operator) external view returns (bool);
+    function setRecord(bytes32 node, address owner, address resolver, uint64 ttl) external;
+    function setSubnodeRecord(bytes32 node, bytes32 label, address owner, address resolver, uint64 ttl) external;
+    function setSubnodeOwner(bytes32 node, bytes32 label, address owner) external returns(bytes32);
+    function setResolver(bytes32 node, address resolver) external;
+    function setOwner(bytes32 node, address owner) external;
+    function setTTL(bytes32 node, uint64 ttl) external;
+    function setApprovalForAll(address operator, bool approved) external;
+    function owner(bytes32 node) external view returns (address);
+    function resolver(bytes32 node) external view returns (address);
+    function ttl(bytes32 node) external view returns (uint64);
+    function recordExists(bytes32 node) external view returns (bool);
+    function isApprovedForAll(address owner, address operator) external view returns (bool);
 }

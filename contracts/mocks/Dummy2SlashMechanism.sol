@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.6.2;
+pragma solidity >=0.8.9;
 
 import "../registry/SlashMechanism.sol";
 
@@ -11,7 +11,6 @@ contract Dummy2SlashMechanism is SlashMechanism {
         uint256 _usernameMinLength,
         bytes32 _reservedUsernamesMerkleRoot
     )
-        public 
         SlashMechanism(
             _usernameMinLength,
             _reservedUsernamesMerkleRoot

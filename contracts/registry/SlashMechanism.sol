@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.6.2;
+pragma solidity >=0.8.9;
 
 import "./UsernameRegistrar.sol";
 import "../common/MerkleProof.sol";
@@ -19,7 +19,7 @@ contract SlashMechanism {
     constructor(
         uint256 _usernameMinLength,
         bytes32 _reservedUsernamesMerkleRoot
-    ) public {
+    ) {
         usernameMinLength = _usernameMinLength;
         reservedUsernamesMerkleRoot = _reservedUsernamesMerkleRoot;
     }
@@ -53,8 +53,8 @@ contract SlashMechanism {
     {
         bytes memory username = bytes(_username);
         require(username.length > 12, "Too small to look like an address.");
-        require(username[0] == byte("0"), "First character need to be 0");
-        require(username[1] == byte("x"), "Second character need to be x");
+        require(username[0] == bytes1("0"), "First character need to be 0");
+        require(username[1] == bytes1("x"), "Second character need to be x");
         for(uint i = 2; i < 7; i++){
             uint8 b = uint8(username[i]);
             require((b >= 48 && b <= 57) || (b >= 97 && b <= 102), "Does not look like an address");

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.0;
 
 import "./ENS.sol";
 
@@ -55,7 +55,7 @@ contract PublicResolver {
      * Constructor.
      * @param ensAddr The ENS registrar contract.
      */
-    constructor(ENS ensAddr) public {
+    constructor(ENS ensAddr) {
         ens = ensAddr;
     }
 
@@ -63,11 +63,11 @@ contract PublicResolver {
      * Sets the address associated with an ENS node.
      * May only be called by the owner of that node in the ENS registry.
      * @param node The node to update.
-     * @param addr The address to set.
+     * @param _addr The address to set.
      */
-    function setAddr(bytes32 node, address addr) external onlyOwner(node) {
-        records[node].addr = addr;
-        emit AddrChanged(node, addr);
+    function setAddr(bytes32 node, address _addr) external onlyOwner(node) {
+        records[node].addr = _addr;
+        emit AddrChanged(node, _addr);
     }
 
     /**
@@ -85,11 +85,11 @@ contract PublicResolver {
      * Sets the name associated with an ENS node, for reverse records.
      * May only be called by the owner of that node in the ENS registry.
      * @param node The node to update.
-     * @param name The name to set.
+     * @param _name The name to set.
      */
-    function setName(bytes32 node, string calldata name) external onlyOwner(node) {
-        records[node].name = name;
-        emit NameChanged(node, name);
+    function setName(bytes32 node, string calldata _name) external onlyOwner(node) {
+        records[node].name = _name;
+        emit NameChanged(node, _name);
     }
 
     /**

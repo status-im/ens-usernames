@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.6.2;
+pragma solidity >=0.8.9;
 
 import "./StandardToken.sol";
 import "./ApproveAndCallFallBack.sol";
@@ -9,8 +9,6 @@ import "./ApproveAndCallFallBack.sol";
  * @notice ERC20Token for test scripts, can be minted by anyone.
  */
 contract TestToken is StandardToken {
-
-    constructor() public { }
 
     /**
      * @notice any caller can mint any `_amount`

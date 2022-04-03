@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.6.2;
+pragma solidity >=0.8.9;
 
 /// @dev `Owned` is a base level contract that assigns an `owner` that can be
 ///  later changed
-contract Owned {
+abstract contract Owned {
 
     /// @dev `owner` is the only address that can call a function with this
     /// modifier
@@ -13,14 +13,14 @@ contract Owned {
         _;
     }
 
-    address payable public owner;
+    address public owner;
 
     /// @notice The Constructor assigns the message sender to be `owner`
-    constructor() internal {
+    constructor() {
         owner = msg.sender;
     }
 
-    address payable public newOwner;
+    address public newOwner;
 
     /// @notice `owner` can step down and assign some other address to this role
     /// @param _newOwner The address of the new owner. 0x0 can be used to create

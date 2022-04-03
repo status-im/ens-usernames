@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.6.2;
+pragma solidity >=0.8.9;
 
 import "./Dummy2UsernameRegistrar.sol";
 
@@ -15,7 +15,6 @@ contract UpdatedDummy2UsernameRegistrar is Dummy2UsernameRegistrar {
         address _slashMechanism,
         address _parentRegistry
     )
-        public
         Dummy2UsernameRegistrar(
             _accounts,
             _token,

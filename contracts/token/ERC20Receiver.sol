@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.6.2;
+pragma solidity >=0.8.9;
 
 import "./ERC20Token.sol";
 
@@ -10,10 +10,6 @@ contract ERC20Receiver {
     event TokenWithdrawn(address indexed token, address indexed sender, uint256 amount);
 
     mapping (address => mapping(address => uint256)) tokenBalances;
-
-    constructor() public {
-        
-    }
 
     function depositToken(
         ERC20Token _token

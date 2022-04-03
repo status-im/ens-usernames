@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.6.2;
+pragma solidity >=0.8.9;
 
 import "../common/Controlled.sol";
 import "../openzeppelin-solidity/token/ERC721/ERC721.sol";
@@ -21,7 +21,6 @@ contract UsernameToken is Controlled, ERC721 {
     constructor(
         address payable _controller
     )
-        public
         ERC721("USER","Status Username")
         Controlled(_controller)
     {

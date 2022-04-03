@@ -1,7 +1,9 @@
-pragma solidity ^0.6.0;
+// SPDX-License-Identifier: BSD-2-Clause
+
+pragma solidity ^0.8.4;
 
 import "./ENS.sol";
-import "../token/ERC721.sol";
+import "../openzeppelin-solidity/token/ERC721/IERC721.sol";
 import "../openzeppelin-solidity/access/Ownable.sol";
 
 abstract contract BaseRegistrar is Ownable, IERC721 {
@@ -23,29 +25,29 @@ abstract contract BaseRegistrar is Ownable, IERC721 {
     mapping(address=>bool) public controllers;
 
     // Authorises a controller, who can register and renew domains.
-    function addController(address controller) external virtual;
+    function addController(address controller) virtual external;
 
     // Revoke controller permission for an address.
-    function removeController(address controller) external virtual;
+    function removeController(address controller) virtual external;
 
     // Set the resolver for the TLD this registrar manages.
-    function setResolver(address resolver) external virtual;
+    function setResolver(address resolver) virtual external;
 
     // Returns the expiration timestamp of the specified label hash.
-    function nameExpires(uint256 id) external virtual view returns(uint);
+    function nameExpires(uint256 id) virtual external view returns(uint);
 
     // Returns true iff the specified name is available for registration.
-    function available(uint256 id) public virtual view returns(bool);
+    function available(uint256 id) virtual public view returns(bool);
 
     /**
      * @dev Register a name.
      */
-    function register(uint256 id, address owner, uint duration) external virtual returns(uint);
+    function register(uint256 id, address owner, uint duration) virtual external returns(uint);
 
-    function renew(uint256 id, uint duration) external virtual returns(uint);
+    function renew(uint256 id, uint duration) virtual external returns(uint);
 
     /**
      * @dev Reclaim ownership of a name in ENS, if you own it in the registrar.
      */
-    function reclaim(uint256 id, address owner) external virtual;
+    function reclaim(uint256 id, address owner) virtual external;
 }

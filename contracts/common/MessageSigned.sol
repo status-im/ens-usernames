@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.6.2;
+pragma solidity >=0.8.9;
 
 /**
  * @notice Uses ethereum signed messages
  */
-contract MessageSigned {
-
-    constructor() internal {}
+abstract contract MessageSigned {
 
     /**
      * @notice recovers address who signed the message
