@@ -67,7 +67,6 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         address _slashMechanism,
         address _parentRegistry
     )
-        public
         Controlled(msg.sender)
     {
         require(address(_token) != address(0), "No ERC20Token address defined.");
