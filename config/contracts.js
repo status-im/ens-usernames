@@ -5,7 +5,7 @@ const merkleTree = new MerkleTree(ReservedUsernames);
 
 module.exports = {
   default: {
-    library: 'embarkjs', 
+    library: 'embarkjs',
     dappConnection: [
       "$EMBARK",
       "$WEB3",  // uses pre existing web3 object if available (e.g in Mist)
@@ -19,8 +19,8 @@ module.exports = {
       MerkleProofWrapper: {
         deploy: false
       },
-      ERC20Receiver: { 
-        deploy: false 
+      ERC20Receiver: {
+        deploy: false
       },
       ENSRegistry: {},
       PublicResolver: {
@@ -34,7 +34,8 @@ module.exports = {
           "0x5f7791d31ca0493e9ca7c9ca16695ecd9d5044768674d14d31ab5d8277518fff",
           3,
           merkleTree.getHexRoot(),
-          "0x9e183BC54Bb4f3cCa1A478CA6f2c3EdC37B60478"
+          "0x9e183BC54Bb4f3cCa1A478CA6f2c3EdC37B60478",
+          31536000
         ]
       }
     }
@@ -63,7 +64,7 @@ module.exports = {
       }
     }
   },
-  livenet:{
+  livenet: {
     deploy: {
       ENSRegistry: {
         address: "0x314159265dd8dbb310642f98f50c066173c1259b"
@@ -88,7 +89,7 @@ module.exports = {
       }
     }
   },
-  testnet:{
+  testnet: {
     deploy: {
       ENSRegistry: {
         address: "0x112234455c3a32fd11230c42e7bccd4a84e02010"
@@ -113,7 +114,7 @@ module.exports = {
       }
     }
   },
-  rinkeby:{
+  rinkeby: {
     deploy: {
       ENSRegistry: {
         address: "0xe7410170f87102DF0055eB195163A03B7F2Bff4A"
