@@ -20,7 +20,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     PublicResolver public resolver;
     address public parentRegistry;
 
-    uint256 public constant releaseDelay = 365 days;
+    uint256 public releaseDelay;
     mapping (bytes32 => Account) public accounts;
     mapping (bytes32 => SlashReserve) reservedSlashers;
 
@@ -69,6 +69,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _usernameMinLength Minimum length of usernames
      * @param _reservedUsernamesMerkleRoot Merkle root of reserved usernames
      * @param _parentRegistry Address of old registry (if any) for optional account migration.
+     * @param _releaseDelay Time in seconds to wait before releasing username.
      */
     constructor(
         ERC20Token _token,
@@ -77,7 +78,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         bytes32 _ensNode,
         uint256 _usernameMinLength,
         bytes32 _reservedUsernamesMerkleRoot,
-        address _parentRegistry
+        address _parentRegistry,
+        uint256 _releaseDelay
     )
         public
     {
@@ -92,14 +94,15 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         usernameMinLength = _usernameMinLength;
         reservedUsernamesMerkleRoot = _reservedUsernamesMerkleRoot;
         parentRegistry = _parentRegistry;
+        releaseDelay = _releaseDelay;
         setState(RegistrarState.Inactive);
     }
 
     /**
      * @notice Registers `_label` username to `ensNode` setting msg.sender as owner.
      * Terms of name registration:
-     * - SNT is deposited, not spent; the amount is locked up for 1 year.
-     * - After 1 year, the user can release the name and receive their deposit back (at any time).
+     * - SNT is deposited, not spent; the amount is locked up for a configured release delay.
+     * - After the configured release delay, the user can release the name and receive their deposit back (at any time).
      * - User deposits are completely protected. The contract controller cannot access them.
      * - User's address(es) will be publicly associated with the ENS name.
      * - User must authorise the contract to transfer `price` `token.name()`  on their behalf.
