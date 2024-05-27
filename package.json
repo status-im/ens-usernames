@@ -1,84 +1,35 @@
 {
-  "name": "status-contracts",
+  "name": "status-im/ens-usernames",
   "version": "0.0.1",
   "description": "",
-  "scripts": {
-    "solidity-coverage": "./node_modules/.bin/solidity-coverage",
-    "test": "embark test",
-    "lint": "eslint"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/status-im/contracts.git"
-  },
-  "author": "Status Research & Development GMBH",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/status-im/contracts/issues"
-  },
-  "homepage": "https://github.com/status-im/contracts#readme",
-  "dependencies": {
-    "@material-ui/core": "^1.2.1",
-    "@material-ui/icons": "^1.1.0",
-    "bignumber.js": "^5.0.0",
-    "classnames": "^2.2.6",
-    "elliptic": "^6.4.1",
-    "eth-ens-namehash": "^2.0.8",
-    "formik": "^0.11.11",
-    "i18n-js": "^3.1.0",
-    "idna-normalize": "^1.0.0",
-    "install": "^0.11.0",
-    "npm": "^6.1.0",
-    "prop-types": "^15.6.1",
-    "react": "^16.4.2",
-    "react-blockies": "^1.3.0",
-    "react-bootstrap": "^0.32.1",
-    "react-copy-to-clipboard": "^5.0.1",
-    "react-dom": "^16.4.2",
-    "react-redux": "^5.0.7",
-    "react-router": "^4.3.1",
-    "react-router-dom": "^4.3.1",
-    "react-toggle": "^4.0.2",
-    "redux": "^4.0.0",
-    "redux-action-creator": "^2.3.0",
-    "redux-thunk": "^2.3.0",
-    "reselect": "^3.0.1",
-    "styled-components": "^3.3.2",
-    "typeface-roboto": "0.0.54",
-    "web3-utils": "^1.0.0-beta.34"
+  "author": {
+    "name": "Status Research & Development GMBH",
+    "url": "https://github.com/status-im/ens-usernames"
   },
   "devDependencies": {
-    "embark": "^6.0.0",
-    "embark-basic-pipeline": "^6.0.0",
-    "embark-geth": "^6.0.0",
-    "embark-graph": "^6.0.0",
-    "embark-ipfs": "^6.0.0",
-    "embark-parity": "^6.0.0",
-    "embark-profiler": "^6.0.0",
-    "embark-swarm": "^6.0.0",
-    "embark-whisper-geth": "^6.0.0",
-    "embarkjs": "^6.0.0",
-    "embarkjs-ens": "^6.0.0",
-    "embarkjs-ipfs": "^6.0.0",
-    "embarkjs-swarm": "^6.0.0",
-    "embarkjs-web3": "^6.0.0",
-    "embarkjs-whisper": "^6.0.0",
-    "@babel/plugin-proposal-class-properties": "^7.0.0",
-    "@babel/plugin-proposal-decorators": "^7.0.0",
-    "@babel/plugin-proposal-export-namespace-from": "^7.0.0",
-    "@babel/plugin-proposal-function-sent": "^7.0.0",
-    "@babel/plugin-proposal-json-strings": "^7.0.0",
-    "@babel/plugin-proposal-numeric-separator": "^7.0.0",
-    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
-    "@babel/plugin-proposal-throw-expressions": "^7.0.0",
-    "@babel/plugin-syntax-dynamic-import": "^7.0.0",
-    "@babel/plugin-syntax-import-meta": "^7.0.0",
-
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb": "^16.1.0",
-    "eslint-plugin-import": "^2.12.0",
-    "eslint-plugin-jsx-a11y": "^6.0.3",
-    "eslint-plugin-react": "^7.8.2",
-    "ethereumjs-util": "^5.2.0"
-  }
+    "prettier": "^3.0.0",
+    "solhint-community": "^3.6.0",
+    "commit-and-tag-version": "^12.2.0"
+  },
+  "keywords": [
+    "blockchain",
+    "ethereum",
+    "forge",
+    "foundry",
+    "smart-contracts",
+    "solidity",
+    "template"
+  ],
+  "scripts": {
+    "clean": "rm -rf cache out",
+    "lint": "pnpm lint:sol && pnpm prettier:check",
+    "verify": "certoraRun certora/certora.conf",
+    "lint:sol": "forge fmt --check && pnpm solhint {script,src,test,certora}/**/*.sol",
+    "prettier:check": "prettier --check **/*.{json,md,yml} --ignore-path=.prettierignore",
+    "prettier:write": "prettier --write **/*.{json,md,yml} --ignore-path=.prettierignore",
+    "gas-report": "forge test --gas-report 2>&1 | (tee /dev/tty | awk '/Test result:/ {found=1; buffer=\"\"; next} found && !/Ran/ {buffer=buffer $0 ORS} /Ran/ {found=0} END {printf \"%s\", buffer}' > .gas-report)",
+    "release": "commit-and-tag-version",
+    "adorno": "pnpm prettier:write && forge fmt && forge snapshot && pnpm gas-report"
+  },
+  "license": "ISC"
 }

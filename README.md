@@ -7,9 +7,9 @@ DApp to register usernames for Status Network, using ENS subnodes as usernames a
 - Funds are deposited for 1 year. Your SNT will be locked, but not spent.
 - After 1 year, the user can release the name for being registered again, and receive their deposit back.
 - Usernames are created as a subdomain of `stateofus.eth` [ENS domain](https://ens.domains/).
-- Usernames not allowed are less then 4 characters, or contained in this list (link to list), or starts with `0x` and more then 12 characters. 
+- Usernames not allowed are less then 4 characters, or contained in this list (link to list), or starts with `0x` and more then 12 characters.
 - Revealing a registered not allowed username will result in loss of deposit and removal of username.
-- Users are free to own the subdomains, but they are property of Status Network, and might be subject of new terms. 
+- Users are free to own the subdomains, but they are property of Status Network, and might be subject of new terms.
 - If terms of the contract change—e.g. Status Network makes contract upgrades—the user has the right to get their deposit back and release the username, or do nothing and keep using username as long new contract allows it.
 - User's handle (name) is always secret to network until user reveals it to someone.
 - User's address(es) when associated with a username will be publicly visible.
@@ -17,7 +17,7 @@ DApp to register usernames for Status Network, using ENS subnodes as usernames a
 Usernames eliminates the need to copy/scan - and worse, type - long hexadecimal addresses / public keys, by providing an ENS subdomain registry and recognition of ENS names in Status for interacting with other people in Status.
 
 Requires https://github.com/creationix/nvm
-Usage: 
+Usage:
  ```
  nvm install v8.9.4
  nvm use v8.9.4
