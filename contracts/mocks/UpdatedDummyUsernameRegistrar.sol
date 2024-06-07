@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.8.19;
+pragma solidity 0.8.25;
 
 import "./DummyUsernameRegistrar.sol";
 
 contract UpdatedDummyUsernameRegistrar is DummyUsernameRegistrar {
-
     constructor(
         ERC20Token _token,
         ENS _ensRegistry,
@@ -24,8 +23,5 @@ contract UpdatedDummyUsernameRegistrar is DummyUsernameRegistrar {
             _reservedUsernamesMerkleRoot,
             _parentRegistry
         )
-    {
-
-    }
-
+    { }
 }

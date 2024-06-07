@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.8.19;
+pragma solidity 0.8.25;
 
 import "../common/MerkleProof.sol";
 import "../common/Controlled.sol";
@@ -14,7 +14,6 @@ import "../ens/PublicResolver.sol";
  * @notice Registers usernames as ENS subnodes of the domain `ensNode`
  */
 contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
-
     ERC20Token public token;
     ENS public ensRegistry;
     PublicResolver public resolver;
@@ -33,7 +32,12 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     event RegistryMoved(address newRegistry);
     event UsernameOwner(bytes32 indexed nameHash, address owner);
 
-    enum RegistrarState { Inactive, Active, Moved }
+    enum RegistrarState {
+        Inactive,
+        Active,
+        Moved
+    }
+
     bytes32 public ensNode;
     uint256 public price;
     RegistrarState public state;
@@ -53,7 +57,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     /**
      * @notice Callable only by `parentRegistry()` to continue migration of ENSSubdomainRegistry.
      */
-    modifier onlyParentRegistry {
+    modifier onlyParentRegistry() {
         require(msg.sender == parentRegistry, "Migration only.");
         _;
     }
@@ -122,7 +126,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         bytes32 _pubkeyB
     )
         external
-        returns(bytes32 namehash)
+        returns (bytes32 namehash)
     {
         return registerUser(msg.sender, _label, _account, _pubkeyA, _pubkeyB);
     }
@@ -133,11 +137,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * or anytime by account owner when domain migrated to a new registry.
      * @param _label Username hash.
      */
-    function release(
-        bytes32 _label
-    )
-        external
-    {
+    function release(bytes32 _label) external {
         bytes32 namehash = keccak256(abi.encodePacked(ensNode, _label));
         Account memory account = accounts[_label];
         require(account.creationTime > 0, "Username not registered.");
@@ -160,12 +160,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
             address newOwner = ensRegistry.owner(ensNode);
             //Low level call, case dropUsername not implemented or failing, proceed release.
             //Return of this call have no use.
-            newOwner.call{gas:80000}(
-                abi.encodeWithSelector(
-                    this.dropUsername.selector,
-                    _label
-                )
-            );
+            newOwner.call{ gas: 80_000 }(abi.encodeWithSelector(this.dropUsername.selector, _label));
         }
         emit UsernameOwner(namehash, address(0));
     }
@@ -175,12 +170,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * to update this contract registry, otherwise former owner can release
      * if domain is moved to a new registry.
      * @param _label Username hash.
-     **/
-    function updateAccountOwner(
-        bytes32 _label
-    )
-        external
-    {
+     *
+     */
+    function updateAccountOwner(bytes32 _label) external {
         bytes32 namehash = keccak256(abi.encodePacked(ensNode, _label));
         require(msg.sender == ensRegistry.owner(namehash), "Caller not owner of ENS node.");
         require(accounts[_label].creationTime > 0, "Username not registered.");
@@ -202,12 +194,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @notice Slash username smaller then `usernameMinLength`.
      * @param _username Raw value of offending username.
      */
-    function slashSmallUsername(
-        string calldata _username,
-        uint256 _reserveSecret
-    )
-        external
-    {
+    function slashSmallUsername(string calldata _username, uint256 _reserveSecret) external {
         bytes memory username = bytes(_username);
         require(username.length < usernameMinLength, "Not a small username.");
         slashUsername(username, _reserveSecret);
@@ -217,17 +204,12 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @notice Slash username starting with "0x" and with length greater than 12.
      * @param _username Raw value of offending username.
      */
-    function slashAddressLikeUsername(
-        string calldata _username,
-        uint256 _reserveSecret
-    )
-        external
-    {
+    function slashAddressLikeUsername(string calldata _username, uint256 _reserveSecret) external {
         bytes memory username = bytes(_username);
         require(username.length > 12, "Too small to look like an address.");
         require(username[0] == bytes1("0"), "First character need to be 0");
         require(username[1] == bytes1("x"), "Second character need to be x");
-        for(uint i = 2; i < 7; i++){
+        for (uint256 i = 2; i < 7; i++) {
             bytes1 b = username[i];
             require((b >= 0x30 && b <= 0x39) || (b >= 0x61 && b <= 0x66), "Does not look like an address");
         }
@@ -247,14 +229,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         external
     {
         bytes memory username = bytes(_username);
-        require(
-            MerkleProof.verifyProof(
-                _proof,
-                reservedUsernamesMerkleRoot,
-                keccak256(username)
-            ),
-            "Invalid Proof."
-        );
+        require(MerkleProof.verifyProof(_proof, reservedUsernamesMerkleRoot, keccak256(username)), "Invalid Proof.");
         slashUsername(username, _reserveSecret);
     }
 
@@ -263,13 +238,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _username Raw value of offending username.
      * @param _offendingPos Position of non alphanumeric character.
      */
-    function slashInvalidUsername(
-        string calldata _username,
-        uint256 _offendingPos,
-        uint256 _reserveSecret
-    )
-        external
-    {
+    function slashInvalidUsername(string calldata _username, uint256 _offendingPos, uint256 _reserveSecret) external {
         bytes memory username = bytes(_username);
         require(username.length > _offendingPos, "Invalid position.");
         bytes1 b = username[_offendingPos];
@@ -283,18 +252,14 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @notice Clear resolver and ownership of unowned subdomians.
      * @param _labels Sequence to erase.
      */
-    function eraseNode(
-        bytes32[] calldata _labels
-    )
-        external
-    {
-        uint len = _labels.length;
+    function eraseNode(bytes32[] calldata _labels) external {
+        uint256 len = _labels.length;
         require(len != 0, "Nothing to erase");
         bytes32 label = _labels[len - 1];
         bytes32 subnode = keccak256(abi.encodePacked(ensNode, label));
         require(ensRegistry.owner(subnode) == address(0), "First slash/release top level subdomain");
         ensRegistry.setSubnodeOwner(ensNode, label, address(this));
-        if(len > 1) {
+        if (len > 1) {
             eraseNodeHierarchy(len - 2, _labels, subnode);
         }
         ensRegistry.setResolver(subnode, address(0));
@@ -304,13 +269,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     /**
      * @notice Migrate account to new registry, opt-in to new contract.
      * @param _label Username hash.
-     **/
-    function moveAccount(
-        bytes32 _label,
-        UsernameRegistrar _newRegistry
-    )
-        external
-    {
+     *
+     */
+    function moveAccount(bytes32 _label, UsernameRegistrar _newRegistry) external {
         require(state == RegistrarState.Moved, "Wrong contract state");
         require(msg.sender == accounts[_label].owner, "Callable only by account owner.");
         require(ensRegistry.owner(ensNode) == address(_newRegistry), "Wrong update");
@@ -318,24 +279,14 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         delete accounts[_label];
 
         token.approve(address(_newRegistry), account.balance);
-        _newRegistry.migrateUsername(
-            _label,
-            account.balance,
-            account.creationTime,
-            account.owner
-        );
+        _newRegistry.migrateUsername(_label, account.balance, account.creationTime, account.owner);
     }
 
     /**
      * @notice Activate registration.
      * @param _price The price of registration.
      */
-    function activate(
-        uint256 _price
-    )
-        external
-        onlyController
-    {
+    function activate(uint256 _price) external onlyController {
         require(state == RegistrarState.Inactive, "Registry state is not Inactive");
         require(ensRegistry.owner(ensNode) == address(this), "Registry does not own registry");
         price = _price;
@@ -347,12 +298,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @notice Updates Public Resolver for resolving users.
      * @param _resolver New PublicResolver.
      */
-    function setResolver(
-        address _resolver
-    )
-        external
-        onlyController
-    {
+    function setResolver(address _resolver) external onlyController {
         resolver = PublicResolver(_resolver);
     }
 
@@ -360,12 +306,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @notice Updates registration price.
      * @param _price New registration price.
      */
-    function updateRegistryPrice(
-        uint256 _price
-    )
-        external
-        onlyController
-    {
+    function updateRegistryPrice(uint256 _price) external onlyController {
         require(state == RegistrarState.Active, "Registry not owned");
         price = _price;
         emit RegistryPrice(_price);
@@ -376,12 +317,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * Usernames registered are not affected, but they would be able to instantly release.
      * @param _newRegistry New UsernameRegistrar for hodling `ensNode` node.
      */
-    function moveRegistry(
-        UsernameRegistrar _newRegistry
-    )
-        external
-        onlyController
-    {
+    function moveRegistry(UsernameRegistrar _newRegistry) external onlyController {
         require(_newRegistry != this, "Cannot move to self.");
         require(ensRegistry.owner(ensNode) == address(this), "Registry not owned anymore.");
         setState(RegistrarState.Moved);
@@ -395,12 +331,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * Clear ENS resolver and subnode owner.
      * @param _label Username hash.
      */
-    function dropUsername(
-        bytes32 _label
-    )
-        external
-        onlyParentRegistry
-    {
+    function dropUsername(bytes32 _label) external onlyParentRegistry {
         require(accounts[_label].creationTime == 0, "Already migrated");
         bytes32 namehash = keccak256(abi.encodePacked(ensNode, _label));
         ensRegistry.setSubnodeOwner(ensNode, _label, address(this));
@@ -412,21 +343,16 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @notice Withdraw not reserved tokens
      * @param _token Address of ERC20 withdrawing excess, or address(0) if want ETH.
      * @param _beneficiary Address to send the funds.
-     **/
-    function withdrawExcessBalance(
-        address _token,
-        address payable _beneficiary
-    )
-        external
-        onlyController
-    {
+     *
+     */
+    function withdrawExcessBalance(address _token, address payable _beneficiary) external onlyController {
         require(_beneficiary != address(0), "Cannot burn token");
         if (_token == address(0)) {
             _beneficiary.transfer(address(this).balance);
         } else {
             ERC20Token excessToken = ERC20Token(_token);
             uint256 amount = excessToken.balanceOf(address(this));
-            if(_token == address(token)){
+            if (_token == address(token)) {
                 require(amount > reserveAmount, "Is not excess");
                 amount -= reserveAmount;
             } else {
@@ -440,14 +366,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @notice Withdraw ens nodes not belonging to this contract.
      * @param _domainHash Ens node namehash.
      * @param _beneficiary New owner of ens node.
-     **/
-    function withdrawWrongNode(
-        bytes32 _domainHash,
-        address _beneficiary
-    )
-        external
-        onlyController
-    {
+     *
+     */
+    function withdrawWrongNode(bytes32 _domainHash, address _beneficiary) external onlyController {
         require(_beneficiary != address(0), "Cannot burn node");
         require(_domainHash != ensNode, "Cannot withdraw main node");
         require(ensRegistry.owner(_domainHash) == address(this), "Not owner of this node");
@@ -457,12 +378,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     /**
      * @notice Gets registration price.
      * @return registryPrice Registration price.
-     **/
-    function getPrice()
-        external
-        view
-        returns(uint256 registryPrice)
-    {
+     *
+     */
+    function getPrice() external view returns (uint256 registryPrice) {
         return price;
     }
 
@@ -470,12 +388,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @notice reads amount tokens locked in username
      * @param _label Username hash.
      * @return accountBalance Locked username balance.
-     **/
-    function getAccountBalance(bytes32 _label)
-        external
-        view
-        returns(uint256 accountBalance)
-    {
+     *
+     */
+    function getAccountBalance(bytes32 _label) external view returns (uint256 accountBalance) {
         accountBalance = accounts[_label].balance;
     }
 
@@ -484,12 +399,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * which can release or migrate in case of upgrade.
      * @param _label Username hash.
      * @return owner Username account owner.
-     **/
-    function getAccountOwner(bytes32 _label)
-        external
-        view
-        returns(address owner)
-    {
+     *
+     */
+    function getAccountOwner(bytes32 _label) external view returns (address owner) {
         owner = accounts[_label].owner;
     }
 
@@ -497,12 +409,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @notice reads when the account was registered
      * @param _label Username hash.
      * @return creationTime Registration time.
-     **/
-    function getCreationTime(bytes32 _label)
-        external
-        view
-        returns(uint256 creationTime)
-    {
+     *
+     */
+    function getCreationTime(bytes32 _label) external view returns (uint256 creationTime) {
         creationTime = accounts[_label].creationTime;
     }
 
@@ -510,14 +419,11 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @notice calculate time where username can be released
      * @param _label Username hash.
      * @return releaseTime Exact time when username can be released.
-     **/
-    function getExpirationTime(bytes32 _label)
-        external
-        view
-        returns(uint256 releaseTime)
-    {
+     *
+     */
+    function getExpirationTime(bytes32 _label) external view returns (uint256 releaseTime) {
         uint256 creationTime = accounts[_label].creationTime;
-        if (creationTime > 0){
+        if (creationTime > 0) {
             releaseTime = creationTime + releaseDelay;
         }
     }
@@ -526,12 +432,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @notice calculate reward part an account could payout on slash
      * @param _label Username hash.
      * @return partReward Part of reward
-     **/
-    function getSlashRewardPart(bytes32 _label)
-        external
-        view
-        returns(uint256 partReward)
-    {
+     *
+     */
+    function getSlashRewardPart(bytes32 _label) external view returns (uint256 partReward) {
         uint256 balance = accounts[_label].balance;
         if (balance > 0) {
             partReward = balance / 3;
@@ -545,15 +448,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _token Token being approved, need to be equal `token()`.
      * @param _data Abi encoded data with selector of `register(bytes32,address,bytes32,bytes32)`.
      */
-    function receiveApproval(
-        address _from,
-        uint256 _amount,
-        address _token,
-        bytes memory _data
-    )
-        public
-        override
-    {
+    function receiveApproval(address _from, uint256 _amount, address _token, bytes memory _data) public override {
         require(_amount == price, "Wrong value");
         require(_token == address(token), "Wrong token");
         require(_token == address(msg.sender), "Wrong call");
@@ -564,10 +459,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         bytes32 pubkeyA;
         bytes32 pubkeyB;
         (sig, label, account, pubkeyA, pubkeyB) = abiDecodeRegister(_data);
-        require(
-            sig == this.register.selector,
-            "Wrong method selector"
-        );
+        require(sig == this.register.selector, "Wrong method selector");
         registerUser(_from, label, account, pubkeyA, pubkeyB);
     }
 
@@ -577,7 +469,8 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _tokenBalance Amount being transfered from `parentRegistry()`.
      * @param _creationTime Time user registrated in `parentRegistry()` is preserved.
      * @param _accountOwner Account owner which migrated the account.
-     **/
+     *
+     */
     function migrateUsername(
         bytes32 _label,
         uint256 _tokenBalance,
@@ -589,11 +482,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
     {
         if (_tokenBalance > 0) {
             require(
-                token.transferFrom(
-                    parentRegistry,
-                    address(this),
-                    _tokenBalance
-                ),
+                token.transferFrom(parentRegistry, address(this), _tokenBalance),
                 "Error moving funds from old registar."
             );
             reserveAmount += _tokenBalance;
@@ -605,13 +494,9 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @dev callable only by parent registry to continue migration
      * of registry and activate registration.
      * @param _price The price of registration.
-     **/
-    function migrateRegistry(
-        uint256 _price
-    )
-        external
-        onlyParentRegistry
-    {
+     *
+     */
+    function migrateRegistry(uint256 _price) external onlyParentRegistry {
         require(state == RegistrarState.Inactive, "Not Inactive");
         require(ensRegistry.owner(ensNode) == address(this), "ENS registry owner not transfered.");
         price = _price;
@@ -635,23 +520,16 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
         bytes32 _pubkeyB
     )
         internal
-        returns(bytes32 namehash)
+        returns (bytes32 namehash)
     {
         require(state == RegistrarState.Active, "Registry not active.");
         namehash = keccak256(abi.encodePacked(ensNode, _label));
         require(ensRegistry.owner(namehash) == address(0), "ENS node already owned.");
         require(accounts[_label].creationTime == 0, "Username already registered.");
         accounts[_label] = Account(price, block.timestamp, _owner);
-        if(price > 0) {
+        if (price > 0) {
             require(token.allowance(_owner, address(this)) >= price, "Unallowed to spend.");
-            require(
-                token.transferFrom(
-                    _owner,
-                    address(this),
-                    price
-                ),
-                "Transfer failed"
-            );
+            require(token.transferFrom(_owner, address(this), price), "Transfer failed");
             reserveAmount += price;
         }
 
@@ -679,23 +557,14 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @dev Removes account hash of `_username` and send account.balance to msg.sender.
      * @param _username Username being slashed.
      */
-    function slashUsername(
-        bytes memory _username,
-        uint256 _reserveSecret
-    )
-        internal
-    {
+    function slashUsername(bytes memory _username, uint256 _reserveSecret) internal {
         bytes32 label = keccak256(_username);
         bytes32 namehash = keccak256(abi.encodePacked(ensNode, label));
         uint256 amountToTransfer = 0;
         uint256 creationTime = accounts[label].creationTime;
         address owner = ensRegistry.owner(namehash);
-        if(creationTime == 0) {
-            require(
-                owner != address(0) ||
-                ensRegistry.resolver(namehash) != address(0),
-                "Nothing to slash."
-            );
+        if (creationTime == 0) {
+            require(owner != address(0) || ensRegistry.resolver(namehash) != address(0), "Nothing to slash.");
         } else {
             assert(creationTime != block.timestamp);
             amountToTransfer = accounts[label].balance;
@@ -732,13 +601,7 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @param _labels list of subnode labes
      * @param _subnode subnode being erased
      */
-    function eraseNodeHierarchy(
-        uint _idx,
-        bytes32[] memory _labels,
-        bytes32 _subnode
-    )
-        private
-    {
+    function eraseNodeHierarchy(uint256 _idx, bytes32[] memory _labels, bytes32 _subnode) private {
         // Take ownership of the node
         ensRegistry.setSubnodeOwner(_subnode, _labels[_idx], address(this));
         bytes32 subnode = keccak256(abi.encodePacked(_subnode, _labels[_idx]));
@@ -762,18 +625,10 @@ contract UsernameRegistrar is Controlled, ApproveAndCallFallBack {
      * @return pubkeyA Pubkey part A to set at public resolver.
      * @return pubkeyB Pubkey part B to set at public resolver.
      */
-    function abiDecodeRegister(
-        bytes memory _data
-    )
+    function abiDecodeRegister(bytes memory _data)
         private
         pure
-        returns(
-            bytes4 sig,
-            bytes32 label,
-            address account,
-            bytes32 pubkeyA,
-            bytes32 pubkeyB
-        )
+        returns (bytes4 sig, bytes32 label, address account, bytes32 pubkeyA, bytes32 pubkeyB)
     {
         assembly {
             sig := mload(add(_data, add(0x20, 0)))

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
-pragma solidity 0.8.19;
+pragma solidity 0.8.25;
 
 import { ENS } from "./ENS.sol";
 
@@ -9,7 +9,6 @@ import { ENS } from "./ENS.sol";
  * address.
  */
 contract PublicResolver {
-
     bytes4 public constant INTERFACE_META_ID = 0x01ffc9a7;
     bytes4 public constant ADDR_INTERFACE_ID = 0x3b3b57de;
     bytes4 public constant NAME_INTERFACE_ID = 0x691f3431;
@@ -26,6 +25,7 @@ contract PublicResolver {
     event TextChanged(bytes32 indexed node, string indexedKey, string key);
     event ContenthashChanged(bytes32 indexed node, bytes hash);
     event InterfaceChanged(bytes32 indexed node, bytes4 indexed interfaceID, address implementer);
+
     error NotOwner();
     error InvalidContentType();
 
@@ -38,15 +38,15 @@ contract PublicResolver {
         address addr;
         string name;
         PublicKey pubkey;
-        mapping(string=>string) text;
-        mapping(uint256=>bytes) abis;
+        mapping(string => string) text;
+        mapping(uint256 => bytes) abis;
         bytes contenthash;
-        mapping(bytes4=>address) interfaces;
+        mapping(bytes4 => address) interfaces;
     }
 
     ENS public ens;
 
-    mapping (bytes32 key => Record data) public records;
+    mapping(bytes32 key => Record data) public records;
 
     modifier onlyOwner(bytes32 node) {
         if (ens.owner(node) != msg.sender) {
@@ -106,7 +106,7 @@ contract PublicResolver {
      */
     function setABI(bytes32 node, uint256 contentType, bytes calldata data) external onlyOwner(node) {
         // Content types must be powers of 2
-        if(((contentType - 1) & contentType) != 0){
+        if (((contentType - 1) & contentType) != 0) {
             revert InvalidContentType();
         }
 
@@ -232,25 +232,24 @@ contract PublicResolver {
      */
     function interfaceImplementer(bytes32 node, bytes4 interfaceID) external view returns (address) {
         address implementer = records[node].interfaces[interfaceID];
-        if(implementer != address(0)) {
+        if (implementer != address(0)) {
             return implementer;
         }
 
         address a = addr(node);
-        if(a == address(0)) {
+        if (a == address(0)) {
             return address(0);
         }
 
-        (bool success, bytes memory returnData) = a.staticcall(
-            abi.encodeWithSignature("supportsInterface(bytes4)", INTERFACE_META_ID)
-        );
-        if(!success || returnData.length < 32 || returnData[31] == 0) {
+        (bool success, bytes memory returnData) =
+            a.staticcall(abi.encodeWithSignature("supportsInterface(bytes4)", INTERFACE_META_ID));
+        if (!success || returnData.length < 32 || returnData[31] == 0) {
             // EIP 168 not supported by target
             return address(0);
         }
 
         (success, returnData) = a.staticcall(abi.encodeWithSignature("supportsInterface(bytes4)", interfaceID));
-        if(!success || returnData.length < 32 || returnData[31] == 0) {
+        if (!success || returnData.length < 32 || returnData[31] == 0) {
             // Specified interface not supported by target
             return address(0);
         }
@@ -264,13 +263,9 @@ contract PublicResolver {
      * @return True if the contract implements the requested interface.
      */
     function supportsInterface(bytes4 interfaceID) external pure returns (bool) {
-        return interfaceID == ADDR_INTERFACE_ID ||
-        interfaceID == NAME_INTERFACE_ID ||
-        interfaceID == ABI_INTERFACE_ID ||
-        interfaceID == PUBKEY_INTERFACE_ID ||
-        interfaceID == TEXT_INTERFACE_ID ||
-        interfaceID == CONTENTHASH_INTERFACE_ID ||
-        interfaceID == INTERFACE_INTERFACE_ID ||
-        interfaceID == INTERFACE_META_ID;
+        return interfaceID == ADDR_INTERFACE_ID || interfaceID == NAME_INTERFACE_ID || interfaceID == ABI_INTERFACE_ID
+            || interfaceID == PUBKEY_INTERFACE_ID || interfaceID == TEXT_INTERFACE_ID
+            || interfaceID == CONTENTHASH_INTERFACE_ID || interfaceID == INTERFACE_INTERFACE_ID
+            || interfaceID == INTERFACE_META_ID;
     }
 }

@@ -1,35 +1,22 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.8.19;
+pragma solidity 0.8.25;
 
 /**
  * @notice Uses ethereum signed messages
  */
 abstract contract MessageSigned {
-
     /**
      * @notice recovers address who signed the message
      * @param _signHash operation ethereum signed message hash
      * @param _messageSignature message `_signHash` signature
      */
-    function recoverAddress(
-        bytes32 _signHash,
-        bytes memory _messageSignature
-    )
-        internal
-        pure
-        returns(address)
-    {
+    function recoverAddress(bytes32 _signHash, bytes memory _messageSignature) internal pure returns (address) {
         uint8 v;
         bytes32 r;
         bytes32 s;
-        (v,r,s) = signatureSplit(_messageSignature);
-        return ecrecover(
-            _signHash,
-            v,
-            r,
-            s
-        );
+        (v, r, s) = signatureSplit(_messageSignature);
+        return ecrecover(_signHash, v, r, s);
     }
 
     /**
@@ -37,24 +24,14 @@ abstract contract MessageSigned {
      * @param _hash Sign to hash.
      * @return signHash Hash to be signed.
      */
-    function getSignHash(
-        bytes32 _hash
-    )
-        internal
-        pure
-        returns (bytes32 signHash)
-    {
+    function getSignHash(bytes32 _hash) internal pure returns (bytes32 signHash) {
         signHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _hash));
     }
 
     /**
      * @dev divides bytes signature into `uint8 v, bytes32 r, bytes32 s`
      */
-    function signatureSplit(bytes memory _signature)
-        internal
-        pure
-        returns (uint8 v, bytes32 r, bytes32 s)
-    {
+    function signatureSplit(bytes memory _signature) internal pure returns (uint8 v, bytes32 r, bytes32 s) {
         require(_signature.length == 65, "Bad signature length");
         // The signature format is a compact form of:
         //   {bytes32 r}{bytes32 s}{uint8 v}
@@ -74,5 +51,4 @@ abstract contract MessageSigned {
         }
         require(v == 27 || v == 28, "Bad signature version");
     }
-
 }

@@ -1,72 +1,35 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.8.19;
+pragma solidity 0.8.25;
 
 import "./ERC20Token.sol";
 
 contract ERC20Receiver {
-
     event TokenDeposited(address indexed token, address indexed sender, uint256 amount);
     event TokenWithdrawn(address indexed token, address indexed sender, uint256 amount);
 
-    mapping (address => mapping(address => uint256)) tokenBalances;
+    mapping(address => mapping(address => uint256)) tokenBalances;
 
-    constructor() {
+    constructor() { }
 
+    function depositToken(ERC20Token _token) external {
+        _depositToken(msg.sender, _token, _token.allowance(msg.sender, address(this)));
     }
 
-    function depositToken(
-        ERC20Token _token
-    )
-        external
-    {
-        _depositToken(
-            msg.sender,
-            _token,
-            _token.allowance(
-                msg.sender,
-                address(this)
-            )
-        );
-    }
-
-    function withdrawToken(
-        ERC20Token _token,
-        uint256 _amount
-    )
-        external
-    {
+    function withdrawToken(ERC20Token _token, uint256 _amount) external {
         _withdrawToken(msg.sender, _token, _amount);
     }
 
-    function depositToken(
-        ERC20Token _token,
-        uint256 _amount
-    )
-        external
-    {
+    function depositToken(ERC20Token _token, uint256 _amount) external {
         require(_token.allowance(msg.sender, address(this)) >= _amount, "Bad argument");
         _depositToken(msg.sender, _token, _amount);
     }
 
-    function tokenBalanceOf(
-        ERC20Token _token,
-        address _from
-    )
-        external
-        view
-        returns(uint256 fromTokenBalance)
-    {
+    function tokenBalanceOf(ERC20Token _token, address _from) external view returns (uint256 fromTokenBalance) {
         return tokenBalances[address(_token)][_from];
     }
 
-    function _depositToken(
-        address _from,
-        ERC20Token _token,
-        uint256 _amount
-    )
-        private
-    {
+    function _depositToken(address _from, ERC20Token _token, uint256 _amount) private {
         require(_amount > 0, "Bad argument");
         if (_token.transferFrom(_from, address(this), _amount)) {
             tokenBalances[address(_token)][_from] += _amount;
@@ -74,19 +37,11 @@ contract ERC20Receiver {
         }
     }
 
-    function _withdrawToken(
-        address _from,
-        ERC20Token _token,
-        uint256 _amount
-    )
-        private
-    {
+    function _withdrawToken(address _from, ERC20Token _token, uint256 _amount) private {
         require(_amount > 0, "Bad argument");
         require(tokenBalances[address(_token)][_from] >= _amount, "Insufficient funds");
         tokenBalances[address(_token)][_from] -= _amount;
         require(_token.transfer(_from, _amount), "Transfer fail");
         emit TokenWithdrawn(address(_token), _from, _amount);
     }
-
-
 }

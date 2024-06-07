@@ -1,48 +1,26 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.8.19;
+pragma solidity 0.8.25;
 
 import "./ERC20Token.sol";
 
 abstract contract StandardToken is ERC20Token {
-
     uint256 private totalTokens;
-    mapping (address => uint256) balances;
-    mapping (address => mapping (address => uint256)) allowed;
+    mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint256)) allowed;
 
     constructor() { }
 
-    function transfer(
-        address _to,
-        uint256 _value
-    )
-        external
-        returns (bool success)
-    {
+    function transfer(address _to, uint256 _value) external returns (bool success) {
         return transfer(msg.sender, _to, _value);
     }
 
-    function approve(
-        address _to,
-        uint256 _value
-    )
-        external
-        returns (bool success)
-    {
+    function approve(address _to, uint256 _value) external returns (bool success) {
         return approve(msg.sender, _to, _value);
     }
 
-    function transferFrom(
-        address _from,
-        address _to,
-        uint256 _value
-    )
-        external
-        returns (bool success)
-    {
-        if (balances[_from] >= _value &&
-            allowed[_from][msg.sender] >= _value &&
-            _value > 0) {
+    function transferFrom(address _from, address _to, uint256 _value) external returns (bool success) {
+        if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
             allowed[_from][msg.sender] -= _value;
             return transfer(_from, _to, _value);
         } else {
@@ -50,27 +28,15 @@ abstract contract StandardToken is ERC20Token {
         }
     }
 
-    function allowance(address _owner, address _spender)
-        external
-        view
-        returns (uint256 remaining)
-    {
+    function allowance(address _owner, address _spender) external view returns (uint256 remaining) {
         return allowed[_owner][_spender];
     }
 
-    function balanceOf(address _owner)
-        external
-        view
-        returns (uint256 balance)
-    {
+    function balanceOf(address _owner) external view returns (uint256 balance) {
         return balances[_owner];
     }
 
-    function totalSupply()
-        external
-        view
-        returns(uint256 supply)
-    {
+    function totalSupply() external view returns (uint256 supply) {
         return totalTokens;
     }
 
@@ -81,7 +47,6 @@ abstract contract StandardToken is ERC20Token {
      * @param _value The amount of tokens to be spent.
      */
     function approve(address _from, address _spender, uint256 _value) internal returns (bool) {
-
         // To change the approve amount you first have to reduce the addresses`
         //  allowance to zero by calling `approve(_spender, 0)` if it is not
         //  already 0 to mitigate the race condition described here:
@@ -93,28 +58,16 @@ abstract contract StandardToken is ERC20Token {
         return true;
     }
 
-    function _mint(
-        address _to,
-        uint256 _amount
-    )
-        internal
-    {
+    function _mint(address _to, uint256 _amount) internal {
         balances[_to] += _amount;
         totalTokens += _amount;
         emit Transfer(address(0x0), _to, _amount);
     }
 
-    function transfer(
-        address _from,
-        address _to,
-        uint256 _value
-    )
-        internal
-        returns (bool success)
-    {
+    function transfer(address _from, address _to, uint256 _value) internal returns (bool success) {
         if (balances[_from] >= _value && _value > 0) {
             balances[_from] -= _value;
-            if(_to == address(0)) {
+            if (_to == address(0)) {
                 totalTokens -= _value;
             } else {
                 balances[_to] += _value;
@@ -125,6 +78,4 @@ abstract contract StandardToken is ERC20Token {
             return false;
         }
     }
-
-
 }

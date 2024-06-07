@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.8.19;
+pragma solidity 0.8.25;
 
 import "./StandardToken.sol";
 import "./ApproveAndCallFallBack.sol";
@@ -9,7 +9,6 @@ import "./ApproveAndCallFallBack.sol";
  * @notice ERC20Token for test scripts, can be minted by anyone.
  */
 contract TestToken is StandardToken {
-
     constructor() { }
 
     /**
@@ -29,7 +28,11 @@ contract TestToken is StandardToken {
         _mint(_beneficiary, _amount);
     }
 
-    function approveAndCall(address _spender, uint256 _value, bytes calldata _extraData)
+    function approveAndCall(
+        address _spender,
+        uint256 _value,
+        bytes calldata _extraData
+    )
         external
         returns (bool success)
     {
@@ -37,5 +40,4 @@ contract TestToken is StandardToken {
         ApproveAndCallFallBack(_spender).receiveApproval(msg.sender, _value, address(this), _extraData);
         return true;
     }
-
 }

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.8.19;
+pragma solidity 0.8.25;
 
 abstract contract Controlled {
     /// @notice The address of the controller is the only address that can call
     ///  a function with this modifier
-    modifier onlyController {
+    modifier onlyController() {
         require(msg.sender == controller, "Unauthorized");
         _;
     }

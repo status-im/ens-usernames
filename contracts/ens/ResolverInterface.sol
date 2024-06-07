@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
-pragma solidity 0.8.19;
+pragma solidity 0.8.25;
 pragma experimental ABIEncoderV2;
 
 /**
  * A generic resolver interface which includes all the functions including the ones deprecated
  */
-interface Resolver{
+interface Resolver {
     event AddrChanged(bytes32 indexed node, address a);
-    event AddressChanged(bytes32 indexed node, uint coinType, bytes newAddress);
+    event AddressChanged(bytes32 indexed node, uint256 coinType, bytes newAddress);
     event NameChanged(bytes32 indexed node, string name);
     event ABIChanged(bytes32 indexed node, uint256 indexed contentType);
     event PubkeyChanged(bytes32 indexed node, bytes32 x, bytes32 y);
@@ -19,7 +19,7 @@ interface Resolver{
 
     function ABI(bytes32 _node, uint256 _contentTypes) external view returns (uint256, bytes memory);
     function addr(bytes32 _node) external view returns (address);
-    function addr(bytes32 _node, uint _coinType) external view returns(bytes memory);
+    function addr(bytes32 _node, uint256 _coinType) external view returns (bytes memory);
     function contenthash(bytes32 _node) external view returns (bytes memory);
     function dnsrr(bytes32 _node) external view returns (bytes memory);
     function name(bytes32 _node) external view returns (string memory);
@@ -28,7 +28,7 @@ interface Resolver{
     function interfaceImplementer(bytes32 _node, bytes4 _interfaceID) external view returns (address);
     function setABI(bytes32 _node, uint256 _contentType, bytes calldata _data) external;
     function setAddr(bytes32 _node, address _addr) external;
-    function setAddr(bytes32 _node, uint _coinType, bytes calldata _a) external;
+    function setAddr(bytes32 _node, uint256 _coinType, bytes calldata _a) external;
     function setContenthash(bytes32 _node, bytes calldata _hash) external;
     function setDnsrr(bytes32 _node, bytes calldata _data) external;
     function setName(bytes32 _node, string calldata _name) external;
@@ -36,7 +36,7 @@ interface Resolver{
     function setText(bytes32 _node, string calldata _key, string calldata _value) external;
     function setInterface(bytes32 _node, bytes4 _interfaceID, address _implementer) external;
     function supportsInterface(bytes4 _interfaceID) external pure returns (bool);
-    function multicall(bytes[] calldata _data) external returns(bytes[] memory results);
+    function multicall(bytes[] calldata _data) external returns (bytes[] memory results);
 
     /* Deprecated functions */
     function content(bytes32 _node) external view returns (bytes32);

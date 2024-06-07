@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
-pragma solidity 0.8.19;
+pragma solidity 0.8.25;
 
 import "./ENS.sol";
 
@@ -8,15 +8,14 @@ import "./ENS.sol";
  * The ENS registry contract.
  */
 contract ENSRegistry is ENS {
-
     struct Record {
         address owner;
         address resolver;
         uint64 ttl;
     }
 
-    mapping (bytes32 => Record) records;
-    mapping (address => mapping(address => bool)) operators;
+    mapping(bytes32 => Record) records;
+    mapping(address => mapping(address => bool)) operators;
 
     // Permits modifications only by the _owner of the specified _node.
     modifier authorised(bytes32 _node) {
@@ -68,12 +67,21 @@ contract ENSRegistry is ENS {
     }
 
     /**
-     * @dev Transfers ownership of a subnode keccak256(_node, _label) to a new address. May only be called by the _owner of the parent _node.
+     * @dev Transfers ownership of a subnode keccak256(_node, _label) to a new address. May only be called by the _owner
+     * of the parent _node.
      * @param _node The parent _node.
      * @param _label The hash of the _label specifying the subnode.
      * @param _owner The address of the new _owner.
      */
-    function setSubnodeOwner(bytes32 _node, bytes32 _label, address _owner) public authorised(_node) returns(bytes32) {
+    function setSubnodeOwner(
+        bytes32 _node,
+        bytes32 _label,
+        address _owner
+    )
+        public
+        authorised(_node)
+        returns (bytes32)
+    {
         bytes32 subnode = keccak256(abi.encodePacked(_node, _label));
         _setOwner(subnode, _owner);
         emit NewOwner(_node, _label, _owner);
@@ -167,12 +175,12 @@ contract ENSRegistry is ENS {
     }
 
     function _setResolverAndTTL(bytes32 _node, address _resolver, uint64 _ttl) internal {
-        if(_resolver != records[_node].resolver) {
+        if (_resolver != records[_node].resolver) {
             records[_node].resolver = _resolver;
             emit NewResolver(_node, _resolver);
         }
 
-        if(_ttl != records[_node].ttl) {
+        if (_ttl != records[_node].ttl) {
             records[_node].ttl = _ttl;
             emit NewTTL(_node, _ttl);
         }
