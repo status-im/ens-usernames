@@ -10,11 +10,11 @@
   gas_reports = ["*"]
   libs = ["lib"]
   optimizer = true
-  optimizer_runs = 10_000
+  optimizer_runs = 200
   out = "out"
   script = "script"
-  solc = "0.8.19"
-  src = "src"
+  solc = "0.8.25"
+  src = "contracts"
   test = "test"
 
 [profile.ci]
@@ -22,15 +22,15 @@
   verbosity = 4
 
 [etherscan]
-  arbitrum = { key = "${API_KEY_ARBISCAN}" }
-  avalanche = { key = "${API_KEY_SNOWTRACE}" }
-  bnb_smart_chain = { key = "${API_KEY_BSCSCAN}" }
-  gnosis_chain = { key = "${API_KEY_GNOSISSCAN}" }
-  goerli = { key = "${API_KEY_ETHERSCAN}" }
-  mainnet = { key = "${API_KEY_ETHERSCAN}" }
-  optimism = { key = "${API_KEY_OPTIMISTIC_ETHERSCAN}" }
-  polygon = { key = "${API_KEY_POLYGONSCAN}" }
-  sepolia = { key = "${API_KEY_ETHERSCAN}" }
+# arbitrum = { key = "${API_KEY_ARBISCAN}" }
+# avalanche = { key = "${API_KEY_SNOWTRACE}" }
+# bnb_smart_chain = { key = "${API_KEY_BSCSCAN}" }
+# gnosis_chain = { key = "${API_KEY_GNOSISSCAN}" }
+# goerli = { key = "${API_KEY_ETHERSCAN}" }
+# mainnet = { key = "${API_KEY_ETHERSCAN}" }
+# optimism = { key = "${API_KEY_OPTIMISTIC_ETHERSCAN}" }
+# polygon = { key = "${API_KEY_POLYGONSCAN}" }
+# sepolia = { key = "${API_KEY_ETHERSCAN}" }
 
 [fmt]
   bracket_spacing = true

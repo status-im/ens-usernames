@@ -7,9 +7,9 @@
     "url": "https://github.com/status-im/ens-usernames"
   },
   "devDependencies": {
-    "prettier": "^3.0.0",
-    "solhint-community": "^3.6.0",
-    "commit-and-tag-version": "^12.2.0"
+    "commit-and-tag-version": "^12.2.0",
+    "prettier": "^3.3.2",
+    "solhint-community": "^3.6.0"
   },
   "keywords": [
     "blockchain",
@@ -31,5 +31,5 @@
     "release": "commit-and-tag-version",
     "adorno": "pnpm prettier:write && forge fmt && forge snapshot && pnpm gas-report"
   },
-  "license": "ISC"
+  "license": "MIT"
 }
