@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.5.11;
+pragma solidity 0.8.19;
 
 import "./StandardToken.sol";
 import "./ApproveAndCallFallBack.sol";
@@ -10,16 +10,24 @@ import "./ApproveAndCallFallBack.sol";
  */
 contract TestToken is StandardToken {
 
-    constructor() public { }
+    constructor() { }
 
     /**
      * @notice any caller can mint any `_amount`
      * @param _amount how much to be minted
      */
     function mint(uint256 _amount) public {
-        mint(msg.sender, _amount);
+        _mint(msg.sender, _amount);
     }
 
+    /**
+     * @notice any caller can mint any `_amount`
+     * @param _beneficiary who will receive the minted tokens
+     * @param _amount how much to be minted
+     */
+    function mint(address _beneficiary, uint256 _amount) public {
+        _mint(_beneficiary, _amount);
+    }
 
     function approveAndCall(address _spender, uint256 _value, bytes calldata _extraData)
         external

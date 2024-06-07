@@ -14,7 +14,7 @@
   out = "out"
   script = "script"
   solc = "0.8.19"
-  src = "src"
+  src = "contracts"
   test = "test"
 
 [profile.ci]

@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: CC0-1.0
 
-pragma solidity 0.5.11;
+pragma solidity 0.8.19;
 
 import "./ERC20Token.sol";
 
-contract StandardToken is ERC20Token {
+abstract contract StandardToken is ERC20Token {
 
     uint256 private totalTokens;
     mapping (address => uint256) balances;
     mapping (address => mapping (address => uint256)) allowed;
 
-    constructor() internal { }
+    constructor() { }
 
     function transfer(
         address _to,
@@ -93,7 +93,7 @@ contract StandardToken is ERC20Token {
         return true;
     }
 
-    function mint(
+    function _mint(
         address _to,
         uint256 _amount
     )

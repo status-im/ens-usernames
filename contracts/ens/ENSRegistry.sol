@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
-pragma solidity 0.5.11;
+pragma solidity 0.8.19;
 
 import "./ENS.sol";
 
@@ -28,7 +28,7 @@ contract ENSRegistry is ENS {
     /**
      * @dev Constructs a new ENS registrar.
      */
-    constructor() public {
+    constructor() {
         records[0x0].owner = msg.sender;
     }
 

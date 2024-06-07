@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
-pragma solidity 0.5.11;
+pragma solidity 0.8.19;
 
-import "./ENS.sol";
+import { ENS } from "./ENS.sol";
 
 /**
  * A simple resolver anyone can use; only allows the owner of a node to set its
@@ -10,14 +10,14 @@ import "./ENS.sol";
  */
 contract PublicResolver {
 
-    bytes4 constant INTERFACE_META_ID = 0x01ffc9a7;
-    bytes4 constant ADDR_INTERFACE_ID = 0x3b3b57de;
-    bytes4 constant NAME_INTERFACE_ID = 0x691f3431;
-    bytes4 constant ABI_INTERFACE_ID = 0x2203ab56;
-    bytes4 constant PUBKEY_INTERFACE_ID = 0xc8690233;
-    bytes4 constant TEXT_INTERFACE_ID = 0x59d1d43c;
-    bytes4 constant CONTENTHASH_INTERFACE_ID = 0xbc1c58d1;
-    bytes4 constant INTERFACE_INTERFACE_ID = bytes4(keccak256("interfaceImplementer(bytes32,bytes4)"));
+    bytes4 public constant INTERFACE_META_ID = 0x01ffc9a7;
+    bytes4 public constant ADDR_INTERFACE_ID = 0x3b3b57de;
+    bytes4 public constant NAME_INTERFACE_ID = 0x691f3431;
+    bytes4 public constant ABI_INTERFACE_ID = 0x2203ab56;
+    bytes4 public constant PUBKEY_INTERFACE_ID = 0xc8690233;
+    bytes4 public constant TEXT_INTERFACE_ID = 0x59d1d43c;
+    bytes4 public constant CONTENTHASH_INTERFACE_ID = 0xbc1c58d1;
+    bytes4 public constant INTERFACE_INTERFACE_ID = bytes4(keccak256("interfaceImplementer(bytes32,bytes4)"));
 
     event AddrChanged(bytes32 indexed node, address a);
     event NameChanged(bytes32 indexed node, string name);
@@ -26,6 +26,8 @@ contract PublicResolver {
     event TextChanged(bytes32 indexed node, string indexedKey, string key);
     event ContenthashChanged(bytes32 indexed node, bytes hash);
     event InterfaceChanged(bytes32 indexed node, bytes4 indexed interfaceID, address implementer);
+    error NotOwner();
+    error InvalidContentType();
 
     struct PublicKey {
         bytes32 x;
@@ -42,12 +44,14 @@ contract PublicResolver {
         mapping(bytes4=>address) interfaces;
     }
 
-    ENS ens;
+    ENS public ens;
 
-    mapping (bytes32 => Record) records;
+    mapping (bytes32 key => Record data) public records;
 
     modifier onlyOwner(bytes32 node) {
-        require(ens.owner(node) == msg.sender);
+        if (ens.owner(node) != msg.sender) {
+            revert NotOwner();
+        }
         _;
     }
 
@@ -55,7 +59,7 @@ contract PublicResolver {
      * Constructor.
      * @param ensAddr The ENS registrar contract.
      */
-    constructor(ENS ensAddr) public {
+    constructor(ENS ensAddr) {
         ens = ensAddr;
     }
 
@@ -63,11 +67,11 @@ contract PublicResolver {
      * Sets the address associated with an ENS node.
      * May only be called by the owner of that node in the ENS registry.
      * @param node The node to update.
-     * @param addr The address to set.
+     * @param _addr The address to set.
      */
-    function setAddr(bytes32 node, address addr) external onlyOwner(node) {
-        records[node].addr = addr;
-        emit AddrChanged(node, addr);
+    function setAddr(bytes32 node, address _addr) external onlyOwner(node) {
+        records[node].addr = _addr;
+        emit AddrChanged(node, _addr);
     }
 
     /**
@@ -85,11 +89,11 @@ contract PublicResolver {
      * Sets the name associated with an ENS node, for reverse records.
      * May only be called by the owner of that node in the ENS registry.
      * @param node The node to update.
-     * @param name The name to set.
+     * @param _name The name to set.
      */
-    function setName(bytes32 node, string calldata name) external onlyOwner(node) {
-        records[node].name = name;
-        emit NameChanged(node, name);
+    function setName(bytes32 node, string calldata _name) external onlyOwner(node) {
+        records[node].name = _name;
+        emit NameChanged(node, _name);
     }
 
     /**
@@ -102,7 +106,9 @@ contract PublicResolver {
      */
     function setABI(bytes32 node, uint256 contentType, bytes calldata data) external onlyOwner(node) {
         // Content types must be powers of 2
-        require(((contentType - 1) & contentType) == 0);
+        if(((contentType - 1) & contentType) != 0){
+            revert InvalidContentType();
+        }
 
         records[node].abis[contentType] = data;
         emit ABIChanged(node, contentType);
@@ -133,7 +139,8 @@ contract PublicResolver {
 
     /**
      * Sets an interface associated with a name.
-     * Setting the address to 0 restores the default behaviour of querying the contract at `addr()` for interface support.
+     * Setting the address to 0 restores the
+     * default behaviour of querying the contract at `addr()` for interface support.
      * @param node The node to update.
      * @param interfaceID The EIP 168 interface ID.
      * @param implementer The address of a contract that implements this interface for this node.
@@ -234,7 +241,9 @@ contract PublicResolver {
             return address(0);
         }
 
-        (bool success, bytes memory returnData) = a.staticcall(abi.encodeWithSignature("supportsInterface(bytes4)", INTERFACE_META_ID));
+        (bool success, bytes memory returnData) = a.staticcall(
+            abi.encodeWithSignature("supportsInterface(bytes4)", INTERFACE_META_ID)
+        );
         if(!success || returnData.length < 32 || returnData[31] == 0) {
             // EIP 168 not supported by target
             return address(0);
