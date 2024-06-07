@@ -2,7 +2,10 @@
   "detectors_to_exclude": "naming-convention,reentrancy-events,solc-version,timestamp",
   "filter_paths": "(lib|test)",
   "solc_remaps": [
-    "@openzeppelin/contracts=lib/openzeppelin-contracts/contracts/",
-    "forge-std/=lib/forge-std/src/"
+    "forge-std/=lib/forge-std/src/",
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "@ensdomains/ens-contracts/=lib/ens-contracts/contracts/",
+    "@ensdomains/buffer/=lib/buffer/",
+    "@vacp2p/minime=lib/minime/contracts/"
   ]
 }

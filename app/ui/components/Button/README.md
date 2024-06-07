@@ -5,11 +5,9 @@ A simple Button component.
 ## Usage
 
 ```jsx
-import { Button } from '@aragon/ui'
+import { Button } from "@aragon/ui";
 
-const App = () => (
-  <Button>Hello World</Button>
-)
+const App = () => <Button>Hello World</Button>;
 ```
 
 ## Properties
@@ -29,7 +27,7 @@ const App = () => (
     <Button mode="outline">Cancel</Button>
     <Button mode="strong">Accept</Button>
   </div>
-)
+);
 ```
 
 ### `emphasis`
@@ -47,7 +45,7 @@ const App = () => (
     <Button emphasis="negative">Cancel</Button>
     <Button emphasis="positive">Accept</Button>
   </div>
-)
+);
 ```
 
 ### `compact`
@@ -60,9 +58,7 @@ Set to true to obtain a button that contains less padding than normal buttons.
 #### Example:
 
 ```jsx
-const MyButton = () => (
-  <Button compact>Accept</Button>
-)
+const MyButton = () => <Button compact>Accept</Button>;
 ```
 
 ### `wide`
@@ -75,9 +71,7 @@ Set to true to obtain a button that expands horizontally.
 #### Example:
 
 ```jsx
-const MyButton = () => (
-  <Button wide>Accept</Button>
-)
+const MyButton = () => <Button wide>Accept</Button>;
 ```
 
 ## Attached Components
@@ -93,5 +87,5 @@ const LinkButton = () => (
   <Button.Anchor mode="strong" href="https://aragon.one/" target="_blank">
     Aragon
   </Button.Anchor>
-)
+);
 ```

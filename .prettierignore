@@ -16,3 +16,9 @@ pnpm-lock.yaml
 yarn.lock
 
 slither.config.json
+
+.eslintrc.json
+.solhint.json
+.vscode/*.json
+app/languages/*.json
+reservedNames.json
